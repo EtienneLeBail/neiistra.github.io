@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1.5 Moteur Audio — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --red-dim: #8a1f1a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+  .chapter-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .chapter-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%); }
+  .chapter-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .chapter-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .chapter-number { font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px,15vw,180px); line-height: 0.85; color: rgba(255,255,255,0.04); position: absolute; right: 48px; top: 80px; pointer-events: none; }
+  .chapter-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px,7vw,80px); letter-spacing: 2px; line-height: 1; margin-bottom: 12px; position: relative; }
+  .chapter-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 40px; position: relative; }
+  .chapter-meta { display: flex; gap: 32px; flex-wrap: wrap; position: relative; }
+  .meta-pill { background: var(--gray); border: 1px solid var(--border); border-radius: 4px; padding: 8px 16px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .meta-pill span { color: var(--white); margin-left: 6px; }
+  .content { max-width: 900px; margin: 0 auto; padding: 64px 48px; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; line-height: 1; }
+  p { font-size: 15px; color: var(--gray-text); line-height: 1.8; margin-bottom: 16px; }
+  p strong { color: var(--white); font-weight: 500; }
+  .highlight-box { background: var(--gray); border-left: 3px solid var(--red); padding: 20px 24px; margin: 24px 0; border-radius: 0 6px 6px 0; }
+  .highlight-box p { margin: 0; color: var(--white); font-size: 14px; line-height: 1.7; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .diagram-wrap { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin: 32px 0; overflow-x: auto; }
+  .diagram-caption { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 16px; text-align: center; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; margin: 32px 0; }
+  .stat-box { background: var(--gray); padding: 24px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 2px; line-height: 1; color: var(--white); }
+  .stat-num span { color: var(--red); }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .impl-grid { display: flex; flex-direction: column; gap: 2px; margin: 32px 0; }
+  .impl-card { background: var(--gray); padding: 24px 28px; display: grid; grid-template-columns: 120px 1fr; gap: 24px; align-items: start; transition: background 0.2s; }
+  .impl-card:hover { background: var(--gray-mid); }
+  .impl-tag { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: var(--red); line-height: 1; }
+  .impl-tag-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 4px; }
+  .impl-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 6px; }
+  .impl-text { font-size: 13px; color: var(--gray-text); line-height: 1.7; margin: 0; }
+  .sound-card { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; margin-bottom: 8px; display: grid; grid-template-columns: 160px 1fr auto; gap: 20px; align-items: center; }
+  .sound-name { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 4px; }
+  .sound-desc { font-size: 12px; color: var(--gray-text); line-height: 1.5; }
+  .sound-range { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 1px; color: var(--white); text-align: right; white-space: nowrap; }
+  .sound-range span { font-size: 14px; color: var(--red); }
+  .range-bar { height: 4px; background: var(--gray-mid); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+  .range-fill { height: 100%; border-radius: 2px; background: var(--red); }
+  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; display: inline-block; }
+  .nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .nav-prev { flex: 1; } .nav-next { flex: 1; text-align: right; }
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .chapter-eyebrow{animation:fadeUp .6s ease both;} .chapter-title{animation:fadeUp .6s .1s ease both;} .chapter-subtitle{animation:fadeUp .6s .2s ease both;} .chapter-meta{animation:fadeUp .6s .3s ease both;}
+  @media(max-width:768px){ nav{padding:0 24px;} .chapter-hero{padding:100px 24px 48px;} .content{padding:48px 24px;} .stat-grid{grid-template-columns:repeat(2,1fr);} .impl-card{grid-template-columns:1fr;gap:8px;} .sound-card{grid-template-columns:1fr;gap:8px;} .next-chapter{flex-direction:column;gap:24px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="../index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+
+<section class="chapter-hero">
+  <div class="chapter-eyebrow">Partie I — Fondements physiques &amp; techniques</div>
+  <div class="chapter-number">1.5</div>
+  <h1 class="chapter-title">Moteur Audio</h1>
+  <p class="chapter-subtitle">HRTF, spatialisation 3D &amp; signatures sonores</p>
+  <div class="chapter-meta">
+    <div class="meta-pill">Discipline <span>Acoustique & psychoacoustique</span></div>
+    <div class="meta-pill">Mécanique <span>Intel audio · Localisation · Footsteps</span></div>
+    <div class="meta-pill">Niveau <span>Tous niveaux</span></div>
+  </div>
+</section>
+
+<div class="content">
+
+  <div class="section-label">Introduction</div>
+  <h2>Le son précède toujours l'image dans R6</h2>
+  <p>Dans Rainbow Six Siege, le son n'est pas un accompagnement — c'est un <strong>vecteur d'information tactique primaire</strong>. Les joueurs expérimentés peuvent localiser un ennemi, identifier son action, estimer sa distance et anticiper son déplacement uniquement à partir des informations sonores — avant même de le voir. Ce n'est pas un talent mystérieux : c'est de la physique acoustique et de la psychoacoustique, deux disciplines dont R6 exploite les principes de manière très précise.</p>
+
+  <div class="stat-grid">
+    <div class="stat-box"><span class="stat-num">10<span>µs</span></span><span class="stat-label">Précision ITD cerveau</span></div>
+    <div class="stat-box"><span class="stat-num">1<span>°</span></span><span class="stat-label">Résolution angulaire</span></div>
+    <div class="stat-box"><span class="stat-num">340<span>m/s</span></span><span class="stat-label">Vitesse du son simulée</span></div>
+    <div class="stat-box"><span class="stat-num">HRTF<span></span></span><span class="stat-label">Technologie utilisée</span></div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECTION 1: HRTF -->
+  <div class="section-label">Section 1</div>
+  <h2>HRTF — comment le cerveau localise les sons en 3D</h2>
+  <p>Le cerveau humain localise un son dans l'espace en exploitant deux mécanismes physiques distincts. L'<strong>ITD</strong> (Interaural Time Difference) — le délai entre l'arrivée du son à l'oreille gauche et à l'oreille droite. Et l'<strong>ILD</strong> (Interaural Level Difference) — la différence d'intensité entre les deux oreilles. Combinés, ces deux paramètres permettent une localisation angulaire précise à environ 1 degré dans l'axe horizontal.</p>
+  <p>R6 simule ces deux paramètres via la technologie <strong>HRTF</strong> (Head-Related Transfer Function) — une fonction mathématique qui modélise comment le son se déforme en passant autour de la tête et des pavillons des oreilles selon la direction de la source. Le résultat : un casque stéréo standard peut simuler une perception sonore 3D convaincante, permettant de distinguer si un son vient de la gauche, de la droite, de devant, de derrière, du dessus ou du dessous.</p>
+
+  <div class="diagram-wrap">
+    <svg width="100%" viewBox="0 0 680 300" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- Head top view -->
+      <circle cx="340" cy="150" r="70" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+      <!-- Ears -->
+      <ellipse cx="270" cy="150" rx="10" ry="18" fill="rgba(55,138,221,0.4)" stroke="#378ADD" stroke-width="1"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#85B7EB" x="254" y="154" text-anchor="middle">Gauche</text>
+      <ellipse cx="410" cy="150" rx="10" ry="18" fill="rgba(200,48,42,0.4)" stroke="#c8302a" stroke-width="1"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#F09595" x="426" y="154" text-anchor="middle">Droite</text>
+      <!-- Nose -->
+      <polygon points="340,80 330,100 350,100" fill="rgba(255,255,255,0.1)"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="340" y="72" text-anchor="middle">Avant</text>
+
+      <!-- Sound source -->
+      <circle cx="120" cy="80" r="10" fill="rgba(239,159,39,0.8)" stroke="#EF9F27" stroke-width="1.5"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#EF9F27" x="120" y="64" text-anchor="middle">Son ennemi</text>
+
+      <!-- Sound waves -->
+      <path d="M 130 80 Q 200 100 260 148" stroke="#378ADD" stroke-width="2" fill="none" marker-end="url(#arr)" stroke-dasharray="6 3"/>
+      <path d="M 130 80 Q 240 60 400 146" stroke="#c8302a" stroke-width="2" fill="none" marker-end="url(#arr)" stroke-dasharray="6 3"/>
+
+      <!-- ITD label -->
+      <rect x="150" y="170" width="180" height="50" rx="6" fill="rgba(55,138,221,0.1)" stroke="rgba(55,138,221,0.3)" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" font-weight="500" fill="#85B7EB" x="240" y="190" text-anchor="middle">ITD — délai temporel</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#378ADD" x="240" y="208" text-anchor="middle">~0.4ms ici → vient de la gauche</text>
+
+      <!-- ILD label -->
+      <rect x="370" y="170" width="200" height="50" rx="6" fill="rgba(200,48,42,0.1)" stroke="rgba(200,48,42,0.3)" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" font-weight="500" fill="#F09595" x="470" y="190" text-anchor="middle">ILD — différence de niveau</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#c8302a" x="470" y="208" text-anchor="middle">Oreille G plus forte → gauche</text>
+
+      <!-- Vertical axis note -->
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#555" x="340" y="260" text-anchor="middle">Vue de dessus (plan horizontal)</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#444" x="340" y="278" text-anchor="middle">La verticalité est encodée par la déformation HRTF des pavillons</text>
+    </svg>
+    <p class="diagram-caption">ITD et ILD — les deux mécanismes de localisation sonore 3D exploités par le HRTF</p>
+  </div>
+
+  <div class="highlight-box">
+    <p>La distinction haut/bas est la plus difficile à percevoir avec précision — elle repose uniquement sur la distorsion spectrale introduite par les pavillons des oreilles, ce qui varie entre individus. C'est pour ça que localiser un ennemi à l'étage au-dessus est intuitivement moins précis qu'à gauche ou à droite.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECTION 2 : SIGNATURES SONORES -->
+  <div class="section-label">Section 2</div>
+  <h2>Catalogue des signatures sonores — portées et caractéristiques</h2>
+  <p>Chaque action dans R6 génère un son avec une <strong>signature spectrale unique</strong> et une portée d'atténuation définie. Voici les signatures les plus tactiquement importantes, avec leurs portées estimées et ce qu'elles révèlent.</p>
+
+  <div style="margin: 24px 0;">
+    <div class="sound-card">
+      <div>
+        <div class="sound-name">Pas — sprint</div>
+        <div class="sound-desc">Fréquences basses (80–200Hz). Révèle direction et vitesse de déplacement. Intervalles réguliers = sprint.</div>
+        <div class="range-bar"><div class="range-fill" style="width:100%"></div></div>
+      </div>
+      <div style="font-size:13px;color:var(--gray-text);line-height:1.6;">Direction précise<br>Étage identifiable<br>Vitesse estimable</div>
+      <div class="sound-range">~12<span>m</span></div>
+    </div>
+
+    <div class="sound-card">
+      <div>
+        <div class="sound-name">Pas — marche</div>
+        <div class="sound-desc">Fréquences mixtes, plus discrètes. Moins de réverbération que le sprint. Révèle une approche prudente.</div>
+        <div class="range-bar"><div class="range-fill" style="width:60%"></div></div>
+      </div>
+      <div style="font-size:13px;color:var(--gray-text);line-height:1.6;">Direction bonne<br>Distance difficile<br>Intention révélée</div>
+      <div class="sound-range">~7<span>m</span></div>
+    </div>
+
+    <div class="sound-card">
+      <div>
+        <div class="sound-name">Crouching</div>
+        <div class="sound-desc">Son de frottement caractéristique. Signature spectrale distincte du pas normal. Très identifiable.</div>
+        <div class="range-bar"><div class="range-fill" style="width:35%"></div></div>
+      </div>
+      <div style="font-size:13px;color:var(--gray-text);line-height:1.6;">Action révélée<br>Position approximative<br>Signature distinctive</div>
+      <div class="sound-range">~4<span>m</span></div>
+    </div>
+
+    <div class="sound-card">
+      <div>
+        <div class="sound-name">Rechargement arme</div>
+        <div class="sound-desc">Son métallique clair, directionnel. Révèle que l'ennemi est temporairement vulnérable (~2s).</div>
+        <div class="range-bar"><div class="range-fill" style="width:75%"></div></div>
+      </div>
+      <div style="font-size:13px;color:var(--gray-text);line-height:1.6;">Vulnérabilité révélée<br>Position approximative<br>Timing d'attaque</div>
+      <div class="sound-range">~9<span>m</span></div>
+    </div>
+
+    <div class="sound-card">
+      <div>
+        <div class="sound-name">Destruction mur (balles)</div>
+        <div class="sound-desc">Impact + débris. Révèle l'angle attaqué et la position approximative de l'attaquant.</div>
+        <div class="range-bar"><div class="range-fill" style="width:85%"></div></div>
+      </div>
+      <div style="font-size:13px;color:var(--gray-text);line-height:1.6;">Direction précise<br>Angle attaqué clair<br>Portée très large</div>
+      <div class="sound-range">~15<span>m</span></div>
+    </div>
+
+    <div class="sound-card">
+      <div>
+        <div class="sound-name">Rappel / bris de fenêtre</div>
+        <div class="sound-desc">Son d'impact cristallin distinctif. Révèle immédiatement un entry en cours. Directif et long.</div>
+        <div class="range-bar"><div class="range-fill" style="width:90%"></div></div>
+      </div>
+      <div style="font-size:13px;color:var(--gray-text);line-height:1.6;">Entry révélé<br>Point d'entrée identifiable<br>Timing critique</div>
+      <div class="sound-range">~18<span>m</span></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECTION 3 : SIMULATEUR AUDIO -->
+  <div class="section-label">Section 3 — Simulateur interactif</div>
+  <h2>Visualise la propagation sonore dans une pièce</h2>
+  <p>Clique n'importe où dans la carte pour placer un ennemi et voir les ondes sonores se propager — et quelles informations tu pourrais extraire depuis différentes positions.</p>
+
+  <div class="diagram-wrap">
+    <canvas id="audioCanvas" height="340" style="width:100%;display:block;cursor:crosshair;"></canvas>
+    <div id="audio-info" style="margin-top:12px;background:rgba(0,0,0,0.3);padding:12px 16px;border-radius:4px;font-size:13px;color:var(--gray-text);line-height:1.6;min-height:44px;">Clique sur la carte pour placer un ennemi et voir la propagation sonore.</div>
+    <p class="diagram-caption">Propagation des ondes sonores — les murs atténuent mais ne bloquent pas complètement</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECTION 4 : IMPLICATIONS -->
+  <div class="section-label">Section 4</div>
+  <h2>Exploiter le moteur audio tactiquement</h2>
+
+  <div class="impl-grid">
+    <div class="impl-card">
+      <div><div class="impl-tag">Foot-</div><div class="impl-tag-sub">steps</div></div>
+      <div>
+        <div class="impl-title">Extraire le maximum d'info des pas</div>
+        <p class="impl-text">Les pas dans R6 encodent 4 informations simultanées : la direction (ITD/ILD), la distance (volume d'atténuation), la vitesse (intervalle entre impacts), et l'étage (réverbération différente). Un joueur avancé traite ces 4 canaux en parallèle. La clé d'entraînement : d'abord apprendre à distinguer dessus/dessous (le signal le plus dur), puis travailler la distance, puis la direction précise. Ne pas travailler les 4 simultanément au début — ça crée de la surcharge cognitive.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Audio</div><div class="impl-tag-sub">masking</div></div>
+      <div>
+        <div class="impl-title">L'audio masking — couvrir ses propres sons</div>
+        <p class="impl-text">Dans R6, certains sons en couvrent d'autres — c'est l'audio masking. Rappeler une fenêtre au moment où une grenade explose dans la pièce voisine couvre le son de l'entrée. Déclencher un gadget bruyant (IQ scanner, Lion scan) pendant un déplacement couvre les pas. Les pros utilisent intentionnellement les sons ambiants et les sons d'équipiers pour masquer leurs déplacements — c'est une technique avancée de gestion de l'information sonore qui nécessite une coordination d'équipe précise.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Setup</div><div class="impl-tag-sub">audio</div></div>
+      <div>
+        <div class="impl-title">Optimiser son setup audio pour R6</div>
+        <p class="impl-text">Pour R6, le HRTF de Windows Sonic ou Dolby Atmos for Headphones est préférable au son stéréo pur — mais seulement avec un bon casque fermé (pour l'isolation des basses fréquences de pas). L'égalisation optimale pour R6 booste légèrement les fréquences entre 200 et 800Hz (zone des pas) et les hautes fréquences autour de 3–5kHz (rechargements, sons métalliques), tout en réduisant les fréquences très hautes (>8kHz) qui fatiguent l'oreille en session longue sans apporter d'intel tactique.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Silence</div><div class="impl-tag-sub">tactique</div></div>
+      <div>
+        <div class="impl-title">Quand le silence est l'information la plus précieuse</div>
+        <p class="impl-text">L'absence de son est elle-même de l'intel. Si tu entends des pas qui s'arrêtent soudainement près d'une porte, l'ennemi est en position d'attente — il prépare un peek ou une entrée. Le silence après une série de pas de sprint indique un changement de posture (passage en marche ou accroupi). Les défenseurs expérimentés font délibérément des pauses dans leur déplacement pour analyser les réactions adverses avant de continuer — en lisant les sons qui cessent, pas seulement ceux qui commencent.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="next-chapter">
+  <div class="nav-prev"><a href="1-4-destruction.html" class="nav-cta">← Chapitre 1.4</a></div>
+  <div class="nav-next"><a href="1-6-ballistics.html" class="nav-cta">Chapitre 1.6 →</a></div>
+</div>
+
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie I · Chapitre 1.5</span>
+</footer>
+
+<script>
+function drawAudioMap(sourceX, sourceY) {
+  const canvas = document.getElementById('audioCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 820;
+  canvas.width = W;
+  const H = 340;
+  ctx.clearRect(0, 0, W, H);
+
+  // Room layout
+  const rooms = [
+    { x:40,  y:40,  w:260, h:180, label:'Pièce A', color:'rgba(55,138,221,0.06)' },
+    { x:340, y:40,  w:300, h:120, label:'Couloir', color:'rgba(255,255,255,0.02)' },
+    { x:340, y:200, w:300, h:100, label:'Pièce B', color:'rgba(200,48,42,0.06)' },
+    { x:40,  y:260, w:260, h:60,  label:'Escalier', color:'rgba(29,158,117,0.05)' },
+  ];
+
+  // Walls
+  ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+  ctx.lineWidth = 2;
+  rooms.forEach(r => {
+    ctx.fillStyle = r.color;
+    ctx.fillRect(r.x, r.y, r.w, r.h);
+    ctx.strokeRect(r.x, r.y, r.w, r.h);
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.font = "11px 'Barlow Condensed', sans-serif";
+    ctx.textAlign = 'center';
+    ctx.fillText(r.label, r.x + r.w/2, r.y + r.h/2 + 4);
+  });
+
+  // Player position (listener)
+  const playerX = 140, playerY = 130;
+  ctx.beginPath();
+  ctx.arc(playerX, playerY, 12, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(29,158,117,0.8)';
+  ctx.fill();
+  ctx.strokeStyle = '#1D9E75';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.fillStyle = '#5DCAA5';
+  ctx.font = "10px 'Barlow Condensed', sans-serif";
+  ctx.textAlign = 'center';
+  ctx.fillText('TOI', playerX, playerY + 4);
+
+  if (!sourceX) {
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.font = "13px 'Barlow Condensed', sans-serif";
+    ctx.textAlign = 'center';
+    ctx.fillText('← Clique pour placer un ennemi', W/2, H/2 + 4);
+    return;
+  }
+
+  // Enemy
+  ctx.beginPath();
+  ctx.arc(sourceX, sourceY, 12, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(200,48,42,0.8)';
+  ctx.fill();
+  ctx.strokeStyle = '#c8302a';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.fillStyle = '#F09595';
+  ctx.font = "10px 'Barlow Condensed', sans-serif";
+  ctx.textAlign = 'center';
+  ctx.fillText('ENM', sourceX, sourceY + 4);
+
+  // Sound waves
+  const maxR = 220;
+  for (let r = 30; r <= maxR; r += 40) {
+    const alpha = 0.4 * (1 - r/maxR);
+    ctx.beginPath();
+    ctx.arc(sourceX, sourceY, r, 0, Math.PI*2);
+    ctx.strokeStyle = `rgba(239,159,39,${alpha})`;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Distance line
+  const dist = Math.sqrt((sourceX-playerX)**2 + (sourceY-playerY)**2);
+  const realDist = (dist * 18 / Math.min(W, H)).toFixed(1);
+
+  ctx.beginPath();
+  ctx.moveTo(playerX, playerY);
+  ctx.lineTo(sourceX, sourceY);
+  ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([3, 3]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Angle indicator
+  const angle = Math.atan2(sourceY - playerY, sourceX - playerX) * 180 / Math.PI;
+  const angleStr = angle > 0 ? `${Math.round(angle)}° bas-droite` :
+                   angle < -90 ? `${Math.round(Math.abs(angle+180))}° bas-gauche` :
+                   `${Math.round(Math.abs(angle))}° haut-${sourceX > playerX ? 'droite' : 'gauche'}`;
+
+  // Wall attenuation check (rough)
+  const throughWall = sourceX > 300 && playerX < 300;
+  const attenuation = throughWall ? '−15dB (mur)' : '−0dB (ligne directe)';
+  const audible = dist < maxR;
+
+  const infoEl = document.getElementById('audio-info');
+  if (infoEl) {
+    infoEl.innerHTML = `<strong style="color:var(--white)">Distance estimée : ${realDist}m</strong> · 
+    Angle : ${angleStr} · 
+    Atténuation : ${attenuation} · 
+    Audible : <span style="color:${audible?'#1D9E75':'#c8302a'}">${audible?'OUI — son clairement perceptible':'NON — trop loin ou trop atténué'}</span>`;
+  }
+}
+
+let audioInit = false;
+window.addEventListener('load', () => {
+  const canvas = document.getElementById('audioCanvas');
+  if (canvas) {
+    canvas.addEventListener('click', e => {
+      const rect = canvas.getBoundingClientRect();
+      const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+      const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+      drawAudioMap(x, y);
+    });
+    drawAudioMap();
+  }
+});
+window.addEventListener('resize', () => drawAudioMap());
+</script>
+</body>
+</html>
