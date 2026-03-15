@@ -76,12 +76,6 @@
   .impl-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 6px; }
   .impl-text { font-size: 13px; color: var(--gray-text); line-height: 1.7; margin: 0; }
 
-  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; }
-  .next-label { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 8px; }
-  .next-title { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 2px; color: var(--white); }
-  .next-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; }
-  .next-cta:hover { background: var(--red); border-color: var(--red); }
-
   footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
   .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
   .footer-logo span { color: var(--red); }
@@ -102,6 +96,13 @@
     .next-chapter{flex-direction:column;gap:24px;padding:32px 24px;}
     footer{padding:20px 24px;flex-direction:column;gap:8px;}
   }
+
+  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; display: inline-block; }
+  .nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .nav-cta.disabled { color: var(--gray-light); border-color: var(--border); cursor: default; pointer-events: none; }
+  .nav-prev { flex: 1; }
+  .nav-next { flex: 1; text-align: right; }
 </style>
 </head>
 <body>
@@ -320,11 +321,13 @@
 </div>
 
 <div class="next-chapter">
-  <div>
-    <div class="next-label">Prochain chapitre — I.2</div>
-    <div class="next-title">Rendu — Frames, Pipeline GPU &amp; Input Lag</div>
+  <div class="nav-prev">
+    
   </div>
-  <a href="1-2-frames-inputlag.html" class="next-cta">Chapitre suivant →</a>
+  <div class="nav-next">
+    <a href="1-2-frames-inputlag.html" class="nav-cta next-cta">Chapitre 1.2 →</a>
+    
+  </div>
 </div>
 
 <footer>
