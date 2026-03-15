@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2.2 Charge Cognitive — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --red-dim: #8a1f1a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+  .chapter-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .chapter-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%); }
+  .chapter-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .chapter-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .chapter-number { font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px,15vw,180px); line-height: 0.85; color: rgba(255,255,255,0.04); position: absolute; right: 48px; top: 80px; pointer-events: none; }
+  .chapter-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px,7vw,80px); letter-spacing: 2px; line-height: 1; margin-bottom: 12px; position: relative; }
+  .chapter-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 40px; position: relative; }
+  .chapter-meta { display: flex; gap: 32px; flex-wrap: wrap; position: relative; }
+  .meta-pill { background: var(--gray); border: 1px solid var(--border); border-radius: 4px; padding: 8px 16px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .meta-pill span { color: var(--white); margin-left: 6px; }
+  .content { max-width: 900px; margin: 0 auto; padding: 64px 48px; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; line-height: 1; }
+  p { font-size: 15px; color: var(--gray-text); line-height: 1.8; margin-bottom: 16px; }
+  p strong { color: var(--white); font-weight: 500; }
+  .highlight-box { background: var(--gray); border-left: 3px solid var(--red); padding: 20px 24px; margin: 24px 0; border-radius: 0 6px 6px 0; }
+  .highlight-box p { margin: 0; color: var(--white); font-size: 14px; line-height: 1.7; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .diagram-wrap { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin: 32px 0; overflow-x: auto; }
+  .diagram-caption { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 16px; text-align: center; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; margin: 32px 0; }
+  .stat-box { background: var(--gray); padding: 24px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 2px; line-height: 1; color: var(--white); }
+  .stat-num span { color: var(--red); }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .impl-grid { display: flex; flex-direction: column; gap: 2px; margin: 32px 0; }
+  .impl-card { background: var(--gray); padding: 24px 28px; display: grid; grid-template-columns: 120px 1fr; gap: 24px; align-items: start; transition: background 0.2s; }
+  .impl-card:hover { background: var(--gray-mid); }
+  .impl-tag { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: var(--red); line-height: 1; }
+  .impl-tag-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 4px; }
+  .impl-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 6px; }
+  .impl-text { font-size: 13px; color: var(--gray-text); line-height: 1.7; margin: 0; }
+  .sim-btn { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; padding: 7px 14px; border: 1px solid var(--border); background: transparent; color: var(--gray-text); cursor: pointer; border-radius: 4px; transition: all 0.2s; }
+  .sim-btn.active { border-color: var(--red); color: var(--white); background: rgba(200,48,42,0.1); }
+  .sim-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--white); }
+  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; display: inline-block; }
+  .nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .nav-prev { flex: 1; } .nav-next { flex: 1; text-align: right; }
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .chapter-eyebrow{animation:fadeUp .6s ease both;} .chapter-title{animation:fadeUp .6s .1s ease both;} .chapter-subtitle{animation:fadeUp .6s .2s ease both;} .chapter-meta{animation:fadeUp .6s .3s ease both;}
+  @media(max-width:768px){ nav{padding:0 24px;} .chapter-hero{padding:100px 24px 48px;} .content{padding:48px 24px;} .stat-grid{grid-template-columns:repeat(2,1fr);} .impl-card{grid-template-columns:1fr;gap:8px;} .next-chapter{flex-direction:column;gap:24px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="../index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+
+<section class="chapter-hero">
+  <div class="chapter-eyebrow">Partie II — Neurosciences &amp; cognition</div>
+  <div class="chapter-number">2.2</div>
+  <h1 class="chapter-title">Charge Cognitive</h1>
+  <p class="chapter-subtitle">Mémoire de travail &amp; saturation mentale dans R6</p>
+  <div class="chapter-meta">
+    <div class="meta-pill">Discipline <span>Psychologie cognitive</span></div>
+    <div class="meta-pill">Mécanique <span>Game sense · Crosshair · Décision</span></div>
+    <div class="meta-pill">Niveau <span>Tous niveaux</span></div>
+  </div>
+</section>
+
+<div class="content">
+
+  <div class="section-label">Introduction</div>
+  <h2>Pourquoi le cerveau sature en ranked</h2>
+  <p>Tu as déjà eu l'impression de "freeze" dans une situation tendue — de ne plus savoir quoi faire alors que tu aurais su en custom ? Ce n'est pas un manque de compétence : c'est ta <strong>mémoire de travail qui est à saturation</strong>. R6 est l'un des jeux les plus exigeants cognitivement du genre FPS — la quantité d'informations à traiter simultanément en ranked dépasse régulièrement la capacité de traitement conscient du cerveau humain.</p>
+  <p>Ce chapitre déconstruit comment la mémoire de travail fonctionne, pourquoi elle sature, et surtout comment les joueurs expérimentés contournent cette limite biologique grâce à l'automatisation.</p>
+
+  <div class="stat-grid">
+    <div class="stat-box"><span class="stat-num">7<span>±2</span></span><span class="stat-label">Éléments en mémoire de travail</span></div>
+    <div class="stat-box"><span class="stat-num">15<span>s</span></span><span class="stat-label">Durée sans consolidation</span></div>
+    <div class="stat-box"><span class="stat-num">~12<span></span></span><span class="stat-label">Infos simultanées dans R6</span></div>
+    <div class="stat-box"><span class="stat-num">300<span>ms</span></span><span class="stat-label">Coût d'une décision consciente</span></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 1</div>
+  <h2>Les 12 flux d'information simultanés dans R6</h2>
+  <p>En ranked, ton cerveau doit gérer en parallèle une quantité d'informations qui dépasse largement la limite de 7±2 éléments de la mémoire de travail (Miller, 1956). Voici les flux actifs lors d'un round typique — et leur coût cognitif relatif.</p>
+
+  <div class="diagram-wrap">
+    <canvas id="cogLoadCanvas" height="380" style="width:100%;display:block;"></canvas>
+    <p class="diagram-caption">Charge cognitive par flux d'information — rouge = charge élevée, vert = automatisable</p>
+  </div>
+
+  <div class="highlight-box">
+    <p>Un débutant gère consciemment les 12 flux — sa mémoire de travail est perpétuellement saturée. Un pro automatise 8 à 9 de ces flux (mémoire procédurale) et ne traite consciemment que 3 à 4 éléments à haute valeur décisionnelle : position ennemie, timing, et décision tactique. C'est la différence entre "jouer" et "performer".</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 2 — Simulateur interactif</div>
+  <h2>Simule ta charge cognitive en round</h2>
+  <p>Coche les éléments que tu gères <strong>consciemment</strong> pendant un round. Les éléments non cochés sont ceux que tu as automatisés. Vois en temps réel ta charge cognitive estimée.</p>
+
+  <div class="diagram-wrap">
+    <div id="cog-items" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;"></div>
+    <div style="background:rgba(0,0,0,0.3);border-radius:8px;padding:20px;margin-top:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);">Charge cognitive totale</span>
+        <span id="cog-score" style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--white);">0%</span>
+      </div>
+      <div style="height:12px;background:var(--gray-mid);border-radius:6px;overflow:hidden;">
+        <div id="cog-bar" style="height:100%;border-radius:6px;background:var(--red);width:0%;transition:width 0.4s ease,background 0.4s ease;"></div>
+      </div>
+      <div id="cog-verdict" style="font-size:13px;color:var(--gray-text);margin-top:12px;line-height:1.6;"></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 3</div>
+  <h2>La théorie du chunking — comment les pros libèrent de la capacité</h2>
+  <p>Le <strong>chunking</strong> est le processus par lequel le cerveau regroupe plusieurs informations en un seul "chunk" (paquet) stocké en mémoire à long terme. Un joueur débutant qui entre dans une pièce voit : une porte, un bureau, une fenêtre, une chaise, un angle — 5 éléments séparés qui occupent 5 slots de mémoire de travail. Un pro voit : "cuisine de la Frontière" — 1 seul chunk qui active automatiquement tous les angles connus, les positions ennemies probables, et les lignes de tir.</p>
+
+  <div class="diagram-wrap">
+    <svg width="100%" viewBox="0 0 680 280" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <!-- Débutant -->
+      <text font-family="'Bebas Neue',sans-serif" font-size="16" fill="#888" x="170" y="28" text-anchor="middle" letter-spacing="2">DÉBUTANT</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#555" x="170" y="44" text-anchor="middle">7 éléments séparés</text>
+
+      <!-- 7 separate chunks -->
+      <g>
+        <rect x="60" y="60" width="80" height="32" rx="4" fill="rgba(200,48,42,0.2)" stroke="#c8302a" stroke-width="0.8"/>
+        <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#F09595" x="100" y="80" text-anchor="middle">Recul</text>
+      </g>
+      <g>
+        <rect x="150" y="60" width="80" height="32" rx="4" fill="rgba(200,48,42,0.2)" stroke="#c8302a" stroke-width="0.8"/>
+        <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#F09595" x="190" y="80" text-anchor="middle">Crosshair</text>
+      </g>
+      <g>
+        <rect x="60" y="102" width="80" height="32" rx="4" fill="rgba(200,48,42,0.2)" stroke="#c8302a" stroke-width="0.8"/>
+        <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#F09595" x="100" y="122" text-anchor="middle">Mini-map</text>
+      </g>
+      <g>
+        <rect x="150" y="102" width="80" height="32" rx="4" fill="rgba(200,48,42,0.2)" stroke="#c8302a" stroke-width="0.8"/>
+        <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#F09595" x="190" y="122" text-anchor="middle">Sons</text>
+      </g>
+      <g>
+        <rect x="60" y="144" width="80" height="32" rx="4" fill="rgba(200,48,42,0.2)" stroke="#c8302a" stroke-width="0.8"/>
+        <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#F09595" x="100" y="164" text-anchor="middle">Position</text>
+      </g>
+      <g>
+        <rect x="150" y="144" width="80" height="32" rx="4" fill="rgba(200,48,42,0.2)" stroke="#c8302a" stroke-width="0.8"/>
+        <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#F09595" x="190" y="164" text-anchor="middle">Gadgets</text>
+      </g>
+      <g>
+        <rect x="105" y="186" width="80" height="32" rx="4" fill="rgba(200,48,42,0.2)" stroke="#c8302a" stroke-width="0.8"/>
+        <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#F09595" x="145" y="206" text-anchor="middle">Timing</text>
+      </g>
+
+      <rect x="60" y="232" width="170" height="28" rx="4" fill="rgba(200,48,42,0.08)" stroke="rgba(200,48,42,0.3)" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#c8302a" x="145" y="250" text-anchor="middle">Saturation → freeze</text>
+
+      <!-- Divider -->
+      <line x1="340" y1="20" x2="340" y2="270" stroke="var(--border)" stroke-width="1"/>
+
+      <!-- Pro -->
+      <text font-family="'Bebas Neue',sans-serif" font-size="16" fill="#888" x="510" y="28" text-anchor="middle" letter-spacing="2">PRO</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#555" x="510" y="44" text-anchor="middle">3 chunks actifs</text>
+
+      <!-- 3 big chunks -->
+      <g>
+        <rect x="370" y="60" width="140" height="80" rx="6" fill="rgba(29,158,117,0.15)" stroke="#1D9E75" stroke-width="1"/>
+        <text font-family="'Bebas Neue',sans-serif" font-size="16" fill="#5DCAA5" x="440" y="85" text-anchor="middle">AUTOMATISÉ</text>
+        <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#1D9E75" x="440" y="102" text-anchor="middle">Recul · Crosshair</text>
+        <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#1D9E75" x="440" y="116" text-anchor="middle">Sons · Movement</text>
+      </g>
+      <g>
+        <rect x="520" y="60" width="140" height="80" rx="6" fill="rgba(29,158,117,0.15)" stroke="#1D9E75" stroke-width="1"/>
+        <text font-family="'Bebas Neue',sans-serif" font-size="16" fill="#5DCAA5" x="590" y="85" text-anchor="middle">PATTERN</text>
+        <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#1D9E75" x="590" y="102" text-anchor="middle">Map · Angles</text>
+        <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#1D9E75" x="590" y="116" text-anchor="middle">Positions connues</text>
+      </g>
+      <g>
+        <rect x="440" y="160" width="180" height="56" rx="6" fill="rgba(200,48,42,0.2)" stroke="#c8302a" stroke-width="1.5"/>
+        <text font-family="'Bebas Neue',sans-serif" font-size="18" fill="#F09595" x="530" y="183" text-anchor="middle">DÉCISION</text>
+        <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#c8302a" x="530" y="202" text-anchor="middle">100% de focus ici</text>
+      </g>
+
+      <rect x="420" y="232" width="220" height="28" rx="4" fill="rgba(29,158,117,0.08)" stroke="rgba(29,158,117,0.3)" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#1D9E75" x="530" y="250" text-anchor="middle">Bande passante libre → clutch</text>
+    </svg>
+    <p class="diagram-caption">Chunking — débutant vs pro : même information, charge cognitive radicalement différente</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 4</div>
+  <h2>Implications directes pour R6</h2>
+
+  <div class="impl-grid">
+    <div class="impl-card">
+      <div><div class="impl-tag">Cross-</div><div class="impl-tag-sub">hair placement</div></div>
+      <div>
+        <div class="impl-title">Pourquoi le crosshair placement libère du cerveau</div>
+        <p class="impl-text">Maintenir son crosshair au bon endroit en permanence est l'exemple parfait d'automatisation cognitive dans R6. Un débutant décide consciemment où viser à chaque instant — coût : 1 à 2 slots de mémoire de travail en continu. Un joueur expérimenté a automatisé ce placement — son crosshair va naturellement à hauteur de tête sur les angles connus sans effort conscient. Ce slot libéré est immédiatement réalloué à la lecture tactique. C'est pourquoi les coaches insistent sur le crosshair placement avant tout autre aspect technique : c'est l'investissement cognitif avec le meilleur retour.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Tilt</div><div class="impl-tag-sub">cognitif</div></div>
+      <div>
+        <div class="impl-title">Pourquoi le tilt dégrade les performances — explication cognitive</div>
+        <p class="impl-text">Le tilt n'est pas une question de "mental faible". C'est une surcharge cognitive émotionnelle. Quand tu tiltes, le cortex préfrontal — responsable des décisions tactiques — est concurrencé par le système limbique activé par la frustration. Les ressources attentionnelles sont partagées entre la gestion de l'émotion et le jeu. Résultat direct : la mémoire de travail disponible pour le jeu chute de 20 à 40%. Tu joues littéralement avec un handicap cognitif. Les techniques de régulation émotionnelle (respiration, reset rituel entre les rounds) ne sont pas du "mindset" — ce sont des outils de restauration de capacité cognitive.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">1 seule</div><div class="impl-tag-sub">arme d'abord</div></div>
+      <div>
+        <div class="impl-title">Pourquoi maîtriser une arme avant d'en apprendre d'autres</div>
+        <p class="impl-text">Jouer avec de nombreuses armes différentes empêche la formation de chunks solides pour le recul et le handling. Chaque arme nécessite un programme moteur distinct — et tant qu'il n'est pas automatisé, il consomme de la mémoire de travail. La stratégie optimale selon la théorie de la charge cognitive : choisir 1 à 2 armes principales et les jouer exclusivement jusqu'à ce que le contrôle soit entièrement procédural (automatique). Seulement ensuite élargir le pool. Les joueurs Diamant+ ont en général 2 à 3 armes à recul totalement maîtrisé — pas 10 à moitié maîtrisées.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Map</div><div class="impl-tag-sub">pool</div></div>
+      <div>
+        <div class="impl-title">Pourquoi les pros jouent peu de maps en compétition</div>
+        <p class="impl-text">La connaissance d'une map est le chunk cognitif le plus dense de R6. Connaître parfaitement une map signifie que chaque pièce, chaque angle, chaque soft wall active automatiquement un ensemble de patterns tactiques stockés en mémoire long terme. Sur une map inconnue, le joueur traite chaque zone comme nouvelle — coût cognitif maximal. Les pros en compétition se spécialisent sur 3 à 5 maps pour transformer leur connaissance cartographique en automatisme total et dédier toute leur capacité consciente à la lecture de l'adversaire.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="next-chapter">
+  <div class="nav-prev"><a href="2-1-pipeline-visuel.html" class="nav-cta">← Chapitre 2.1</a></div>
+  <div class="nav-next"><a href="2-3-neuroplasticite.html" class="nav-cta">Chapitre 2.3 →</a></div>
+</div>
+
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie II · Chapitre 2.2</span>
+</footer>
+
+<script>
+const cogItems = [
+  { label: 'Contrôle du recul', cost: 15, auto: false },
+  { label: 'Crosshair placement', cost: 12, auto: false },
+  { label: 'Lecture mini-map', cost: 10, auto: false },
+  { label: 'Analyse des sons', cost: 14, auto: false },
+  { label: 'Gestion des gadgets', cost: 11, auto: false },
+  { label: 'Position dans la map', cost: 8, auto: false },
+  { label: 'Timing du round', cost: 9, auto: false },
+  { label: 'Callouts équipe', cost: 7, auto: false },
+  { label: 'Angle surveillance', cost: 13, auto: false },
+  { label: 'Économie de munitions', cost: 6, auto: false },
+  { label: 'Décision tactique', cost: 18, auto: false },
+  { label: 'Gestion du stress', cost: 10, auto: false },
+];
+
+let checked = new Array(cogItems.length).fill(true);
+
+function buildItems() {
+  const container = document.getElementById('cog-items');
+  cogItems.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.style.cssText = 'display:flex;align-items:center;gap:10px;background:var(--gray);padding:10px 14px;border-radius:6px;cursor:pointer;border:1px solid var(--border);transition:border-color 0.2s;';
+    div.innerHTML = `
+      <div id="check-${i}" style="width:16px;height:16px;border-radius:3px;border:1.5px solid var(--red);background:rgba(200,48,42,0.2);flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+        <div style="width:8px;height:8px;background:var(--red);border-radius:1px;"></div>
+      </div>
+      <div style="flex:1;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:1px;color:var(--white);">${item.label}</div>
+        <div style="font-size:11px;color:var(--gray-text);">Coût : ${item.cost}%</div>
+      </div>
+    `;
+    div.addEventListener('click', () => toggleItem(i, div));
+    container.appendChild(div);
+  });
+  updateScore();
+}
+
+function toggleItem(i, div) {
+  checked[i] = !checked[i];
+  const check = document.getElementById(`check-${i}`);
+  if (checked[i]) {
+    check.style.background = 'rgba(200,48,42,0.2)';
+    check.style.borderColor = 'var(--red)';
+    check.querySelector('div').style.background = 'var(--red)';
+    div.style.borderColor = 'var(--border)';
+  } else {
+    check.style.background = 'rgba(29,158,117,0.1)';
+    check.style.borderColor = '#1D9E75';
+    check.querySelector('div').style.background = '#1D9E75';
+    div.style.borderColor = '#1D9E75';
+  }
+  updateScore();
+}
+
+function updateScore() {
+  const total = cogItems.reduce((sum, item, i) => sum + (checked[i] ? item.cost : 0), 0);
+  const max = cogItems.reduce((sum, item) => sum + item.cost, 0);
+  const pct = Math.round((total / max) * 100);
+  document.getElementById('cog-score').textContent = pct + '%';
+  const bar = document.getElementById('cog-bar');
+  bar.style.width = pct + '%';
+  bar.style.background = pct > 75 ? '#c8302a' : pct > 50 ? '#EF9F27' : '#1D9E75';
+
+  let verdict = '';
+  if (pct > 80) verdict = 'Surcharge critique — ton cerveau traite trop de flux consciemment. Le freeze et les erreurs de décision sont inévitables sous pression. Priorité : automatiser le recul et le crosshair placement en custom game.';
+  else if (pct > 60) verdict = 'Charge élevée — tu joues avec peu de marge cognitive. Les situations clutch seront difficiles. Travaille l\'automatisation des éléments techniques (recul, movement) pour libérer de la capacité décisionnelle.';
+  else if (pct > 40) verdict = 'Charge correcte — tu as automatisé une partie significative des éléments techniques. Continue à consolider les patterns de map pour libérer encore de la capacité pour la lecture tactique.';
+  else verdict = 'Charge optimale — la majorité de ta capacité cognitive est libre pour la décision tactique pure. C\'est le profil des joueurs Diamant+. Ton cerveau peut lire le jeu au lieu de juste réagir.';
+  document.getElementById('cog-verdict').textContent = verdict;
+}
+
+function drawCogLoad() {
+  const canvas = document.getElementById('cogLoadCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 820;
+  canvas.width = W;
+  const H = 380;
+  ctx.clearRect(0, 0, W, H);
+
+  const items = [
+    { label: 'Décision tactique', cost: 18, auto: false, color: '#c8302a' },
+    { label: 'Analyse des sons', cost: 14, auto: false, color: '#c8302a' },
+    { label: 'Contrôle du recul', cost: 15, auto: true, color: '#1D9E75' },
+    { label: 'Surveillance angle', cost: 13, auto: false, color: '#EF9F27' },
+    { label: 'Crosshair placement', cost: 12, auto: true, color: '#1D9E75' },
+    { label: 'Gestion gadgets', cost: 11, auto: false, color: '#EF9F27' },
+    { label: 'Lecture mini-map', cost: 10, auto: false, color: '#EF9F27' },
+    { label: 'Gestion du stress', cost: 10, auto: false, color: '#c8302a' },
+    { label: 'Timing du round', cost: 9, auto: true, color: '#1D9E75' },
+    { label: 'Position dans map', cost: 8, auto: true, color: '#1D9E75' },
+    { label: 'Callouts équipe', cost: 7, auto: false, color: '#EF9F27' },
+    { label: 'Éco munitions', cost: 6, auto: true, color: '#1D9E75' },
+  ];
+
+  const barH = 24, gap = 8, startY = 30, labelW = 180;
+  const maxCost = 18;
+
+  items.forEach((item, i) => {
+    const y = startY + i * (barH + gap);
+    const barW = ((W - labelW - 80) * item.cost / maxCost);
+
+    ctx.fillStyle = 'var(--gray-text)';
+    ctx.font = "12px 'Barlow Condensed', sans-serif";
+    ctx.textAlign = 'right';
+    ctx.fillStyle = item.auto ? '#1D9E75' : '#aaa';
+    ctx.fillText(item.label, labelW - 8, y + barH/2 + 4);
+
+    ctx.fillStyle = item.color + '25';
+    ctx.fillRect(labelW, y, barW, barH);
+    ctx.strokeStyle = item.color;
+    ctx.lineWidth = 0.8;
+    ctx.strokeRect(labelW, y, barW, barH);
+
+    ctx.fillStyle = item.color;
+    ctx.font = "500 11px 'Barlow Condensed', sans-serif";
+    ctx.textAlign = 'left';
+    ctx.fillText(item.cost + '%', labelW + barW + 6, y + barH/2 + 4);
+
+    if (item.auto) {
+      ctx.fillStyle = 'rgba(29,158,117,0.15)';
+      ctx.fillRect(W - 100, y, 90, barH);
+      ctx.fillStyle = '#1D9E75';
+      ctx.font = "10px 'Barlow Condensed', sans-serif";
+      ctx.textAlign = 'center';
+      ctx.fillText('Automatisable', W - 55, y + barH/2 + 4);
+    }
+  });
+
+  ctx.fillStyle = '#555';
+  ctx.font = "10px 'Barlow Condensed', sans-serif";
+  ctx.textAlign = 'left';
+  ctx.fillText('Vert = automatisable avec entraînement · Rouge = toujours conscient · Jaune = partiellement automatisable', labelW, H - 8);
+}
+
+window.addEventListener('load', () => { drawCogLoad(); buildItems(); });
+window.addEventListener('resize', drawCogLoad);
+</script>
+</body>
+</html>
