@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1.4 Physique de la Destruction — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --red-dim: #8a1f1a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+  .chapter-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .chapter-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%); }
+  .chapter-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .chapter-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .chapter-number { font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px,15vw,180px); line-height: 0.85; color: rgba(255,255,255,0.04); position: absolute; right: 48px; top: 80px; pointer-events: none; }
+  .chapter-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px,7vw,80px); letter-spacing: 2px; line-height: 1; margin-bottom: 12px; position: relative; }
+  .chapter-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 40px; position: relative; }
+  .chapter-meta { display: flex; gap: 32px; flex-wrap: wrap; position: relative; }
+  .meta-pill { background: var(--gray); border: 1px solid var(--border); border-radius: 4px; padding: 8px 16px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .meta-pill span { color: var(--white); margin-left: 6px; }
+  .content { max-width: 900px; margin: 0 auto; padding: 64px 48px; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; line-height: 1; }
+  p { font-size: 15px; color: var(--gray-text); line-height: 1.8; margin-bottom: 16px; }
+  p strong { color: var(--white); font-weight: 500; }
+  .highlight-box { background: var(--gray); border-left: 3px solid var(--red); padding: 20px 24px; margin: 24px 0; border-radius: 0 6px 6px 0; }
+  .highlight-box p { margin: 0; color: var(--white); font-size: 14px; line-height: 1.7; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .diagram-wrap { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin: 32px 0; overflow-x: auto; }
+  .diagram-caption { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 16px; text-align: center; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; margin: 32px 0; }
+  .stat-box { background: var(--gray); padding: 24px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 2px; line-height: 1; color: var(--white); }
+  .stat-num span { color: var(--red); }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .impl-grid { display: flex; flex-direction: column; gap: 2px; margin: 32px 0; }
+  .impl-card { background: var(--gray); padding: 24px 28px; display: grid; grid-template-columns: 120px 1fr; gap: 24px; align-items: start; transition: background 0.2s; }
+  .impl-card:hover { background: var(--gray-mid); }
+  .impl-tag { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: var(--red); line-height: 1; }
+  .impl-tag-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 4px; }
+  .impl-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 6px; }
+  .impl-text { font-size: 13px; color: var(--gray-text); line-height: 1.7; margin: 0; }
+  .sim-wrap { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 28px; margin: 32px 0; }
+  .sim-btn { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; padding: 7px 14px; border: 1px solid var(--border); background: transparent; color: var(--gray-text); cursor: pointer; border-radius: 4px; transition: all 0.2s; }
+  .sim-btn.active { border-color: var(--red); color: var(--white); background: rgba(200,48,42,0.1); }
+  .sim-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--white); }
+  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; display: inline-block; }
+  .nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .nav-prev { flex: 1; }
+  .nav-next { flex: 1; text-align: right; }
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .chapter-eyebrow{animation:fadeUp .6s ease both;} .chapter-title{animation:fadeUp .6s .1s ease both;} .chapter-subtitle{animation:fadeUp .6s .2s ease both;} .chapter-meta{animation:fadeUp .6s .3s ease both;}
+  @media(max-width:768px){ nav{padding:0 24px;} .chapter-hero{padding:100px 24px 48px;} .content{padding:48px 24px;} .stat-grid{grid-template-columns:repeat(2,1fr);} .impl-card{grid-template-columns:1fr;gap:8px;} .next-chapter{flex-direction:column;gap:24px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="../index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+
+<section class="chapter-hero">
+  <div class="chapter-eyebrow">Partie I — Fondements physiques &amp; techniques</div>
+  <div class="chapter-number">1.4</div>
+  <h1 class="chapter-title">Physique de la Destruction</h1>
+  <p class="chapter-subtitle">Soft walls, hard walls &amp; création d'angles</p>
+  <div class="chapter-meta">
+    <div class="meta-pill">Discipline <span>Mécanique des matériaux</span></div>
+    <div class="meta-pill">Mécanique <span>Destruction · Angles · Pénétration</span></div>
+    <div class="meta-pill">Niveau <span>Tous niveaux</span></div>
+  </div>
+</section>
+
+<div class="content">
+
+  <div class="section-label">Introduction</div>
+  <h2>La destruction comme système physique</h2>
+  <p>La destruction dans R6 n'est pas un effet cosmétique — c'est un <strong>système physique avec des règles précises</strong>. Chaque surface du jeu possède des propriétés de résistance aux dégâts, une classification de matériau, et un comportement de destruction déterministe. Comprendre ces règles transforme la destruction d'un outil de chaos en un outil de création d'avantages tactiques calculés.</p>
+  <p>Le moteur de destruction de R6 — développé en interne par Ubisoft sous le nom <strong>RealBlast</strong> — est l'un des systèmes les plus sophistiqués du genre FPS. Il calcule en temps réel la propagation des dégâts, la déformation des surfaces, et la création de nouveaux volumes d'espace jouable à chaque explosion ou impact.</p>
+
+  <div class="stat-grid">
+    <div class="stat-box"><span class="stat-num">3<span>types</span></span><span class="stat-label">Bois, béton, métal</span></div>
+    <div class="stat-box"><span class="stat-num">~60<span>°</span></span><span class="stat-label">Angle max pénétration</span></div>
+    <div class="stat-box"><span class="stat-num">2<span>tirs</span></span><span class="stat-label">Ouvre un soft wall</span></div>
+    <div class="stat-box"><span class="stat-num">∞<span></span></span><span class="stat-label">Angles créables</span></div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECTION 1 : MATERIAUX -->
+  <div class="section-label">Section 1</div>
+  <h2>Les 3 familles de matériaux</h2>
+  <p>Chaque surface dans R6 appartient à une famille de matériaux qui détermine son comportement face aux dégâts. Cette classification n'est pas visible directement dans le jeu — elle s'apprend par l'expérience et par la mémorisation des cartes.</p>
+
+  <div class="diagram-wrap">
+    <svg width="100%" viewBox="0 0 680 300" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- Soft wall (bois) -->
+      <rect x="40" y="40" width="180" height="220" rx="8" fill="rgba(239,159,39,0.08)" stroke="#EF9F27" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="18" fill="#EF9F27" x="130" y="68" text-anchor="middle" letter-spacing="2">SOFT WALL</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#BA7517" x="130" y="84" text-anchor="middle" letter-spacing="1">Bois / cloison</text>
+      <line x1="60" y1="100" x2="200" y2="100" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+      <text font-family="'Barlow',sans-serif" font-size="12" fill="#888" x="130" y="122" text-anchor="middle">Détruit par :</text>
+      <text font-family="'Barlow',sans-serif" font-size="12" fill="#EF9F27" x="130" y="142" text-anchor="middle">Balles · Explosifs</text>
+      <text font-family="'Barlow',sans-serif" font-size="12" fill="#EF9F27" x="130" y="162" text-anchor="middle">Melee · Sledge</text>
+      <line x1="60" y1="180" x2="200" y2="180" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+      <text font-family="'Barlow',sans-serif" font-size="12" fill="#888" x="130" y="200" text-anchor="middle">Pénétration balle :</text>
+      <text font-family="'Bebas Neue',sans-serif" font-size="22" fill="#EF9F27" x="130" y="230" text-anchor="middle">OUI</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="130" y="248" text-anchor="middle">Dégâts réduits après mur</text>
+
+      <!-- Hard wall reinforcable -->
+      <rect x="250" y="40" width="180" height="220" rx="8" fill="rgba(55,138,221,0.08)" stroke="#378ADD" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="16" fill="#378ADD" x="340" y="68" text-anchor="middle" letter-spacing="2">HARD WALL</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#185FA5" x="340" y="84" text-anchor="middle" letter-spacing="1">Béton / pierre</text>
+      <line x1="270" y1="100" x2="410" y2="100" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+      <text font-family="'Barlow',sans-serif" font-size="12" fill="#888" x="340" y="122" text-anchor="middle">Détruit par :</text>
+      <text font-family="'Barlow',sans-serif" font-size="12" fill="#378ADD" x="340" y="142" text-anchor="middle">Explosifs puissants</text>
+      <text font-family="'Barlow',sans-serif" font-size="12" fill="#378ADD" x="340" y="162" text-anchor="middle">Ash · Hibana · Thermite</text>
+      <line x1="270" y1="180" x2="410" y2="180" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+      <text font-family="'Barlow',sans-serif" font-size="12" fill="#888" x="340" y="200" text-anchor="middle">Pénétration balle :</text>
+      <text font-family="'Bebas Neue',sans-serif" font-size="22" fill="#c8302a" x="340" y="230" text-anchor="middle">NON</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="340" y="248" text-anchor="middle">Bloque tout projectile</text>
+
+      <!-- Renforcé -->
+      <rect x="460" y="40" width="180" height="220" rx="8" fill="rgba(127,119,221,0.08)" stroke="#7F77DD" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="16" fill="#7F77DD" x="550" y="68" text-anchor="middle" letter-spacing="2">RENFORCÉ</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#534AB7" x="550" y="84" text-anchor="middle" letter-spacing="1">Métal / renforts</text>
+      <line x1="480" y1="100" x2="620" y2="100" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+      <text font-family="'Barlow',sans-serif" font-size="12" fill="#888" x="550" y="122" text-anchor="middle">Détruit par :</text>
+      <text font-family="'Barlow',sans-serif" font-size="12" fill="#7F77DD" x="550" y="142" text-anchor="middle">Thermite · Hibana</text>
+      <text font-family="'Barlow',sans-serif" font-size="12" fill="#7F77DD" x="550" y="162" text-anchor="middle">Bandit trick (électricité)</text>
+      <line x1="480" y1="180" x2="620" y2="180" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+      <text font-family="'Barlow',sans-serif" font-size="12" fill="#888" x="550" y="200" text-anchor="middle">Pénétration balle :</text>
+      <text font-family="'Bebas Neue',sans-serif" font-size="22" fill="#c8302a" x="550" y="230" text-anchor="middle">JAMAIS</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="550" y="248" text-anchor="middle">Résiste à tout sauf ops dédiés</text>
+    </svg>
+    <p class="diagram-caption">Les 3 familles de matériaux dans R6 — comportements et règles de pénétration</p>
+  </div>
+
+  <div class="highlight-box">
+    <p>La règle d'or : <strong>tout ce qui est bois se détruit aux balles, tout ce qui est béton/métal ne se détruit qu'aux explosifs ou opérateurs spécialisés</strong>. L'exception : les renforts défenseurs transforment un soft wall en mur renforcé — c'est le cœur de l'économie tactique défensive.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECTION 2 : SIMULATEUR DESTRUCTION -->
+  <div class="section-label">Section 2 — Simulateur interactif</div>
+  <h2>Simule la destruction d'un mur</h2>
+  <p>Clique sur le mur pour simuler des impacts de balles ou d'explosifs. Observe comment les trous se propagent et créent de nouvelles lignes de vue.</p>
+
+  <div class="sim-wrap">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;align-items:center;">
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);">Outil :</span>
+      <button class="sim-btn active" id="tool-bullet" onclick="setTool('bullet',this)">Balle (1 tir)</button>
+      <button class="sim-btn" id="tool-shotgun" onclick="setTool('shotgun',this)">Fusil à pompe</button>
+      <button class="sim-btn" id="tool-sledge" onclick="setTool('sledge',this)">Sledge</button>
+      <button class="sim-btn" id="tool-grenade" onclick="setTool('grenade',this)">Grenade</button>
+      <div style="width:1px;height:24px;background:var(--border);margin:0 4px;"></div>
+      <button class="sim-btn" onclick="resetWall()" style="color:var(--red);border-color:rgba(200,48,42,0.3);">Réinitialiser</button>
+    </div>
+    <canvas id="wallCanvas" height="280" style="width:100%;display:block;border-radius:6px;cursor:crosshair;"></canvas>
+    <div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;">
+      <div style="background:rgba(0,0,0,0.3);padding:10px 16px;border-radius:4px;flex:1;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-light);margin-bottom:2px;">Intégrité du mur</div>
+        <div id="wall-integrity" style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--white);">100%</div>
+      </div>
+      <div style="background:rgba(0,0,0,0.3);padding:10px 16px;border-radius:4px;flex:1;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-light);margin-bottom:2px;">Lignes de vue créées</div>
+        <div id="wall-sightlines" style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--white);">0</div>
+      </div>
+      <div style="background:rgba(0,0,0,0.3);padding:10px 16px;border-radius:4px;flex:2;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-light);margin-bottom:2px;">Statut</div>
+        <div id="wall-status" style="font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--gray-text);padding-top:4px;">Mur intact — aucune ligne de vue</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECTION 3 : ANGLES -->
+  <div class="section-label">Section 3</div>
+  <h2>Création d'angles — la géométrie de la destruction</h2>
+  <p>Chaque trou créé dans un mur est une nouvelle <strong>ligne de vue bidirectionnelle</strong>. La position du trou, sa hauteur, et sa taille déterminent quels angles sont couverts depuis chaque côté. C'est pour ça que la destruction n'est pas seulement un outil offensif — c'est un outil de contrôle géométrique de l'espace.</p>
+
+  <div class="diagram-wrap">
+    <svg width="100%" viewBox="0 0 680 320" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- Floor -->
+      <rect x="40" y="260" width="600" height="4" rx="2" fill="rgba(255,255,255,0.1)"/>
+      <!-- Ceiling -->
+      <rect x="40" y="50" width="600" height="4" rx="2" fill="rgba(255,255,255,0.1)"/>
+
+      <!-- Wall with holes -->
+      <rect x="318" y="54" width="24" height="210" fill="#2e2e2e" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+
+      <!-- Hole 1: high (head level) -->
+      <rect x="318" y="90" width="24" height="36" fill="var(--black)"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#c8302a" x="330" y="82" text-anchor="middle">Trou tête</text>
+
+      <!-- Hole 2: low (foot level) -->
+      <rect x="318" y="200" width="24" height="44" fill="var(--black)"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#EF9F27" x="330" y="260" text-anchor="middle">Trou sol</text>
+
+      <!-- Shooter left -->
+      <circle cx="160" cy="200" r="14" fill="rgba(55,138,221,0.6)" stroke="#378ADD" stroke-width="1"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#85B7EB" x="160" y="230" text-anchor="middle">Attaquant</text>
+
+      <!-- FOV from high hole (head) -->
+      <path d="M 174 198 L 342 98 L 342 126 Z" fill="rgba(200,48,42,0.1)" stroke="none"/>
+      <line x1="174" y1="198" x2="342" y2="98" stroke="#c8302a" stroke-width="1" stroke-dasharray="5 3" opacity="0.6" marker-end="url(#arr2)" fill="none"/>
+      <line x1="174" y1="198" x2="342" y2="126" stroke="#c8302a" stroke-width="1" stroke-dasharray="5 3" opacity="0.6" fill="none"/>
+
+      <!-- FOV from low hole (feet) -->
+      <path d="M 174 198 L 342 200 L 342 244 Z" fill="rgba(239,159,39,0.1)" stroke="none"/>
+      <line x1="174" y1="198" x2="342" y2="200" stroke="#EF9F27" stroke-width="1" stroke-dasharray="5 3" opacity="0.6" marker-end="url(#arr2)" fill="none"/>
+      <line x1="174" y1="198" x2="342" y2="244" stroke="#EF9F27" stroke-width="1" stroke-dasharray="5 3" opacity="0.6" fill="none"/>
+
+      <!-- Defender right -->
+      <circle cx="500" cy="150" r="14" fill="rgba(200,48,42,0.6)" stroke="#c8302a" stroke-width="1"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#F09595" x="500" y="180" text-anchor="middle">Défenseur</text>
+
+      <!-- Annotations -->
+      <rect x="420" y="60" width="220" height="44" rx="6" fill="rgba(200,48,42,0.1)" stroke="rgba(200,48,42,0.3)" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" font-weight="500" fill="#F09595" x="530" y="78" text-anchor="middle">Trou haut = angle tête</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#c8302a" x="530" y="96" text-anchor="middle">Défenseur accroupi = hors angle</text>
+
+      <rect x="420" y="218" width="220" height="44" rx="6" fill="rgba(239,159,39,0.1)" stroke="rgba(239,159,39,0.3)" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" font-weight="500" fill="#FAC775" x="530" y="236" text-anchor="middle">Trou bas = angle pieds</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#EF9F27" x="530" y="254" text-anchor="middle">Oblige le défenseur à bouger</text>
+
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="330" y="310" text-anchor="middle">Vue de côté (section verticale)</text>
+    </svg>
+    <p class="diagram-caption">Position verticale du trou = angle couvert — trou haut vs trou bas</p>
+  </div>
+
+  <p>La <strong>hauteur du trou</strong> détermine l'angle vertical couvert depuis l'autre côté. Un trou à hauteur de tête couvre les ennemis debout mais pas les ennemis accroupis. Un trou à hauteur du sol force les ennemis à se coucher ou à bouger. Cette règle géométrique est fondamentale dans la stratégie défensive — l'emplacement précis des trous creusés par les roamers est rarement aléatoire.</p>
+
+  <hr class="divider">
+
+  <!-- SECTION 4 : IMPLICATIONS -->
+  <div class="section-label">Section 4</div>
+  <h2>Implications tactiques</h2>
+
+  <div class="impl-grid">
+    <div class="impl-card">
+      <div><div class="impl-tag">Soft</div><div class="impl-tag-sub">wall logic</div></div>
+      <div>
+        <div class="impl-title">Pourquoi les soft walls sont l'atout le plus sous-exploité</div>
+        <p class="impl-text">La majorité des joueurs traitent les soft walls comme des obstacles. Les joueurs expérimentés les traitent comme des <em>ressources</em>. Chaque soft wall est un angle potentiel, une ligne de fuite, une position de flanc. Connaître la carte en termes de soft walls — pas seulement en termes de pièces — est une compétence de game sense avancée qui transforme le control spatial en avantage tactique permanent.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Roam</div><div class="impl-tag-sub">holes</div></div>
+      <div>
+        <div class="impl-title">La science des roaming holes</div>
+        <p class="impl-text">Un roaming hole bien placé doit satisfaire 3 conditions : créer une ligne de vue sur une zone de passage ennemie, permettre de se replier rapidement hors de l'angle, et ne pas créer une contre-ligne de vue utilisable par l'attaquant depuis l'extérieur. La hauteur optimale d'un roaming hole est entre 120 et 150cm du sol — assez haut pour couvrir debout, trop haut pour être exploité depuis le sol adverse.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Rappel</div><div class="impl-tag-sub">holes</div></div>
+      <div>
+        <div class="impl-title">Destruction pour l'entrée — créer ses propres points d'accès</div>
+        <p class="impl-text">Les attaquants peuvent créer de nouveaux points d'entrée en détruisant des planchers ou des murs depuis l'extérieur. La règle physique clé : un trou doit être au minimum de 60×60cm pour qu'un opérateur puisse passer. Les trous de rappel creusés trop petits forcent une animation d'entrée plus lente. La destruction préliminaire des barricades barbelées et caméras via le rappel externe est une pratique standard dans le jeu compétitif — elle réduit le bruit d'entrée et le temps d'exposition.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Floor</div><div class="impl-tag-sub">ceiling</div></div>
+      <div>
+        <div class="impl-title">La verticalité — dimension la plus sous-exploitée</div>
+        <p class="impl-text">R6 est l'un des rares FPS à avoir une vraie verticalité tactique. Les planchers sont des soft surfaces dans la grande majorité des cartes — ce qui signifie que la position au-dessus ou en dessous d'un ennemi crée des opportunités de destruction directe. Les pros utilisent systématiquement la règle des "pieds qui dépassent" : quand un ennemi marche au-dessus, ses pieds descendent légèrement en dessous du plancher dans le moteur de collision, créant une cible depuis le dessous. C'est le fondement du strat "ceiling bang".</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Pén.</div><div class="impl-tag-sub">ballistique</div></div>
+      <div>
+        <div class="impl-title">Les dégâts de pénétration — comment ils sont calculés</div>
+        <p class="impl-text">Quand une balle traverse un soft wall avant de toucher un ennemi, elle subit une pénalité de dégâts. Dans R6, cette pénalité est d'environ 10 à 30% selon le matériau et l'épaisseur. Une balle qui traverse deux surfaces subira deux pénalités cumulées. À grande distance avec une pénalité double, un headshot peut ne pas être fatal — c'est pour ça que le wall bang à longue distance requiert un positionnement précis ET une arme à hauts dégâts de base.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="next-chapter">
+  <div class="nav-prev"><a href="1-3-hitboxes.html" class="nav-cta">← Chapitre 1.3</a></div>
+  <div class="nav-next"><a href="1-5-audio.html" class="nav-cta">Chapitre 1.5 →</a></div>
+</div>
+
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie I · Chapitre 1.4</span>
+</footer>
+
+<script>
+// WALL DESTRUCTION SIMULATOR
+let holes = [];
+let currentTool = 'bullet';
+let integrity = 100;
+let sightlines = 0;
+
+const toolProps = {
+  bullet:   { r: 8,  dmg: 4,  color: '#EF9F27', label: 'Impact balle' },
+  shotgun:  { r: 22, dmg: 12, color: '#D85A30', label: 'Impact fusil' },
+  sledge:   { r: 38, dmg: 20, color: '#7F77DD', label: 'Impact Sledge' },
+  grenade:  { r: 65, dmg: 35, color: '#c8302a', label: 'Explosion grenade' },
+};
+
+function setTool(t, btn) {
+  currentTool = t;
+  document.querySelectorAll('.sim-btn').forEach(b => {
+    if(['Balle (1 tir)','Fusil à pompe','Sledge','Grenade'].includes(b.textContent))
+      b.classList.remove('active');
+  });
+  btn.classList.add('active');
+}
+
+function resetWall() {
+  holes = []; integrity = 100; sightlines = 0;
+  drawWall();
+}
+
+function drawWall() {
+  const canvas = document.getElementById('wallCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 820;
+  canvas.width = W;
+  const H = 280;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Floor / ceiling
+  ctx.fillStyle = 'rgba(255,255,255,0.08)';
+  ctx.fillRect(0, 0, W, 8);
+  ctx.fillRect(0, H-8, W, 8);
+
+  // Wall base
+  ctx.fillStyle = '#2a2a25';
+  ctx.fillRect(0, 8, W, H-16);
+
+  // Wood texture lines
+  for (let y = 20; y < H-16; y += 28) {
+    ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+
+  // Draw holes
+  holes.forEach(h => {
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.arc(h.x, h.y, h.r, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(0,0,0,1)';
+    ctx.fill();
+    ctx.restore();
+
+    // Debris ring
+    ctx.beginPath();
+    ctx.arc(h.x, h.y, h.r + 4, 0, Math.PI*2);
+    ctx.strokeStyle = h.color + '60';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  });
+
+  // Sightlines through holes (vertical center line)
+  const centerX = W / 2;
+  const holesOnCenter = holes.filter(h => Math.abs(h.x - centerX) < h.r);
+  if (holesOnCenter.length > 0) {
+    ctx.strokeStyle = 'rgba(200,48,42,0.3)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([8, 4]);
+    ctx.beginPath();
+    ctx.moveTo(centerX, 8);
+    ctx.lineTo(centerX, H-8);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Stats
+  const integrityEl = document.getElementById('wall-integrity');
+  const slEl = document.getElementById('wall-sightlines');
+  const statusEl = document.getElementById('wall-status');
+  if (integrityEl) {
+    const pct = Math.max(0, integrity);
+    integrityEl.textContent = pct + '%';
+    integrityEl.style.color = pct > 60 ? '#f5f2ed' : pct > 30 ? '#EF9F27' : '#c8302a';
+    slEl.textContent = sightlines;
+    if (pct === 0) statusEl.textContent = 'Mur entièrement détruit — passage possible';
+    else if (sightlines > 0) statusEl.textContent = sightlines + ' ligne(s) de vue active(s) — wall bang possible';
+    else statusEl.textContent = 'Mur partiellement endommagé — pas encore de ligne de vue';
+  }
+}
+
+function handleWallClick(e) {
+  const canvas = document.getElementById('wallCanvas');
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+  const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+  const tp = toolProps[currentTool];
+
+  holes.push({ x, y, r: tp.r, color: tp.color });
+  integrity = Math.max(0, integrity - tp.dmg);
+
+  // Count sightlines (holes that span horizontally across significant width)
+  sightlines = holes.filter(h => h.r >= 15).length;
+
+  drawWall();
+}
+
+window.addEventListener('load', () => {
+  const canvas = document.getElementById('wallCanvas');
+  if (canvas) {
+    canvas.addEventListener('click', handleWallClick);
+    drawWall();
+  }
+});
+window.addEventListener('resize', drawWall);
+</script>
+
+</body>
+</html>
