@@ -35,19 +35,16 @@
   .chapter-list { display: flex; flex-direction: column; gap: 2px; }
   .chapter-card { display: grid; grid-template-columns: 80px 1fr auto; gap: 24px; align-items: center; background: var(--gray); padding: 28px 32px; text-decoration: none; color: inherit; transition: background 0.2s; position: relative; overflow: hidden; }
   .chapter-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--red); transform: scaleY(0); transform-origin: bottom; transition: transform 0.3s ease; }
-  .chapter-card.available:hover { background: var(--gray-mid); }
-  .chapter-card.available:hover::before { transform: scaleY(1); }
-  .chapter-card.locked { cursor: default; opacity: 0.5; }
-  .chap-num { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 2px; color: var(--red-dim); line-height: 1; }
-  .chapter-card.available .chap-num { color: var(--red); }
+  .chapter-card:hover { background: var(--gray-mid); }
+  .chapter-card:hover::before { transform: scaleY(1); }
+  .chap-num { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 2px; color: var(--red); line-height: 1; }
   .chap-title { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 6px; }
   .chap-desc { font-size: 13px; color: var(--gray-text); line-height: 1.5; }
   .chap-right { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
   .chap-status { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 4px 10px; border-radius: 3px; white-space: nowrap; }
   .status-live { background: rgba(200,48,42,0.15); color: var(--red); border: 1px solid rgba(200,48,42,0.3); }
-  .status-wip { background: rgba(255,255,255,0.04); color: var(--gray-light); border: 1px solid var(--border); }
   .chap-arrow { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; color: var(--gray-light); transition: color 0.2s; }
-  .chapter-card.available:hover .chap-arrow { color: var(--white); }
+  .chapter-card:hover .chap-arrow { color: var(--white); }
   .part-nav { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; }
   .part-nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; display: inline-block; }
   .part-nav-cta:hover { background: var(--red); border-color: var(--red); }
@@ -57,10 +54,8 @@
   .footer-logo span { color: var(--red); }
   .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
   @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
-  .part-eyebrow{animation:fadeUp .6s ease both;}
-  .part-title{animation:fadeUp .6s .1s ease both;}
-  .part-desc{animation:fadeUp .6s .2s ease both;}
-  @media(max-width:768px){ nav{padding:0 24px;} .part-hero{grid-template-columns:1fr;padding:100px 24px 48px;gap:32px;} .chapters-section{padding:48px 24px;} .chapter-card{grid-template-columns:56px 1fr;gap:16px;padding:20px 20px;} .chap-right{display:none;} .part-nav{flex-direction:column;gap:16px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }
+  .part-eyebrow{animation:fadeUp .6s ease both;} .part-title{animation:fadeUp .6s .1s ease both;} .part-desc{animation:fadeUp .6s .2s ease both;}
+  @media(max-width:768px){ nav{padding:0 24px;} .part-hero{grid-template-columns:1fr;padding:100px 24px 48px;gap:32px;} .chapters-section{padding:48px 24px;} .chapter-card{grid-template-columns:56px 1fr;gap:16px;padding:20px;} .chap-right{display:none;} .part-nav{flex-direction:column;gap:16px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }
 </style>
 </head>
 <body>
@@ -80,7 +75,7 @@
   </div>
   <div class="part-stats">
     <div class="part-stat"><div class="part-stat-num"><span>6</span></div><div class="part-stat-label">Chapitres</div></div>
-    <div class="part-stat"><div class="part-stat-num"><span>1</span></div><div class="part-stat-label">Disponible</div></div>
+    <div class="part-stat"><div class="part-stat-num"><span>6</span></div><div class="part-stat-label">Disponibles</div></div>
     <div class="part-stat"><div class="part-stat-num">Neuro<span>.</span></div><div class="part-stat-label">Discipline</div></div>
     <div class="part-stat"><div class="part-stat-num">150<span>ms</span></div><div class="part-stat-label">Pipeline moyen</div></div>
   </div>
@@ -90,66 +85,66 @@
   <div class="section-label">Chapitres de la Partie II</div>
   <div class="chapter-list">
 
-    <a href="2-1-pipeline-visuel.html" class="chapter-card available">
+    <a href="2-1-pipeline-visuel.html" class="chapter-card">
       <div class="chap-num">2.1</div>
       <div class="chap-info">
         <div class="chap-title">Pipeline Visuel — De la rétine au tir</div>
-        <div class="chap-desc">Le temps de réaction déconstruit maillon par maillon. Pourquoi le peek advantage est de la neurophysiologie, les deux voies cérébrales parallèles, et ce que 144fps change vraiment dans le pipeline.</div>
+        <div class="chap-desc">Le temps de réaction déconstruit maillon par maillon. Pourquoi le peek advantage est de la neurophysiologie, les deux voies cérébrales parallèles, et ce que 144fps change vraiment.</div>
       </div>
       <div class="chap-right"><span class="chap-status status-live">Disponible</span><span class="chap-arrow">Lire →</span></div>
     </a>
 
-    <div class="chapter-card locked">
+    <a href="2-2-charge-cognitive.html" class="chapter-card">
       <div class="chap-num">2.2</div>
       <div class="chap-info">
         <div class="chap-title">Charge Cognitive &amp; Mémoire de Travail</div>
-        <div class="chap-desc">Pourquoi le cerveau sature en ranked, comment le crosshair placement libère de la capacité mentale, et comment les pros maintiennent 6 flux d'information simultanés sans ralentir.</div>
+        <div class="chap-desc">Pourquoi le cerveau sature en ranked, comment le crosshair placement libère de la capacité mentale, et pourquoi les pros gèrent 12 flux d'information sans se noyer.</div>
       </div>
-      <div class="chap-right"><span class="chap-status status-wip">À venir</span></div>
-    </div>
+      <div class="chap-right"><span class="chap-status status-live">Disponible</span><span class="chap-arrow">Lire →</span></div>
+    </a>
 
-    <div class="chapter-card locked">
+    <a href="2-3-neuroplasticite.html" class="chapter-card">
       <div class="chap-num">2.3</div>
       <div class="chap-info">
         <div class="chap-title">Neuroplasticité &amp; Apprentissage Moteur</div>
-        <div class="chap-desc">Comment le aim, le recul et le movement s'automatisent neurologiquement. La science de la mémoire procédurale, du chunking, et de la pratique délibérée appliquée au FPS.</div>
+        <div class="chap-desc">Comment le aim, le recul et le movement s'automatisent neurologiquement. Les 4 phases d'apprentissage, la myélinisation, et pourquoi changer de sensibilité détruit la mémoire musculaire.</div>
       </div>
-      <div class="chap-right"><span class="chap-status status-wip">À venir</span></div>
-    </div>
+      <div class="chap-right"><span class="chap-status status-live">Disponible</span><span class="chap-arrow">Lire →</span></div>
+    </a>
 
-    <div class="chapter-card locked">
+    <a href="2-4-game-sense.html" class="chapter-card">
       <div class="chap-num">2.4</div>
       <div class="chap-info">
         <div class="chap-title">Pattern Recognition &amp; Game Sense</div>
-        <div class="chap-desc">Comment le cerveau construit des modèles prédictifs à partir de l'expérience. La neurologie derrière le "sixième sens" des joueurs expérimentés — et comment l'entraîner.</div>
+        <div class="chap-desc">La neurologie derrière le "sixième sens" des joueurs expérimentés. Modèle OODA, bibliothèque de patterns, VOD review — et un quiz de situations R6 réelles pour tester ta lecture de jeu.</div>
       </div>
-      <div class="chap-right"><span class="chap-status status-wip">À venir</span></div>
-    </div>
+      <div class="chap-right"><span class="chap-status status-live">Disponible</span><span class="chap-arrow">Lire →</span></div>
+    </a>
 
-    <div class="chapter-card locked">
+    <a href="2-5-attention.html" class="chapter-card">
       <div class="chap-num">2.5</div>
       <div class="chap-info">
         <div class="chap-title">Attention Sélective &amp; Focus</div>
-        <div class="chap-desc">Où le regard va, pourquoi, et comment l'entraîner. La gestion de l'attention dans un environnement à haute densité d'information — mini-map, sons, angles, gadgets simultanés.</div>
+        <div class="chap-desc">La pyramide d'attention dans R6, l'inattentional blindness, et comment entraîner le scan périphérique. Inclut un mini-jeu interactif de détection périphérique.</div>
       </div>
-      <div class="chap-right"><span class="chap-status status-wip">À venir</span></div>
-    </div>
+      <div class="chap-right"><span class="chap-status status-live">Disponible</span><span class="chap-arrow">Lire →</span></div>
+    </a>
 
-    <div class="chapter-card locked">
+    <a href="2-6-stress.html" class="chapter-card">
       <div class="chap-num">2.6</div>
       <div class="chap-info">
         <div class="chap-title">Stress &amp; Performance</div>
-        <div class="chap-desc">Cortisol, tunnel vision, clutch factor. La physiologie du stress en ranked et en tournoi — pourquoi les mains tremblent, comment les pros gèrent la pression, et la science du mental.</div>
+        <div class="chap-desc">Cortisol, tunnel vision, clutch factor. La physiologie du stress en ranked — pourquoi les mains tremblent, la loi de Yerkes-Dodson, et les techniques de gestion basées sur la neurologie.</div>
       </div>
-      <div class="chap-right"><span class="chap-status status-wip">À venir</span></div>
-    </div>
+      <div class="chap-right"><span class="chap-status status-live">Disponible</span><span class="chap-arrow">Lire →</span></div>
+    </a>
 
   </div>
 </div>
 
 <div class="part-nav">
   <a href="../partie-1/index.html" class="part-nav-cta">← Partie I</a>
-  <a href="#" class="part-nav-cta disabled">Partie III →</a>
+  <a href="../partie-3/index.html" class="part-nav-cta disabled">Partie III →</a>
 </div>
 
 <footer>
