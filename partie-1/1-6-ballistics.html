@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1.6 Ballistics & Recoil — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --red-dim: #8a1f1a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+  .chapter-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .chapter-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%); }
+  .chapter-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .chapter-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .chapter-number { font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px,15vw,180px); line-height: 0.85; color: rgba(255,255,255,0.04); position: absolute; right: 48px; top: 80px; pointer-events: none; }
+  .chapter-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px,7vw,80px); letter-spacing: 2px; line-height: 1; margin-bottom: 12px; position: relative; }
+  .chapter-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 40px; position: relative; }
+  .chapter-meta { display: flex; gap: 32px; flex-wrap: wrap; position: relative; }
+  .meta-pill { background: var(--gray); border: 1px solid var(--border); border-radius: 4px; padding: 8px 16px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .meta-pill span { color: var(--white); margin-left: 6px; }
+  .content { max-width: 900px; margin: 0 auto; padding: 64px 48px; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; line-height: 1; }
+  p { font-size: 15px; color: var(--gray-text); line-height: 1.8; margin-bottom: 16px; }
+  p strong { color: var(--white); font-weight: 500; }
+  .highlight-box { background: var(--gray); border-left: 3px solid var(--red); padding: 20px 24px; margin: 24px 0; border-radius: 0 6px 6px 0; }
+  .highlight-box p { margin: 0; color: var(--white); font-size: 14px; line-height: 1.7; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .diagram-wrap { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin: 32px 0; overflow-x: auto; }
+  .diagram-caption { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 16px; text-align: center; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; margin: 32px 0; }
+  .stat-box { background: var(--gray); padding: 24px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 2px; line-height: 1; color: var(--white); }
+  .stat-num span { color: var(--red); }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .impl-grid { display: flex; flex-direction: column; gap: 2px; margin: 32px 0; }
+  .impl-card { background: var(--gray); padding: 24px 28px; display: grid; grid-template-columns: 120px 1fr; gap: 24px; align-items: start; transition: background 0.2s; }
+  .impl-card:hover { background: var(--gray-mid); }
+  .impl-tag { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: var(--red); line-height: 1; }
+  .impl-tag-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 4px; }
+  .impl-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 6px; }
+  .impl-text { font-size: 13px; color: var(--gray-text); line-height: 1.7; margin: 0; }
+  .sim-btn { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; padding: 7px 14px; border: 1px solid var(--border); background: transparent; color: var(--gray-text); cursor: pointer; border-radius: 4px; transition: all 0.2s; }
+  .sim-btn.active { border-color: var(--red); color: var(--white); background: rgba(200,48,42,0.1); }
+  .sim-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--white); }
+  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; display: inline-block; }
+  .nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .nav-prev { flex: 1; } .nav-next { flex: 1; text-align: right; }
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .chapter-eyebrow{animation:fadeUp .6s ease both;} .chapter-title{animation:fadeUp .6s .1s ease both;} .chapter-subtitle{animation:fadeUp .6s .2s ease both;} .chapter-meta{animation:fadeUp .6s .3s ease both;}
+  @media(max-width:768px){ nav{padding:0 24px;} .chapter-hero{padding:100px 24px 48px;} .content{padding:48px 24px;} .stat-grid{grid-template-columns:repeat(2,1fr);} .impl-card{grid-template-columns:1fr;gap:8px;} .next-chapter{flex-direction:column;gap:24px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="../index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+
+<section class="chapter-hero">
+  <div class="chapter-eyebrow">Partie I — Fondements physiques &amp; techniques</div>
+  <div class="chapter-number">1.6</div>
+  <h1 class="chapter-title">Ballistics &amp; Recoil</h1>
+  <p class="chapter-subtitle">Patterns déterministes, bloom &amp; contrôle moteur</p>
+  <div class="chapter-meta">
+    <div class="meta-pill">Discipline <span>Balistique & biomécanique</span></div>
+    <div class="meta-pill">Mécanique <span>Recul · Spray · Précision</span></div>
+    <div class="meta-pill">Niveau <span>Tous niveaux</span></div>
+  </div>
+</section>
+
+<div class="content">
+
+  <div class="section-label">Introduction</div>
+  <h2>Le recul n'est pas aléatoire</h2>
+  <p>C'est la première chose à comprendre sur le recul dans R6 : <strong>chaque arme a un pattern de recul entièrement déterministe</strong>. La séquence exacte de déplacements de la mire pour chaque tir est fixe — ce n'est pas du hasard, c'est un programme scriptés par les développeurs. Apprendre à contrôler le recul, c'est mémoriser et inverser ce programme dans tes muscles.</p>
+  <p>Ce chapitre déconstruit la balistique de R6 depuis les fondations physiques : le bloom, le spray pattern, la suppression, et la mécanique musculaire du contrôle de recul.</p>
+
+  <div class="stat-grid">
+    <div class="stat-box"><span class="stat-num">0<span>%</span></span><span class="stat-label">Aléatoire dans le pattern</span></div>
+    <div class="stat-box"><span class="stat-num">~30<span>tirs</span></span><span class="stat-label">Pour mémoriser un pattern</span></div>
+    <div class="stat-box"><span class="stat-num">850<span>m/s</span></span><span class="stat-label">Vélocité balle moyenne</span></div>
+    <div class="stat-box"><span class="stat-num">+15<span>%</span></span><span class="stat-label">Bloom en mouvement</span></div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECTION 1 : BLOOM vs RECOIL -->
+  <div class="section-label">Section 1</div>
+  <h2>Bloom vs recul — deux mécaniques distinctes</h2>
+  <p>La plupart des joueurs confondent deux mécaniques qui ont des effets visuels similaires mais des causes et des solutions radicalement différentes.</p>
+  <p>Le <strong>bloom</strong> (aussi appelé dispersion ou spread) est l'élargissement du cône de précision de l'arme causé par le mouvement, la posture, ou la cadence de tir. Il affecte où la balle peut aller dans le cône — et contrairement au recul, il a une composante aléatoire dans R6. Le <strong>recul</strong> est le déplacement déterministe de la mire causé par chaque tir. Il suit toujours exactement le même pattern, balle après balle.</p>
+
+  <div class="diagram-wrap">
+    <svg width="100%" viewBox="0 0 680 280" xmlns="http://www.w3.org/2000/svg">
+      <!-- Bloom diagram (left) -->
+      <text font-family="'Bebas Neue',sans-serif" font-size="16" fill="#EF9F27" x="170" y="30" text-anchor="middle" letter-spacing="2">BLOOM</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="170" y="46" text-anchor="middle">Composante aléatoire</text>
+
+      <!-- Crosshair center -->
+      <circle cx="170" cy="140" r="3" fill="rgba(255,255,255,0.6)"/>
+      <line x1="150" y1="140" x2="190" y2="140" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+      <line x1="170" y1="120" x2="170" y2="160" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+
+      <!-- Bloom cone at rest -->
+      <circle cx="170" cy="140" r="15" fill="none" stroke="rgba(239,159,39,0.4)" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#888" x="170" y="168" text-anchor="middle">Au repos</text>
+
+      <!-- Bloom cone moving -->
+      <circle cx="170" cy="140" r="32" fill="rgba(239,159,39,0.05)" stroke="#EF9F27" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#EF9F27" x="215" y="130" text-anchor="start">En sprint</text>
+
+      <!-- Random bullet impacts -->
+      <circle cx="158" cy="132" r="3" fill="#EF9F27" opacity="0.7"/>
+      <circle cx="182" cy="148" r="3" fill="#EF9F27" opacity="0.7"/>
+      <circle cx="165" cy="155" r="3" fill="#EF9F27" opacity="0.7"/>
+      <circle cx="178" cy="128" r="3" fill="#EF9F27" opacity="0.7"/>
+      <circle cx="152" cy="145" r="3" fill="#EF9F27" opacity="0.5"/>
+      <circle cx="186" cy="136" r="3" fill="#EF9F27" opacity="0.5"/>
+
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#555" x="170" y="248" text-anchor="middle">Impacts dispersés aléatoirement</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#444" x="170" y="264" text-anchor="middle">dans le cône de dispersion</text>
+
+      <!-- Divider -->
+      <line x1="340" y1="20" x2="340" y2="270" stroke="var(--border)" stroke-width="1"/>
+
+      <!-- Recoil diagram (right) -->
+      <text font-family="'Bebas Neue',sans-serif" font-size="16" fill="#c8302a" x="510" y="30" text-anchor="middle" letter-spacing="2">RECUL</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="510" y="46" text-anchor="middle">Entièrement déterministe</text>
+
+      <!-- Spray pattern -->
+      <circle cx="510" cy="240" r="3" fill="rgba(255,255,255,0.6)"/>
+
+      <!-- Recoil pattern dots (upward then right, typical AK-style) -->
+      <circle cx="510" cy="240" r="3" fill="#c8302a" opacity="0.9"/>
+      <circle cx="510" cy="224" r="3" fill="#c8302a" opacity="0.85"/>
+      <circle cx="512" cy="208" r="3" fill="#c8302a" opacity="0.8"/>
+      <circle cx="516" cy="194" r="3" fill="#c8302a" opacity="0.75"/>
+      <circle cx="522" cy="182" r="3" fill="#c8302a" opacity="0.7"/>
+      <circle cx="520" cy="168" r="3" fill="#c8302a" opacity="0.65"/>
+      <circle cx="514" cy="155" r="3" fill="#c8302a" opacity="0.6"/>
+      <circle cx="506" cy="144" r="3" fill="#c8302a" opacity="0.55"/>
+      <circle cx="498" cy="134" r="3" fill="#c8302a" opacity="0.5"/>
+      <circle cx="494" cy="122" r="3" fill="#c8302a" opacity="0.45"/>
+
+      <!-- Connect dots -->
+      <polyline points="510,240 510,224 512,208 516,194 522,182 520,168 514,155 506,144 498,134 494,122"
+        fill="none" stroke="rgba(200,48,42,0.3)" stroke-width="1.5"/>
+
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#c8302a" x="530" y="230" text-anchor="start">Tir 1</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="rgba(200,48,42,0.5)" x="480" y="118" text-anchor="start">Tir 10</text>
+
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#555" x="510" y="260" text-anchor="middle">Pattern identique à chaque rafale</text>
+    </svg>
+    <p class="diagram-caption">Bloom (aléatoire dans le cône) vs recul (pattern déterministe)</p>
+  </div>
+
+  <div class="highlight-box">
+    <p>La conséquence pratique : <strong>le bloom se combat en s'arrêtant et en visant avant de tirer</strong>. Le recul se combat en mémorisant le pattern et en appliquant le contre-mouvement inverse avec la souris. Ce sont deux compétences séparées qui s'entraînent séparément.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECTION 2 : SIMULATEUR RECUL -->
+  <div class="section-label">Section 2 — Simulateur interactif</div>
+  <h2>Visualise et entraîne le contrôle de recul</h2>
+  <p>Sélectionne une arme et clique sur "Tirer" pour voir le pattern de recul. Puis active le "Contrôle" pour voir le contre-mouvement exact à appliquer.</p>
+
+  <div class="diagram-wrap">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center;">
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);">Arme :</span>
+      <button class="sim-btn active" onclick="setWeapon('r4c',this)">R4-C</button>
+      <button class="sim-btn" onclick="setWeapon('ak12',this)">AK-12</button>
+      <button class="sim-btn" onclick="setWeapon('mp5',this)">MP5</button>
+      <button class="sim-btn" onclick="setWeapon('556xi',this)">556xi</button>
+      <div style="width:1px;height:24px;background:var(--border);margin:0 4px;"></div>
+      <button class="sim-btn" id="btn-control" onclick="toggleControl(this)">Afficher contrôle</button>
+      <button class="sim-btn" onclick="resetRecoil()" style="color:var(--red);border-color:rgba(200,48,42,0.3);">Reset</button>
+    </div>
+    <canvas id="recoilCanvas" height="320" style="width:100%;display:block;border-radius:6px;background:rgba(0,0,0,0.3);"></canvas>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:2px;">
+      <div style="background:rgba(0,0,0,0.3);padding:10px 16px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-light);margin-bottom:2px;">Arme sélectionnée</div>
+        <div id="rv-weapon" style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--white);">R4-C</div>
+      </div>
+      <div style="background:rgba(0,0,0,0.3);padding:10px 16px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-light);margin-bottom:2px;">Cadence de tir</div>
+        <div id="rv-rpm" style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--white);">850 <span style="font-size:14px;color:var(--red)">RPM</span></div>
+      </div>
+      <div style="background:rgba(0,0,0,0.3);padding:10px 16px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-light);margin-bottom:2px;">Difficulté recul</div>
+        <div id="rv-diff" style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--white);">Modérée</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECTION 3: IMPLICATIONS -->
+  <div class="section-label">Section 3</div>
+  <h2>Implications pour le jeu</h2>
+
+  <div class="impl-grid">
+    <div class="impl-card">
+      <div><div class="impl-tag">Pattern</div><div class="impl-tag-sub">mémoire</div></div>
+      <div>
+        <div class="impl-title">Comment mémoriser un pattern de recul — la science de l'apprentissage moteur</div>
+        <p class="impl-text">Mémoriser un pattern de recul est un processus de mémoire procédurale (cervelet + ganglions de la base), pas de mémoire déclarative. Cela signifie qu'il faut des répétitions physiques, pas de la lecture. La méthode optimale : 15 à 20 minutes de practice sur cible statique à courte distance, arme unique, en visualisant simultanément le mouvement à contrer. Après ~300 répétitions consécutives sur 3 à 5 sessions, le programme moteur est suffisamment consolidé pour fonctionner en jeu sans effort conscient.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Burst</div><div class="impl-tag-sub">fire</div></div>
+      <div>
+        <div class="impl-title">Pourquoi le burst fire est plus efficace à moyenne distance</div>
+        <p class="impl-text">À moyenne distance (10–20m), les premières 3 à 5 balles d'une rafale ont une dispersion quasi nulle — le pattern de recul n'a pas encore dévié significativement. Au-delà, la déviation accumulée rend les tirs nettement moins précis. Le burst fire consiste à tirer 3 à 5 balles, attendre 100 à 150ms (le temps que la mire revienne au centre), et répéter. Cette technique transforme un spray incontrôlable à longue distance en une série de rafales précises. C'est la mécanique utilisée par tous les joueurs avancés sur les duels à moyenne et longue portée.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">ADS</div><div class="impl-tag-sub">vs hip</div></div>
+      <div>
+        <div class="impl-title">ADS vs hip fire — quand utiliser chacun</div>
+        <p class="impl-text">En ADS (visée avec lunette), le bloom est réduit d'environ 60 à 70% et le recul est plus contrôlable visuellement — mais le temps d'ouverture de feu est augmenté de 150 à 300ms (ADS time). En hip fire (tir depuis la hanche), le bloom est maximal mais il n'y a pas de délai d'ADS. La règle pratique : hip fire à moins de 3m (la distance est si courte que le bloom importe peu), ADS pour tout le reste. Les exceptions : Shotgun (hip fire optimal jusqu'à 6m), pistolets (hip fire précis jusqu'à 4m).</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Sup-</div><div class="impl-tag-sub">pression</div></div>
+      <div>
+        <div class="impl-title">La suppression — une mécanique psychologique et non physique</div>
+        <p class="impl-text">Dans R6, la suppression n'a pas d'effet physique sur la hitbox ou la précision de l'ennemi — contrairement à d'autres FPS. Elle n'existe que comme effet visuel (écran qui tremble légèrement) et psychologique. Son utilité tactique est donc purement comportementale : forcer un ennemi à se baisser ou à changer de position en le mettant sous pression sonore et visuelle. Les joueurs qui "jouent pour se faire supprimer" commettent une erreur de game sense — ils réagissent à quelque chose qui n'a aucun impact mécanique sur leur performance.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="next-chapter">
+  <div class="nav-prev"><a href="1-5-audio.html" class="nav-cta">← Chapitre 1.5</a></div>
+  <div class="nav-next"><a href="../partie-2/2-1-pipeline-visuel.html" class="nav-cta">Partie II →</a></div>
+</div>
+
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie I · Chapitre 1.6</span>
+</footer>
+
+<script>
+const weapons = {
+  r4c:  { name:'R4-C',  rpm:850, diff:'Modérée',  pattern:[[0,0],[0,-16],[2,-30],[5,-42],[4,-56],[2,-68],[-2,-78],[-5,-86],[-4,-94],[-2,-100]] },
+  ak12: { name:'AK-12', rpm:700, diff:'Élevée',   pattern:[[0,0],[0,-14],[3,-28],[7,-40],[9,-52],[7,-64],[3,-75],[-3,-84],[-8,-92],[-10,-98]] },
+  mp5:  { name:'MP5',   rpm:800, diff:'Faible',   pattern:[[0,0],[0,-12],[1,-22],[2,-32],[2,-42],[1,-52],[0,-60],[-1,-67],[-2,-73],[-2,-78]] },
+  '556xi': { name:'556xi', rpm:750, diff:'Modérée', pattern:[[0,0],[0,-15],[2,-28],[4,-40],[3,-53],[0,-65],[-3,-76],[-4,-86],[-3,-95],[0,-102]] },
+};
+
+let currentWeapon = 'r4c';
+let showControl = false;
+
+function setWeapon(w, btn) {
+  currentWeapon = w;
+  document.querySelectorAll('.sim-btn').forEach(b => {
+    if(['R4-C','AK-12','MP5','556xi'].includes(b.textContent)) b.classList.remove('active');
+  });
+  btn.classList.add('active');
+  drawRecoil();
+  const wp = weapons[w];
+  document.getElementById('rv-weapon').textContent = wp.name;
+  document.getElementById('rv-rpm').innerHTML = wp.rpm + ' <span style="font-size:14px;color:var(--red)">RPM</span>';
+  document.getElementById('rv-diff').textContent = wp.diff;
+}
+
+function toggleControl(btn) {
+  showControl = !showControl;
+  btn.classList.toggle('active', showControl);
+  btn.textContent = showControl ? 'Masquer contrôle' : 'Afficher contrôle';
+  drawRecoil();
+}
+
+function resetRecoil() {
+  showControl = false;
+  document.getElementById('btn-control').classList.remove('active');
+  document.getElementById('btn-control').textContent = 'Afficher contrôle';
+  drawRecoil();
+}
+
+function drawRecoil() {
+  const canvas = document.getElementById('recoilCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 820;
+  canvas.width = W;
+  const H = 320;
+  ctx.clearRect(0, 0, W, H);
+
+  const wp = weapons[currentWeapon];
+  const cx = W / 2;
+  const cy = H - 40;
+  const scale = 2.2;
+
+  // Grid
+  for (let x = 0; x < W; x += 40) {
+    ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+  }
+  for (let y = 0; y < H; y += 40) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+
+  // Center crosshair
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(cx-20, cy); ctx.lineTo(cx+20, cy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx, cy-20); ctx.lineTo(cx, cy+20); ctx.stroke();
+
+  const pts = wp.pattern;
+
+  // Control counter (inverse path)
+  if (showControl) {
+    ctx.beginPath();
+    pts.forEach((p, i) => {
+      const x = cx - p[0] * scale;
+      const y = cy - p[1] * scale;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.strokeStyle = 'rgba(29,158,117,0.5)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    pts.forEach((p, i) => {
+      const x = cx - p[0] * scale;
+      const y = cy - p[1] * scale;
+      ctx.beginPath();
+      ctx.arc(x, y, 4, 0, Math.PI*2);
+      ctx.fillStyle = '#1D9E75';
+      ctx.fill();
+    });
+
+    ctx.fillStyle = '#5DCAA5';
+    ctx.font = "11px 'Barlow Condensed', sans-serif";
+    ctx.textAlign = 'left';
+    ctx.fillText('Contre-mouvement souris (vert)', 16, 20);
+  }
+
+  // Recoil pattern
+  ctx.beginPath();
+  pts.forEach((p, i) => {
+    const x = cx + p[0] * scale;
+    const y = cy + p[1] * scale;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = 'rgba(200,48,42,0.6)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  pts.forEach((p, i) => {
+    const x = cx + p[0] * scale;
+    const y = cy + p[1] * scale;
+    const alpha = 1 - i * 0.07;
+    ctx.beginPath();
+    ctx.arc(x, y, i === 0 ? 6 : 4, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(200,48,42,${alpha})`;
+    ctx.fill();
+    if (i === 0 || i === pts.length-1) {
+      ctx.fillStyle = '#f5f2ed';
+      ctx.font = "10px 'Barlow Condensed', sans-serif";
+      ctx.textAlign = 'left';
+      ctx.fillText(i === 0 ? 'Tir 1' : 'Tir ' + pts.length, x + 8, y + 4);
+    }
+  });
+
+  // Labels
+  ctx.fillStyle = '#c8302a';
+  ctx.font = "11px 'Barlow Condensed', sans-serif";
+  ctx.textAlign = 'left';
+  ctx.fillText('Pattern de recul (rouge)', 16, showControl ? 36 : 20);
+  ctx.fillStyle = '#555';
+  ctx.fillText('← Partir ici, la mire remonte selon ce trajet →', cx - 120, H - 10);
+}
+
+window.addEventListener('load', drawRecoil);
+window.addEventListener('resize', drawRecoil);
+</script>
+</body>
+</html>
