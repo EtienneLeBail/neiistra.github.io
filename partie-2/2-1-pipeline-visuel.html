@@ -233,22 +233,6 @@
   .rt-analysis { background: var(--gray); border-left: 3px solid var(--gray-light); padding: 16px 20px; margin-top: 2px; font-size: 13px; color: var(--gray-text); line-height: 1.6; min-height: 52px; border-radius: 0 6px 6px 0; }
 
   /* NEXT CHAPTER */
-  .next-chapter {
-    border-top: 1px solid var(--border);
-    padding: 48px;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .next-label { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 8px; }
-  .next-title { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 2px; color: var(--white); }
-  .next-cta {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase;
-    color: var(--white); text-decoration: none;
-    padding: 14px 28px;
-    border: 1px solid rgba(255,255,255,0.2);
-    transition: all 0.25s; white-space: nowrap;
-  }
-  .next-cta:hover { background: var(--red); border-color: var(--red); }
 
   /* FOOTER */
   footer {
@@ -272,9 +256,15 @@
     .content { padding: 48px 24px; }
     .stat-grid { grid-template-columns: repeat(2,1fr); }
     .impl-card { grid-template-columns: 1fr; gap: 8px; }
-    .next-chapter { flex-direction: column; gap: 24px; padding: 32px 24px; }
     footer { padding: 20px 24px; flex-direction: column; gap: 8px; }
   }
+
+  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; display: inline-block; }
+  .nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .nav-cta.disabled { color: var(--gray-light); border-color: var(--border); cursor: default; pointer-events: none; }
+  .nav-prev { flex: 1; }
+  .nav-next { flex: 1; text-align: right; }
 </style>
 </head>
 <body>
@@ -542,11 +532,13 @@
 
 <!-- NEXT CHAPTER -->
 <div class="next-chapter">
-  <div>
-    <div class="next-label">Prochain chapitre — II.2</div>
-    <div class="next-title">Charge cognitive &amp; mémoire de travail</div>
+  <div class="nav-prev">
+    
   </div>
-  <a href="#" class="next-cta">Bientôt disponible →</a>
+  <div class="nav-next">
+    
+    <span class="nav-cta disabled">Bientôt disponible</span>
+  </div>
 </div>
 
 <footer>
