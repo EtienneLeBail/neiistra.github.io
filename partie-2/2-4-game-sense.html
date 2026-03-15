@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2.4 Pattern Recognition & Game Sense — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --red-dim: #8a1f1a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+  .chapter-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .chapter-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%); }
+  .chapter-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .chapter-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .chapter-number { font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px,15vw,180px); line-height: 0.85; color: rgba(255,255,255,0.04); position: absolute; right: 48px; top: 80px; pointer-events: none; }
+  .chapter-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px,7vw,80px); letter-spacing: 2px; line-height: 1; margin-bottom: 12px; position: relative; }
+  .chapter-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 40px; position: relative; }
+  .chapter-meta { display: flex; gap: 32px; flex-wrap: wrap; position: relative; }
+  .meta-pill { background: var(--gray); border: 1px solid var(--border); border-radius: 4px; padding: 8px 16px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .meta-pill span { color: var(--white); margin-left: 6px; }
+  .content { max-width: 900px; margin: 0 auto; padding: 64px 48px; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; line-height: 1; }
+  p { font-size: 15px; color: var(--gray-text); line-height: 1.8; margin-bottom: 16px; }
+  p strong { color: var(--white); font-weight: 500; }
+  .highlight-box { background: var(--gray); border-left: 3px solid var(--red); padding: 20px 24px; margin: 24px 0; border-radius: 0 6px 6px 0; }
+  .highlight-box p { margin: 0; color: var(--white); font-size: 14px; line-height: 1.7; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .diagram-wrap { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin: 32px 0; overflow-x: auto; }
+  .diagram-caption { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 16px; text-align: center; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; margin: 32px 0; }
+  .stat-box { background: var(--gray); padding: 24px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 2px; line-height: 1; color: var(--white); }
+  .stat-num span { color: var(--red); }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .impl-grid { display: flex; flex-direction: column; gap: 2px; margin: 32px 0; }
+  .impl-card { background: var(--gray); padding: 24px 28px; display: grid; grid-template-columns: 120px 1fr; gap: 24px; align-items: start; transition: background 0.2s; }
+  .impl-card:hover { background: var(--gray-mid); }
+  .impl-tag { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: var(--red); line-height: 1; }
+  .impl-tag-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 4px; }
+  .impl-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 6px; }
+  .impl-text { font-size: 13px; color: var(--gray-text); line-height: 1.7; margin: 0; }
+  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; display: inline-block; }
+  .nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .nav-prev { flex: 1; } .nav-next { flex: 1; text-align: right; }
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .chapter-eyebrow{animation:fadeUp .6s ease both;} .chapter-title{animation:fadeUp .6s .1s ease both;} .chapter-subtitle{animation:fadeUp .6s .2s ease both;} .chapter-meta{animation:fadeUp .6s .3s ease both;}
+  @media(max-width:768px){ nav{padding:0 24px;} .chapter-hero{padding:100px 24px 48px;} .content{padding:48px 24px;} .stat-grid{grid-template-columns:repeat(2,1fr);} .impl-card{grid-template-columns:1fr;gap:8px;} .next-chapter{flex-direction:column;gap:24px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="../index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+
+<section class="chapter-hero">
+  <div class="chapter-eyebrow">Partie II — Neurosciences &amp; cognition</div>
+  <div class="chapter-number">2.4</div>
+  <h1 class="chapter-title">Game Sense</h1>
+  <p class="chapter-subtitle">Pattern recognition &amp; modèles prédictifs dans R6</p>
+  <div class="chapter-meta">
+    <div class="meta-pill">Discipline <span>Neurosciences cognitives</span></div>
+    <div class="meta-pill">Mécanique <span>Anticipation · Lecture de jeu · Prédiction</span></div>
+    <div class="meta-pill">Niveau <span>Intermédiaire — Avancé</span></div>
+  </div>
+</section>
+
+<div class="content">
+
+  <div class="section-label">Introduction</div>
+  <h2>Le game sense est de la biologie, pas de la magie</h2>
+  <p>Le "game sense" — cette capacité à "sentir" où sont les ennemis, à anticiper les rotations, à lire le round avant qu'il se passe — est systématiquement mystifié dans les discussions sur R6. Les joueurs qui l'ont parlent d'"instinct" ou de "feeling". La réalité est beaucoup plus précise : c'est un <strong>système de reconnaissance de patterns stockés en mémoire à long terme</strong>, activé automatiquement par des indices contextuels.</p>
+  <p>Ce chapitre explique le mécanisme neurologique du game sense et — surtout — comment l'entraîner délibérément plutôt que d'attendre qu'il se développe passivement.</p>
+
+  <div class="stat-grid">
+    <div class="stat-box"><span class="stat-num">~50<span>k</span></span><span class="stat-label">Patterns d'un expert (chess)</span></div>
+    <div class="stat-box"><span class="stat-num">2<span>s</span></span><span class="stat-label">Pour lire une position experte</span></div>
+    <div class="stat-box"><span class="stat-num">3<span>types</span></span><span class="stat-label">De mémoire impliquées</span></div>
+    <div class="stat-box"><span class="stat-num">VOD<span></span></span><span class="stat-label">Meilleur outil d'encodage</span></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 1</div>
+  <h2>Le modèle OODA appliqué à R6</h2>
+  <p>Le modèle OODA (Observe, Orient, Decide, Act) développé par le colonel John Boyd pour décrire les décisions en combat aérien s'applique parfaitement à R6. Le game sense agit principalement sur la phase <strong>Orient</strong> — en réduisant le temps d'orientation grâce aux patterns mémorisés, il accélère l'ensemble du cycle.</p>
+
+  <div class="diagram-wrap">
+    <svg width="100%" viewBox="0 0 680 280" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- OODA nodes -->
+      <g>
+        <circle cx="100" cy="120" r="52" fill="rgba(55,138,221,0.12)" stroke="#378ADD" stroke-width="1.5"/>
+        <text font-family="'Bebas Neue',sans-serif" font-size="22" fill="#85B7EB" x="100" y="112" text-anchor="middle">OBSERVE</text>
+        <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#378ADD" x="100" y="128" text-anchor="middle">Sons, visuel</text>
+        <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#378ADD" x="100" y="142" text-anchor="middle">mini-map</text>
+      </g>
+      <line x1="154" y1="112" x2="198" y2="112" stroke="#378ADD" stroke-width="1.5" marker-end="url(#arr)" fill="none"/>
+
+      <g>
+        <circle cx="260" cy="120" r="62" fill="rgba(200,48,42,0.15)" stroke="#c8302a" stroke-width="2"/>
+        <text font-family="'Bebas Neue',sans-serif" font-size="22" fill="#F09595" x="260" y="108" text-anchor="middle">ORIENT</text>
+        <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#c8302a" x="260" y="126" text-anchor="middle">Game sense actif</text>
+        <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#c8302a" x="260" y="140" text-anchor="middle">Patterns mémorisés</text>
+        <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#F09595" x="260" y="158" text-anchor="middle">★ CLEF DU GAME SENSE</text>
+      </g>
+      <line x1="324" y1="112" x2="368" y2="112" stroke="#c8302a" stroke-width="1.5" marker-end="url(#arr)" fill="none"/>
+
+      <g>
+        <circle cx="430" cy="120" r="52" fill="rgba(239,159,39,0.12)" stroke="#EF9F27" stroke-width="1.5"/>
+        <text font-family="'Bebas Neue',sans-serif" font-size="22" fill="#FAC775" x="430" y="112" text-anchor="middle">DECIDE</text>
+        <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#EF9F27" x="430" y="128" text-anchor="middle">Choisir l'action</text>
+        <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#EF9F27" x="430" y="142" text-anchor="middle">optimale</text>
+      </g>
+      <line x1="484" y1="112" x2="528" y2="112" stroke="#EF9F27" stroke-width="1.5" marker-end="url(#arr)" fill="none"/>
+
+      <g>
+        <circle cx="590" cy="120" r="52" fill="rgba(29,158,117,0.12)" stroke="#1D9E75" stroke-width="1.5"/>
+        <text font-family="'Bebas Neue',sans-serif" font-size="22" fill="#5DCAA5" x="590" y="112" text-anchor="middle">ACT</text>
+        <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#1D9E75" x="590" y="128" text-anchor="middle">Exécution</text>
+        <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#1D9E75" x="590" y="142" text-anchor="middle">motrice</text>
+      </g>
+
+      <!-- Feedback loop -->
+      <path d="M 590 172 Q 590 230 340 240 Q 90 250 100 172" stroke="rgba(255,255,255,0.15)" stroke-width="1" fill="none" marker-end="url(#arr)" stroke-dasharray="5 4"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="340" y="255" text-anchor="middle">Feedback — chaque round enrichit la bibliothèque de patterns</text>
+
+      <!-- Timing comparison -->
+      <rect x="40" y="195" width="200" height="36" rx="4" fill="rgba(200,48,42,0.08)" stroke="rgba(200,48,42,0.2)" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#c8302a" x="140" y="210" text-anchor="middle">Débutant : Orient = 800ms+</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#888" x="140" y="224" text-anchor="middle">Conscient, lent, coûteux</text>
+
+      <rect x="260" y="195" width="200" height="36" rx="4" fill="rgba(29,158,117,0.08)" stroke="rgba(29,158,117,0.2)" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#1D9E75" x="360" y="210" text-anchor="middle">Pro : Orient = 80–150ms</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#888" x="360" y="224" text-anchor="middle">Pattern recognition automatique</text>
+    </svg>
+    <p class="diagram-caption">Modèle OODA dans R6 — le game sense compresse la phase Orient de 80%</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 2 — Simulateur interactif</div>
+  <h2>Test de reconnaissance de patterns R6</h2>
+  <p>Lis les indices ci-dessous et sélectionne la position ennemie la plus probable. Ce test mesure ta bibliothèque de patterns pour les situations classiques de R6.</p>
+
+  <div class="diagram-wrap">
+    <div id="pattern-question" style="margin-bottom:16px;"></div>
+    <div id="pattern-options" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;"></div>
+    <div id="pattern-feedback" style="background:rgba(0,0,0,0.3);padding:14px 18px;border-radius:6px;font-size:13px;color:var(--gray-text);line-height:1.6;min-height:52px;"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
+      <span id="pattern-score" style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--white);">Score : 0/0</span>
+      <button id="next-btn" onclick="nextQuestion()" style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:8px 20px;border:1px solid var(--border);background:transparent;color:var(--gray-text);cursor:pointer;border-radius:4px;display:none;">Question suivante →</button>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 3</div>
+  <h2>Entraîner le game sense délibérément</h2>
+
+  <div class="impl-grid">
+    <div class="impl-card">
+      <div><div class="impl-tag">VOD</div><div class="impl-tag-sub">review</div></div>
+      <div>
+        <div class="impl-title">La VOD review — l'outil d'encodage de patterns le plus efficace</div>
+        <p class="impl-text">Regarder ses replays (ou des replays pros) est la méthode la plus directe pour encoder des patterns tactiques. Le cerveau observe des situations résolues avec leur outcome — il peut donc construire des associations causales précises. La méthode optimale : pause avant chaque décision ennemie et prédis ce qu'il va faire. Puis vérifie. Chaque prédiction correcte renforce un pattern existant. Chaque prédiction incorrecte crée un nouveau pattern. 30 minutes de VOD review active vaut plus que 3 heures de jeu passif en termes d'encodage de patterns tactiques.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Caméra</div><div class="impl-tag-sub">morte</div></div>
+      <div>
+        <div class="impl-title">Observer depuis le spectateur — voir les patterns invisibles en jeu</div>
+        <p class="impl-text">Quand tu meurs dans R6, reste en caméra de spectateur au lieu de quitter. Observer les ennemis depuis leur perspective révèle des patterns de rotation, des positions défensives, et des timings que tu ne peux pas voir en jeu. Ton cerveau encode ces informations même passivement — mais l'encodage est 3x plus rapide si tu essaies activement de prédire les prochaines actions du joueur observé avant qu'il les fasse. Cette pratique est sous-utilisée à tous les niveaux.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">One</div><div class="impl-tag-sub">map focus</div></div>
+      <div>
+        <div class="impl-title">Pourquoi se spécialiser sur 2-3 maps transforme le game sense</div>
+        <p class="impl-text">Le game sense est map-dépendant. Les patterns que tu as encodés sur Consulate ne s'appliquent pas directement à Bank. Chaque map a ses propres flux de rotation, ses angles clés, ses timings standard et ses positions inattendues. En te spécialisant sur 2 à 3 maps, tu atteins une densité de patterns suffisante pour que la phase Orient devienne quasi-automatique — tu "lis" le round sans effort conscient. Les joueurs qui jouent toutes les maps à mi-niveau n'atteignent jamais cette densité nulle part.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Attaques</div><div class="impl-tag-sub">types</div></div>
+      <div>
+        <div class="impl-title">Reconnaître les types d'attaque depuis les premières secondes</div>
+        <p class="impl-text">Un game sense avancé permet d'identifier le type d'attaque adverse dans les 10 à 15 premières secondes d'un round — rush, split, drone-heavy, fake. Chaque type laisse des signatures: un rush se trahit par l'absence de droning et les sons de sprint rapides. Un split se détecte par les drones venant de plusieurs axes simultanément. Un fake génère du bruit d'un côté puis silence avant la vraie entrée. Ces patterns s'encodent par exposition répétée — plus tu joues contre des équipes coordonnées, plus ta bibliothèque de signatures d'attaque devient riche.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="next-chapter">
+  <div class="nav-prev"><a href="2-3-neuroplasticite.html" class="nav-cta">← Chapitre 2.3</a></div>
+  <div class="nav-next"><a href="2-5-attention.html" class="nav-cta">Chapitre 2.5 →</a></div>
+</div>
+
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie II · Chapitre 2.4</span>
+</footer>
+
+<script>
+const questions = [
+  {
+    context: "Début de round défense sur Oregon. Tu entends des pas de sprint rapides venant du côté camion, un drone passe rapidement sous la porte principale sans s'arrêter, et aucun son côté appartement.",
+    options: ["Rush camion imminent — position sur la porte", "Fake camion — vraie entrée côté appartement", "Split camion + hatch — rotation rapide", "Drone hunt — ils cherchent les positions"],
+    correct: 0,
+    explanation: "Pas de sprint rapides + drone qui ne s'attarde pas = rush en cours. Le drone est utilisé pour balayer les défenseurs sur le chemin, pas pour intel profond. Réponse correcte : rush camion imminent, position sur la porte et alerte équipe."
+  },
+  {
+    context: "Round 4 d'une défense sur Villa. L'équipe adverse a perdu 3 rounds. Leur attaquant Sledge vient d'être tué en droning. Il reste 1'20 au chrono. Silence total depuis 40 secondes.",
+    options: ["Ils abandonnent le round", "Setup d'un full rush désespéré depuis plusieurs axes", "Plant attempt furtif — 1 joueur isolé en approche", "Reset — ils attendent les 45 dernières secondes"],
+    correct: 3,
+    explanation: "Score serré + temps restant long + silence = reset tactique. Ils attendent l'expiration du temps favorable pour forcer un duel dans les dernières secondes. Le silence prolongé après la mort d'un coéquipier est la signature d'un reset délibéré, pas d'un abandon."
+  },
+  {
+    context: "Attaque sur Consulate. Ton drone voit 2 défenseurs en salle de repos et 1 en garage. La salle de réunion (objectif) semble vide. Il reste 1'45.",
+    options: ["Salle de réunion non défendue — push direct", "Roamer en attente dans couloir — trap", "Les 2 en salle de repos vont se replier sur l'objectif", "Plant externe — pression sans rentrer"],
+    correct: 1,
+    explanation: "3 défenseurs visibles sur 5 = 2 non tracés. Une salle d'objectif apparemment vide avec peu de temps joué = roamer(s) en attente dans un angle near. Entrer sans avoir tracé tous les ennemis est l'une des erreurs les plus fréquentes. Correct : supposer un piège, drone la zone avant d'entrer."
+  },
+  {
+    context: "Tu joues Jäger défenseur dans le sous-sol de Clubhouse. Tu entends des tirs de Ash en haut à droite, puis silence. 10 secondes après, tirs de Thermite dans le mur opposé.",
+    options: ["Deux attaquants isolés sans coordination", "Split entry coordonné — brèche principale imminente", "Distraction — rush direct par l'escalier", "Utilisation de gadgets en amont d'un plant externe"],
+    correct: 1,
+    explanation: "Ash + Thermite sur des murs distincts = préparation coordonnée d'un split entry. Ash perce les renforts légers, Thermite s'occupe du mur renforcé. La simultanéité est la signature d'une coordination planifiée. Correcte : anticiper une entrée double et repositionner pour couvrir les deux axes."
+  },
+  {
+    context: "Fin de partie, ton équipe mène 4-3. Tu défends. L'adverse a Hibana, Thatcher, Thermite, Ash, et Sledge. Toutes les brèches de ton site sont renforcées.",
+    options: ["Ils vont rush sans prep — panique du score", "Attack coordonnée — destruction systématique des renforts d'abord", "Plant externe rapide — éviter le confrontation", "Abandon — ils ont perdu la volonté"],
+    correct: 1,
+    explanation: "Composition full hard-breach (Hibana + Thatcher + Thermite + Ash + Sledge) = plan établi de destruction des renforts. Cette compo ne fait pas de rush. Elle démonte méthodiquement les défenses. La réponse défensive correcte : sécuriser les Bandit tricks et les Kaid sur les murs renforcés critiques avant leur approche."
+  }
+];
+
+let current = 0, score = 0, answered = false;
+
+function buildQuestion() {
+  const q = questions[current];
+  answered = false;
+  document.getElementById('next-btn').style.display = 'none';
+  document.getElementById('pattern-feedback').textContent = '';
+
+  document.getElementById('pattern-question').innerHTML = `
+    <div style="background:rgba(0,0,0,0.3);padding:16px 20px;border-radius:6px;border-left:3px solid var(--red);margin-bottom:12px;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:8px;">Situation — Question ${current+1}/${questions.length}</div>
+      <p style="font-size:14px;color:var(--white);line-height:1.7;margin:0;">${q.context}</p>
+    </div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);margin-bottom:8px;">Quelle est ta lecture ?</div>
+  `;
+
+  const opts = document.getElementById('pattern-options');
+  opts.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.style.cssText = 'background:var(--gray);border:1px solid var(--border);border-radius:6px;padding:14px 16px;text-align:left;cursor:pointer;font-family:Barlow,sans-serif;font-size:13px;color:var(--gray-text);line-height:1.5;transition:all 0.2s;';
+    btn.textContent = opt;
+    btn.addEventListener('click', () => selectAnswer(i, btn));
+    opts.appendChild(btn);
+  });
+}
+
+function selectAnswer(i, btn) {
+  if (answered) return;
+  answered = true;
+  const q = questions[current];
+  const correct = i === q.correct;
+  if (correct) score++;
+
+  document.querySelectorAll('#pattern-options button').forEach((b, idx) => {
+    b.style.cursor = 'default';
+    if (idx === q.correct) { b.style.borderColor = '#1D9E75'; b.style.background = 'rgba(29,158,117,0.1)'; b.style.color = '#5DCAA5'; }
+    else if (idx === i && !correct) { b.style.borderColor = '#c8302a'; b.style.background = 'rgba(200,48,42,0.1)'; b.style.color = '#F09595'; }
+  });
+
+  document.getElementById('pattern-feedback').innerHTML = `
+    <strong style="color:${correct ? '#1D9E75' : '#c8302a'}">${correct ? '✓ Bonne lecture' : '✗ Lecture incorrecte'}</strong><br>
+    ${q.explanation}
+  `;
+  document.getElementById('pattern-score').textContent = `Score : ${score}/${current+1}`;
+  if (current < questions.length - 1) document.getElementById('next-btn').style.display = 'inline-block';
+}
+
+function nextQuestion() {
+  current++;
+  buildQuestion();
+}
+
+window.addEventListener('load', buildQuestion);
+</script>
+</body>
+</html>
