@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2.3 Neuroplasticité & Apprentissage Moteur — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --red-dim: #8a1f1a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+  .chapter-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .chapter-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%); }
+  .chapter-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .chapter-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .chapter-number { font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px,15vw,180px); line-height: 0.85; color: rgba(255,255,255,0.04); position: absolute; right: 48px; top: 80px; pointer-events: none; }
+  .chapter-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px,7vw,80px); letter-spacing: 2px; line-height: 1; margin-bottom: 12px; position: relative; }
+  .chapter-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 40px; position: relative; }
+  .chapter-meta { display: flex; gap: 32px; flex-wrap: wrap; position: relative; }
+  .meta-pill { background: var(--gray); border: 1px solid var(--border); border-radius: 4px; padding: 8px 16px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .meta-pill span { color: var(--white); margin-left: 6px; }
+  .content { max-width: 900px; margin: 0 auto; padding: 64px 48px; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; line-height: 1; }
+  p { font-size: 15px; color: var(--gray-text); line-height: 1.8; margin-bottom: 16px; }
+  p strong { color: var(--white); font-weight: 500; }
+  .highlight-box { background: var(--gray); border-left: 3px solid var(--red); padding: 20px 24px; margin: 24px 0; border-radius: 0 6px 6px 0; }
+  .highlight-box p { margin: 0; color: var(--white); font-size: 14px; line-height: 1.7; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .diagram-wrap { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin: 32px 0; overflow-x: auto; }
+  .diagram-caption { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 16px; text-align: center; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; margin: 32px 0; }
+  .stat-box { background: var(--gray); padding: 24px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 2px; line-height: 1; color: var(--white); }
+  .stat-num span { color: var(--red); }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .impl-grid { display: flex; flex-direction: column; gap: 2px; margin: 32px 0; }
+  .impl-card { background: var(--gray); padding: 24px 28px; display: grid; grid-template-columns: 120px 1fr; gap: 24px; align-items: start; transition: background 0.2s; }
+  .impl-card:hover { background: var(--gray-mid); }
+  .impl-tag { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: var(--red); line-height: 1; }
+  .impl-tag-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 4px; }
+  .impl-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 6px; }
+  .impl-text { font-size: 13px; color: var(--gray-text); line-height: 1.7; margin: 0; }
+  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; display: inline-block; }
+  .nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .nav-prev { flex: 1; } .nav-next { flex: 1; text-align: right; }
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .chapter-eyebrow{animation:fadeUp .6s ease both;} .chapter-title{animation:fadeUp .6s .1s ease both;} .chapter-subtitle{animation:fadeUp .6s .2s ease both;} .chapter-meta{animation:fadeUp .6s .3s ease both;}
+  @media(max-width:768px){ nav{padding:0 24px;} .chapter-hero{padding:100px 24px 48px;} .content{padding:48px 24px;} .stat-grid{grid-template-columns:repeat(2,1fr);} .impl-card{grid-template-columns:1fr;gap:8px;} .next-chapter{flex-direction:column;gap:24px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="../index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+
+<section class="chapter-hero">
+  <div class="chapter-eyebrow">Partie II — Neurosciences &amp; cognition</div>
+  <div class="chapter-number">2.3</div>
+  <h1 class="chapter-title">Neuroplasticité</h1>
+  <p class="chapter-subtitle">Apprentissage moteur &amp; mémoire procédurale dans R6</p>
+  <div class="chapter-meta">
+    <div class="meta-pill">Discipline <span>Neuroplasticité & apprentissage</span></div>
+    <div class="meta-pill">Mécanique <span>Aim · Recul · Movement · Automatisation</span></div>
+    <div class="meta-pill">Niveau <span>Tous niveaux</span></div>
+  </div>
+</section>
+
+<div class="content">
+
+  <div class="section-label">Introduction</div>
+  <h2>Le cerveau se recâble avec chaque répétition</h2>
+  <p>La neuroplasticité est la capacité du cerveau à modifier ses connexions synaptiques en réponse à l'expérience et à l'entraînement. Dans le contexte de R6, chaque repetition d'un mouvement — un flick, un spray pattern, un timing de peek — renforce physiquement les connexions neuronales associées. Avec assez de répétitions, ces connexions deviennent si solides que le mouvement s'exécute sans effort conscient.</p>
+  <p>C'est la base neurologique de toute progression dans les jeux de tir. Comprendre ce mécanisme, c'est comprendre <strong>pourquoi certaines méthodes d'entraînement fonctionnent et d'autres non</strong>.</p>
+
+  <div class="stat-grid">
+    <div class="stat-box"><span class="stat-num">300<span>+</span></span><span class="stat-label">Répétitions pour encoder</span></div>
+    <div class="stat-box"><span class="stat-num">21<span>j</span></span><span class="stat-label">Pour une habitude motrice</span></div>
+    <div class="stat-box"><span class="stat-num">4<span>phases</span></span><span class="stat-label">D'apprentissage moteur</span></div>
+    <div class="stat-box"><span class="stat-num">∞<span></span></span><span class="stat-label">Plasticité à tout âge</span></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 1</div>
+  <h2>Les 4 phases d'apprentissage moteur dans R6</h2>
+  <p>Tout apprentissage moteur — qu'il s'agisse de contrôler le recul d'un R4-C, de maîtriser le jiggle peek, ou de viser instinctivement à hauteur de tête — suit le même modèle en 4 phases décrit par Fitts & Posner (1967).</p>
+
+  <div class="diagram-wrap">
+    <canvas id="learningCanvas" height="300" style="width:100%;display:block;"></canvas>
+    <p class="diagram-caption">Les 4 phases d'apprentissage d'une compétence motrice dans R6</p>
+  </div>
+
+  <div class="highlight-box">
+    <p>La phase 3 — "Pratique" — est là où la plupart des joueurs se bloquent. Ils répètent en ranked sans feedback structuré. Le cerveau encode alors les erreurs autant que les bonnes pratiques. La clé : s'entraîner dans un environnement contrôlé (custom game, aim trainer) où tu peux observer et corriger chaque répétition avant de la consolider.</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 2 — Simulateur interactif</div>
+  <h2>Progression de la myélinisation — visualise l'encodage neural</h2>
+  <p>La myélinisation est le processus physique derrière l'automatisation. Chaque répétition renforce la gaine de myéline autour des axones impliqués, accélérant la transmission du signal nerveux. Clique sur "Répéter" pour simuler la progression.</p>
+
+  <div class="diagram-wrap">
+    <div style="display:flex;gap:12px;margin-bottom:16px;align-items:center;flex-wrap:wrap;">
+      <button onclick="addRep()" style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:8px 20px;border:1px solid var(--border);background:transparent;color:var(--gray-text);cursor:pointer;border-radius:4px;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--white)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--gray-text)'">+ 10 répétitions</button>
+      <button onclick="addRep(100)" style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:8px 20px;border:1px solid var(--border);background:transparent;color:var(--gray-text);cursor:pointer;border-radius:4px;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--white)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--gray-text)'">+ 100 répétitions</button>
+      <button onclick="resetReps()" style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:8px 20px;border:1px solid rgba(200,48,42,0.3);background:transparent;color:var(--red);cursor:pointer;border-radius:4px;">Reset</button>
+      <span id="rep-count" style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--white);margin-left:8px;">0 rép.</span>
+    </div>
+    <canvas id="myelinCanvas" height="200" style="width:100%;display:block;border-radius:6px;background:rgba(0,0,0,0.2);"></canvas>
+    <div id="myelinStatus" style="margin-top:12px;background:rgba(0,0,0,0.3);padding:12px 16px;border-radius:4px;font-size:13px;color:var(--gray-text);line-height:1.6;"></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 3</div>
+  <h2>Implications pour s'entraîner efficacement dans R6</h2>
+
+  <div class="impl-grid">
+    <div class="impl-card">
+      <div><div class="impl-tag">Recul</div><div class="impl-tag-sub">encodage</div></div>
+      <div>
+        <div class="impl-title">Comment encoder un pattern de recul durablement</div>
+        <p class="impl-text">La mémoire procédurale du recul se consolide uniquement par la répétition physique — pas par regarder des vidéos. La méthode neuralement optimale : 15 à 20 minutes de spray sur cible statique à 10m, une seule arme, en observant activement l'écart entre le pattern affiché et le pattern souhaité. Les premières 100 répétitions encodent le mouvement grossièrement. Les 200 suivantes affinent la précision. À partir de 500 répétitions cohérentes, le pattern devient semi-automatique. Important : la qualité prime sur la quantité — 50 répétitions avec attention vaut mieux que 200 en pilote automatique.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Sensi-</div><div class="impl-tag-sub">bilité</div></div>
+      <div>
+        <div class="impl-title">Pourquoi changer de sensibilité détruit la mémoire musculaire</div>
+        <p class="impl-text">Chaque programme moteur de aim est encodé avec une sensibilité spécifique — la distance de déplacement physique de la souris correspond exactement à un angle dans le jeu. Changer de sensibilité invalide tous les programmes moteurs encodés. Le cerveau doit tout réapprendre depuis zéro, y compris les ajustements fins consolidés après des centaines d'heures. Le syndrome du "changement de sensibilité constant" est l'une des causes principales de stagnation chez les joueurs intermédiaires — ils détruisent leur propre mémoire musculaire avant qu'elle ne soit consolidée. Règle : choisir une sensibilité et ne pas la changer pendant au minimum 2 à 3 semaines de jeu régulier.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Sommeil</div><div class="impl-tag-sub">consolidation</div></div>
+      <div>
+        <div class="impl-title">Pourquoi dormir après s'entraîner accélère la progression</div>
+        <p class="impl-text">La consolidation de la mémoire procédurale se produit principalement pendant le sommeil profond (phases NREM), quand l'hippocampe rejoue et transfère les patterns du jour vers le néocortex pour stockage long terme. Des études en neurosciences du sport montrent que les sujets qui dorment après une session d'apprentissage moteur progressent 20 à 30% plus vite que ceux qui continuent à pratiquer sans dormir. Pratiquement : une session d'aim training intensive suivie de 7 à 8h de sommeil est plus efficace qu'une session double sans sommeil intermédiaire.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Mauvaise</div><div class="impl-tag-sub">habitude</div></div>
+      <div>
+        <div class="impl-title">Pourquoi corriger une mauvaise habitude est plus difficile qu'en créer une bonne</div>
+        <p class="impl-text">Quand tu joues des centaines de parties avec de mauvais patterns — recul non contrôlé, crosshair au sol, peek mal exécuté — ces patterns sont encodés en mémoire procédurale. Pour les corriger, tu dois non seulement créer un nouveau programme moteur, mais aussi inhiber activement l'ancien, qui reste présent et peut se réactiver sous pression. C'est pour ça que les mauvaises habitudes de débutant sont si tenaces chez les joueurs qui ont beaucoup joué avant d'apprendre correctement. La solution : pratiquer le bon mouvement dans des conditions de stress croissant jusqu'à ce qu'il prime sur l'ancien réflexe.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="next-chapter">
+  <div class="nav-prev"><a href="2-2-charge-cognitive.html" class="nav-cta">← Chapitre 2.2</a></div>
+  <div class="nav-next"><a href="2-4-game-sense.html" class="nav-cta">Chapitre 2.4 →</a></div>
+</div>
+
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie II · Chapitre 2.3</span>
+</footer>
+
+<script>
+function drawLearning() {
+  const canvas = document.getElementById('learningCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 820;
+  canvas.width = W;
+  const H = 300;
+  ctx.clearRect(0, 0, W, H);
+
+  const phases = [
+    { num:'1', name:'Incompétence inconsciente', desc:'Tu ne sais pas que tu fais mal', color:'#c8302a', example:'Tu ne réalises pas que ton crosshair est trop bas', pct:0 },
+    { num:'2', name:'Incompétence consciente', desc:'Tu vois tes erreurs mais ne peux pas corriger', color:'#EF9F27', example:'Tu vois le crosshair trop bas mais ne corriges pas en temps réel', pct:25 },
+    { num:'3', name:'Compétence consciente', desc:'Tu corriges avec effort et concentration', color:'#378ADD', example:'Tu maintiens le crosshair haut mais ça demande un effort', pct:50 },
+    { num:'4', name:'Compétence inconsciente', desc:'Automatique, sans effort', color:'#1D9E75', example:'Le crosshair est naturellement haut — tu n\'y penses plus', pct:75 },
+  ];
+
+  const phaseW = W / 4;
+  const barH = 140;
+  const baseY = H - 60;
+
+  phases.forEach((p, i) => {
+    const x = i * phaseW;
+    const h = 40 + i * 33;
+
+    // Bar
+    ctx.fillStyle = p.color + '25';
+    ctx.fillRect(x + 8, baseY - h, phaseW - 16, h);
+    ctx.strokeStyle = p.color;
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(x + 8, baseY - h, phaseW - 16, h);
+
+    // Phase number
+    ctx.fillStyle = p.color;
+    ctx.font = "500 32px 'Bebas Neue', sans-serif";
+    ctx.textAlign = 'center';
+    ctx.fillText(p.num, x + phaseW/2, baseY - h + 36);
+
+    // Phase name (wrapped)
+    ctx.fillStyle = '#f5f2ed';
+    ctx.font = "500 12px 'Barlow Condensed', sans-serif";
+    const words = p.name.split(' ');
+    let line = '', lineY = baseY + 16;
+    ctx.textAlign = 'center';
+    words.forEach((word, wi) => {
+      const test = line + word + ' ';
+      if (ctx.measureText(test).width > phaseW - 16 && wi > 0) {
+        ctx.fillText(line, x + phaseW/2, lineY);
+        line = word + ' ';
+        lineY += 16;
+      } else { line = test; }
+    });
+    ctx.fillText(line, x + phaseW/2, lineY);
+
+    ctx.fillStyle = '#555';
+    ctx.font = "10px 'Barlow Condensed', sans-serif";
+    const descWords = p.example.split(' ');
+    line = ''; lineY += 16;
+    descWords.forEach((word, wi) => {
+      const test = line + word + ' ';
+      if (ctx.measureText(test).width > phaseW - 12 && wi > 0) {
+        ctx.fillText(line, x + phaseW/2, lineY);
+        line = word + ' ';
+        lineY += 13;
+      } else { line = test; }
+    });
+    ctx.fillText(line, x + phaseW/2, lineY);
+  });
+
+  // Progress arrow
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4,4]);
+  ctx.beginPath();
+  ctx.moveTo(16, baseY + 4);
+  ctx.lineTo(W - 16, baseY + 4);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+let reps = 0;
+function addRep(n = 10) {
+  reps = Math.min(1000, reps + n);
+  document.getElementById('rep-count').textContent = reps + ' rép.';
+  drawMyelin();
+}
+function resetReps() { reps = 0; document.getElementById('rep-count').textContent = '0 rép.'; drawMyelin(); }
+
+function drawMyelin() {
+  const canvas = document.getElementById('myelinCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 820;
+  canvas.width = W;
+  const H = 200;
+  ctx.clearRect(0, 0, W, H);
+
+  const progress = Math.min(1, reps / 500);
+  const nodes = 12;
+  const nodeSpacing = (W - 60) / (nodes - 1);
+  const startX = 30, nodeY = H / 2;
+
+  // Axon base
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(startX, nodeY);
+  ctx.lineTo(startX + (nodes-1)*nodeSpacing, nodeY);
+  ctx.stroke();
+
+  // Myelin sheath (grows with reps)
+  const myelinAlpha = progress;
+  const myelinThickness = 3 + progress * 12;
+  ctx.strokeStyle = `rgba(29,158,117,${myelinAlpha * 0.7})`;
+  ctx.lineWidth = myelinThickness;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(startX, nodeY);
+  ctx.lineTo(startX + (nodes-1)*nodeSpacing * progress, nodeY);
+  ctx.stroke();
+
+  // Signal dot
+  if (reps > 0) {
+    const signalX = startX + (nodes-1)*nodeSpacing * ((Date.now() % 2000) / 2000);
+    const speed = 1 + progress * 3;
+    const fastX = startX + (nodes-1)*nodeSpacing * (((Date.now() * speed / 500) % 1));
+    ctx.beginPath();
+    ctx.arc(Math.min(fastX, startX + (nodes-1)*nodeSpacing), nodeY, 6 + progress*4, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(239,159,39,${0.4 + progress*0.6})`;
+    ctx.fill();
+    requestAnimationFrame(drawMyelin);
+  }
+
+  // Nodes (synapses)
+  for (let i = 0; i < nodes; i++) {
+    const x = startX + i * nodeSpacing;
+    const strengthened = i / nodes < progress;
+    ctx.beginPath();
+    ctx.arc(x, nodeY, strengthened ? 8 : 5, 0, Math.PI*2);
+    ctx.fillStyle = strengthened ? 'rgba(29,158,117,0.8)' : 'rgba(255,255,255,0.15)';
+    ctx.fill();
+    ctx.strokeStyle = strengthened ? '#1D9E75' : 'rgba(255,255,255,0.1)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+
+  // Labels
+  ctx.fillStyle = '#555';
+  ctx.font = "10px 'Barlow Condensed', sans-serif";
+  ctx.textAlign = 'left';
+  ctx.fillText('Axone nu (lent)', startX, H - 8);
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#1D9E75';
+  ctx.fillText('Myélinisé (rapide)', W - startX, H - 8);
+
+  const stages = [
+    { min:0,   max:50,  text:'Connexion initiale — signal lent et instable. Le mouvement est conscient et laborieux.' },
+    { min:50,  max:200, text:'Encodage en cours — la gaine de myéline commence à se former. Le mouvement se fluidifie.' },
+    { min:200, max:400, text:'Consolidation — la myélinisation couvre 40 à 70% de l\'axone. Le mouvement devient partiellement automatique.' },
+    { min:400, max:600, text:'Automatisation — myélinisation quasi-complète. Le mouvement s\'exécute sans effort conscient. Mémoire procédurale établie.' },
+    { min:600, max:1000, text:'Expert — connexion synaptique maximalement renforcée. Le mouvement est irréfléchi, précis et résistant au stress.' },
+  ];
+
+  const status = stages.find(s => reps >= s.min && reps < s.max) || stages[stages.length-1];
+  document.getElementById('myelinStatus').textContent = status.text;
+}
+
+window.addEventListener('load', () => { drawLearning(); drawMyelin(); });
+window.addEventListener('resize', () => { drawLearning(); drawMyelin(); });
+</script>
+</body>
+</html>
