@@ -1,1 +1,615 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2.1 Pipeline Visuel — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f2ed;
+    --red: #c8302a;
+    --red-dim: #8a1f1a;
+    --gray: #1c1c1c;
+    --gray-mid: #2e2e2e;
+    --gray-light: #555;
+    --gray-text: #999;
+    --border: rgba(255,255,255,0.08);
+    --blue: #378ADD;
+    --blue-dim: #185FA5;
+    --teal: #1D9E75;
+    --purple: #7F77DD;
+    --amber: #EF9F27;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
 
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px; height: 64px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,10,10,0.88);
+    backdrop-filter: blur(12px);
+  }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+
+  /* CHAPTER HERO */
+  .chapter-hero {
+    padding: 120px 48px 64px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .chapter-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%);
+  }
+  .chapter-eyebrow {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--red); margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .chapter-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .chapter-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(80px, 15vw, 180px);
+    line-height: 0.85; letter-spacing: 2px;
+    color: rgba(255,255,255,0.04);
+    position: absolute; right: 48px; top: 80px;
+    pointer-events: none;
+  }
+  .chapter-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 7vw, 80px);
+    letter-spacing: 2px; line-height: 1;
+    margin-bottom: 12px; position: relative;
+  }
+  .chapter-subtitle {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--gray-text); margin-bottom: 40px; position: relative;
+  }
+  .chapter-meta {
+    display: flex; gap: 32px; flex-wrap: wrap; position: relative;
+  }
+  .meta-pill {
+    background: var(--gray);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--gray-text);
+  }
+  .meta-pill span { color: var(--white); margin-left: 6px; }
+
+  /* CONTENT */
+  .content { max-width: 900px; margin: 0 auto; padding: 64px 48px; }
+
+  .section-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--red); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+
+  h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px; letter-spacing: 2px;
+    color: var(--white); margin-bottom: 20px; line-height: 1;
+  }
+
+  p {
+    font-size: 15px; color: var(--gray-text);
+    line-height: 1.8; margin-bottom: 16px;
+  }
+  p strong { color: var(--white); font-weight: 500; }
+
+  .highlight-box {
+    background: var(--gray);
+    border-left: 3px solid var(--red);
+    padding: 20px 24px;
+    margin: 24px 0;
+    border-radius: 0 6px 6px 0;
+  }
+  .highlight-box p { margin: 0; color: var(--white); font-size: 14px; }
+
+  .divider {
+    border: none; border-top: 1px solid var(--border);
+    margin: 48px 0;
+  }
+
+  /* DIAGRAM CONTAINER */
+  .diagram-wrap {
+    background: var(--gray);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 32px;
+    margin: 32px 0;
+    overflow-x: auto;
+  }
+  .diagram-caption {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--gray-light); margin-top: 16px; text-align: center;
+  }
+
+  /* SVG CLASSES */
+  svg { font-family: 'Barlow', sans-serif; }
+  .t  { font-size: 14px; fill: var(--white); }
+  .ts { font-size: 12px; fill: var(--gray-text); }
+  .th { font-size: 14px; font-weight: 500; fill: var(--white); }
+
+  /* STAT GRID */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px; margin: 32px 0;
+  }
+  .stat-box {
+    background: var(--gray);
+    padding: 24px 20px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px; letter-spacing: 2px; line-height: 1;
+    color: var(--white);
+  }
+  .stat-num span { color: var(--red); }
+  .stat-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--gray-text);
+  }
+
+  /* IMPLICATION CARDS */
+  .impl-grid { display: flex; flex-direction: column; gap: 2px; margin: 32px 0; }
+  .impl-card {
+    background: var(--gray);
+    padding: 24px 28px;
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 24px; align-items: start;
+    transition: background 0.2s;
+  }
+  .impl-card:hover { background: var(--gray-mid); }
+  .impl-tag {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; letter-spacing: 1px;
+    color: var(--red); line-height: 1;
+  }
+  .impl-tag-sub {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--gray-light); margin-top: 4px;
+  }
+  .impl-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px; font-weight: 500; letter-spacing: 1px;
+    color: var(--white); margin-bottom: 6px;
+  }
+  .impl-text { font-size: 13px; color: var(--gray-text); line-height: 1.7; margin: 0; }
+
+  /* REACTION TEST */
+  .rt-arena {
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--gray);
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    min-height: 160px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 10px;
+    transition: border-color 0.2s;
+  }
+  .rt-arena:hover { border-color: rgba(255,255,255,0.15); }
+  .rt-msg { font-size: 18px; font-weight: 500; color: var(--gray-text); font-family: 'Barlow Condensed', sans-serif; letter-spacing: 2px; text-transform: uppercase; }
+  .rt-sub { font-size: 13px; color: var(--gray-light); }
+  .rt-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; margin: 2px 0; }
+  .rt-stat { background: var(--gray); padding: 16px 20px; }
+  .rt-stat-label { font-size: 11px; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 4px; }
+  .rt-stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 2px; color: var(--white); }
+  .rt-analysis { background: var(--gray); border-left: 3px solid var(--gray-light); padding: 16px 20px; margin-top: 2px; font-size: 13px; color: var(--gray-text); line-height: 1.6; min-height: 52px; border-radius: 0 6px 6px 0; }
+
+  /* NEXT CHAPTER */
+  .next-chapter {
+    border-top: 1px solid var(--border);
+    padding: 48px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .next-label { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 8px; }
+  .next-title { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 2px; color: var(--white); }
+  .next-cta {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--white); text-decoration: none;
+    padding: 14px 28px;
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: all 0.25s; white-space: nowrap;
+  }
+  .next-cta:hover { background: var(--red); border-color: var(--red); }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+
+  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+  .chapter-eyebrow { animation: fadeUp 0.6s ease both; }
+  .chapter-title { animation: fadeUp 0.6s 0.1s ease both; }
+  .chapter-subtitle { animation: fadeUp 0.6s 0.2s ease both; }
+  .chapter-meta { animation: fadeUp 0.6s 0.3s ease both; }
+
+  @media (max-width: 768px) {
+    nav { padding: 0 24px; }
+    .chapter-hero { padding: 100px 24px 48px; }
+    .content { padding: 48px 24px; }
+    .stat-grid { grid-template-columns: repeat(2,1fr); }
+    .impl-card { grid-template-columns: 1fr; gap: 8px; }
+    .next-chapter { flex-direction: column; gap: 24px; padding: 32px 24px; }
+    footer { padding: 20px 24px; flex-direction: column; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="../index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+
+<section class="chapter-hero">
+  <div class="chapter-eyebrow">Partie II — Neurosciences &amp; cognition</div>
+  <div class="chapter-number">2.1</div>
+  <h1 class="chapter-title">Pipeline Visuel</h1>
+  <p class="chapter-subtitle">De la rétine au tir</p>
+  <div class="chapter-meta">
+    <div class="meta-pill">Discipline <span>Neurosciences</span></div>
+    <div class="meta-pill">Mécanique <span>Peek advantage · Réaction · FPS</span></div>
+    <div class="meta-pill">Niveau <span>Tous niveaux</span></div>
+  </div>
+</section>
+
+<div class="content">
+
+  <!-- INTRO -->
+  <div class="section-label">Introduction</div>
+  <h2>Le temps de réaction n'est pas un chiffre</h2>
+  <p>C'est une <strong>chaîne de traitement biologique</strong> avec plusieurs maillons mesurables — et chacun peut être compris, optimisé, ou contourné tactiquement. Quand un joueur "réagit vite", ce n'est pas de la chance ou du talent brut. C'est le résultat d'un pipeline neurologique précis, dont chaque étape obéit à des lois physiques mesurables en millisecondes.</p>
+  <p>Comprendre ce pipeline, c'est comprendre <strong>pourquoi le peek advantage existe</strong>, pourquoi le pre-aim fonctionne, et pourquoi jouer à 144fps change quelque chose — mais pas pour les raisons qu'on croit.</p>
+
+  <div class="stat-grid">
+    <div class="stat-box"><span class="stat-num">150<span>ms</span></span><span class="stat-label">Pipeline moyen complet</span></div>
+    <div class="stat-box"><span class="stat-num">80<span>ms</span></span><span class="stat-label">Voie dorsale (WHERE)</span></div>
+    <div class="stat-box"><span class="stat-num">120<span>ms</span></span><span class="stat-label">Voie ventrale (WHAT)</span></div>
+    <div class="stat-box"><span class="stat-num">9<span>.7ms</span></span><span class="stat-label">Gain réel 60→144fps</span></div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECTION 1 : PIPELINE -->
+  <div class="section-label">Section 1</div>
+  <h2>Le pipeline visuel complet</h2>
+  <p>La lumière quitte ton écran, frappe ta rétine, et déclenche une cascade électrochimique qui remonte jusqu'au cortex moteur. Ce trajet prend entre <strong>150 et 250 millisecondes</strong> selon la complexité de la décision à prendre. Voici chaque maillon.</p>
+
+  <div class="diagram-wrap">
+    <svg width="100%" viewBox="0 0 820 320" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- Row 1 -->
+      <g>
+        <rect x="20" y="60" width="110" height="56" rx="6" fill="#EF9F2720" stroke="#EF9F27" stroke-width="0.8"/>
+        <text class="th" x="75" y="83" text-anchor="middle" dominant-baseline="central" fill="#EF9F27">Photons</text>
+        <text class="ts" x="75" y="101" text-anchor="middle" dominant-baseline="central" fill="#BA7517">Écran → œil</text>
+      </g>
+      <line x1="130" y1="88" x2="155" y2="88" stroke="#EF9F27" stroke-width="1.5" marker-end="url(#arr)" fill="none"/>
+      <text class="ts" x="142" y="80" text-anchor="middle" fill="#555">~0ms</text>
+
+      <g>
+        <rect x="157" y="60" width="110" height="56" rx="6" fill="#378ADD20" stroke="#378ADD" stroke-width="0.8"/>
+        <text class="th" x="212" y="83" text-anchor="middle" dominant-baseline="central" fill="#85B7EB">Rétine</text>
+        <text class="ts" x="212" y="101" text-anchor="middle" dominant-baseline="central" fill="#378ADD">Cônes &amp; bâtonnets</text>
+      </g>
+      <line x1="267" y1="88" x2="292" y2="88" stroke="#378ADD" stroke-width="1.5" marker-end="url(#arr)" fill="none"/>
+      <text class="ts" x="279" y="80" text-anchor="middle" fill="#555">20–30ms</text>
+
+      <g>
+        <rect x="294" y="60" width="110" height="56" rx="6" fill="#7F77DD20" stroke="#7F77DD" stroke-width="0.8"/>
+        <text class="th" x="349" y="83" text-anchor="middle" dominant-baseline="central" fill="#AFA9EC">Cortex V1</text>
+        <text class="ts" x="349" y="101" text-anchor="middle" dominant-baseline="central" fill="#7F77DD">Détection brute</text>
+      </g>
+      <line x1="404" y1="88" x2="429" y2="88" stroke="#7F77DD" stroke-width="1.5" marker-end="url(#arr)" fill="none"/>
+      <text class="ts" x="416" y="80" text-anchor="middle" fill="#555">+30ms</text>
+
+      <g>
+        <rect x="431" y="60" width="110" height="56" rx="6" fill="#1D9E7520" stroke="#1D9E75" stroke-width="0.8"/>
+        <text class="th" x="486" y="83" text-anchor="middle" dominant-baseline="central" fill="#5DCAA5">V4 / V5-MT</text>
+        <text class="ts" x="486" y="101" text-anchor="middle" dominant-baseline="central" fill="#1D9E75">Forme, mouvement</text>
+      </g>
+      <line x1="541" y1="88" x2="541" y2="128" stroke="#1D9E75" stroke-width="1.5" marker-end="url(#arr)" fill="none"/>
+      <text class="ts" x="558" y="116" fill="#555">+20ms</text>
+
+      <!-- Row 2 -->
+      <g>
+        <rect x="400" y="130" width="282" height="56" rx="6" fill="#D85A3020" stroke="#D85A30" stroke-width="0.8"/>
+        <text class="th" x="541" y="153" text-anchor="middle" dominant-baseline="central" fill="#F0997B">Cortex préfrontal</text>
+        <text class="ts" x="541" y="171" text-anchor="middle" dominant-baseline="central" fill="#D85A30">Décision : tirer ou ne pas tirer ?</text>
+      </g>
+      <line x1="400" y1="158" x2="355" y2="158" stroke="#D85A30" stroke-width="1.5" marker-end="url(#arr)" fill="none"/>
+      <text class="ts" x="378" y="150" text-anchor="middle" fill="#555">+20ms</text>
+
+      <g>
+        <rect x="157" y="130" width="196" height="56" rx="6" fill="#88878020" stroke="#888780" stroke-width="0.8"/>
+        <text class="th" x="255" y="153" text-anchor="middle" dominant-baseline="central" fill="#B4B2A9">Cortex moteur</text>
+        <text class="ts" x="255" y="171" text-anchor="middle" dominant-baseline="central" fill="#888780">Signal vers la main</text>
+      </g>
+      <line x1="255" y1="186" x2="255" y2="216" stroke="#888780" stroke-width="1.5" marker-end="url(#arr)" fill="none"/>
+      <text class="ts" x="272" y="206" fill="#555">+50ms</text>
+
+      <g>
+        <rect x="157" y="218" width="196" height="44" rx="6" fill="#E24B4A20" stroke="#E24B4A" stroke-width="0.8"/>
+        <text class="th" x="255" y="240" text-anchor="middle" dominant-baseline="central" fill="#F09595">Contraction musculaire</text>
+      </g>
+
+      <!-- Total -->
+      <rect x="20" y="218" width="118" height="44" rx="6" fill="#1c1c1c" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+      <text class="th" x="79" y="234" text-anchor="middle" fill="var(--white)">TOTAL</text>
+      <text x="79" y="252" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="16" fill="#c8302a">150–250ms</text>
+      <line x1="138" y1="240" x2="155" y2="240" stroke="rgba(255,255,255,0.2)" stroke-width="1" marker-end="url(#arr)" fill="none"/>
+    </svg>
+    <p class="diagram-caption">Pipeline visuel complet — de la lumière à la contraction musculaire</p>
+  </div>
+
+  <p>La rétine contient deux types de photorécepteurs. Les <strong>cônes</strong> (6 à 7 millions, concentrés dans la fovéa) gèrent la haute résolution et la couleur — mais ils sont lents. Les <strong>bâtonnets</strong> (120 millions, en périphérie) détectent le mouvement dans les faibles luminosités avec une latence plus courte.</p>
+
+  <div class="highlight-box">
+    <p>Conséquence directe dans R6 : un ennemi qui bouge en <strong>périphérie</strong> de ton champ visuel est détecté plus vite qu'un ennemi statique que tu regardes directement. C'est pour ça que les défenseurs expérimentés font des micro-mouvements — et pourquoi les attaquants expérimentés s'immobilisent avant de re-peek.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECTION 2 : DEUX VOIES -->
+  <div class="section-label">Section 2</div>
+  <h2>Deux voies parallèles dans le cerveau</h2>
+  <p>Une fois le signal parti de la rétine, le cerveau ne fait pas qu'un seul traitement. Il en fait <strong>deux simultanément</strong> — et c'est là que tout se joue tactiquement.</p>
+
+  <div class="diagram-wrap">
+    <svg width="100%" viewBox="0 0 680 320" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <rect x="240" y="20" width="200" height="50" rx="6" fill="#88878020" stroke="#888780" stroke-width="0.8"/>
+      <text class="th" x="340" y="40" text-anchor="middle" dominant-baseline="central" fill="#B4B2A9">Cortex visuel V1</text>
+      <text class="ts" x="340" y="57" text-anchor="middle" dominant-baseline="central" fill="#888780">Signal brut entrant</text>
+
+      <path d="M 290 70 L 170 118" stroke="#1D9E75" stroke-width="1.5" fill="none" marker-end="url(#arr2)"/>
+      <path d="M 390 70 L 510 118" stroke="#7F77DD" stroke-width="1.5" fill="none" marker-end="url(#arr2)"/>
+      <text class="ts" x="200" y="104" fill="#0F6E56">~80ms total</text>
+      <text class="ts" x="470" y="104" fill="#534AB7">~120ms total</text>
+
+      <rect x="40" y="120" width="260" height="56" rx="6" fill="#1D9E7520" stroke="#1D9E75" stroke-width="0.8"/>
+      <text class="th" x="170" y="143" text-anchor="middle" dominant-baseline="central" fill="#5DCAA5">Voie dorsale — WHERE</text>
+      <text class="ts" x="170" y="161" text-anchor="middle" dominant-baseline="central" fill="#1D9E75">Lobe pariétal — position, vitesse</text>
+
+      <rect x="380" y="120" width="260" height="56" rx="6" fill="#7F77DD20" stroke="#7F77DD" stroke-width="0.8"/>
+      <text class="th" x="510" y="143" text-anchor="middle" dominant-baseline="central" fill="#AFA9EC">Voie ventrale — WHAT</text>
+      <text class="ts" x="510" y="161" text-anchor="middle" dominant-baseline="central" fill="#7F77DD">Lobe temporal — forme, identité</text>
+
+      <line x1="170" y1="176" x2="170" y2="216" stroke="#1D9E75" stroke-width="1.2" fill="none" marker-end="url(#arr2)"/>
+      <line x1="510" y1="176" x2="510" y2="216" stroke="#7F77DD" stroke-width="1.2" fill="none" marker-end="url(#arr2)"/>
+
+      <rect x="40" y="218" width="260" height="50" rx="6" fill="#1D9E7515" stroke="#1D9E7560" stroke-width="0.8"/>
+      <text class="th" x="170" y="237" text-anchor="middle" dominant-baseline="central" fill="#9FE1CB">Réaction au mouvement</text>
+      <text class="ts" x="170" y="254" text-anchor="middle" dominant-baseline="central" fill="#1D9E75">Rapide, instinctive, imprécise</text>
+
+      <rect x="380" y="218" width="260" height="50" rx="6" fill="#7F77DD15" stroke="#7F77DD60" stroke-width="0.8"/>
+      <text class="th" x="510" y="237" text-anchor="middle" dominant-baseline="central" fill="#CECBF6">Identification de la cible</text>
+      <text class="ts" x="510" y="254" text-anchor="middle" dominant-baseline="central" fill="#7F77DD">Lente, précise, consciente</text>
+
+      <rect x="230" y="286" width="220" height="24" rx="4" fill="#1c1c1c" stroke="rgba(255,255,255,0.1)" stroke-width="0.8"/>
+      <text class="ts" x="340" y="298" text-anchor="middle" fill="#555">Fusion dans le cortex préfrontal</text>
+    </svg>
+    <p class="diagram-caption">Voie dorsale (WHERE) vs voie ventrale (WHAT) — deux traitements parallèles</p>
+  </div>
+
+  <p>La <strong>voie dorsale</strong> répond en ~80ms — elle te dit où est l'objet et à quelle vitesse il bouge. C'est elle qui génère la réaction de suivi instinctive. La <strong>voie ventrale</strong> prend ~120ms — elle identifie que c'est un ennemi, pas un coéquipier.</p>
+
+  <div class="highlight-box">
+    <p>Dans R6, cette distinction est critique : si tu tires sur la voie dorsale seule tu réagis plus vite, mais tu risques le team-kill. Jouer avec des opérateurs bien connus réduit le temps de la voie WHAT — ton cerveau reconnaît les silhouettes plus vite car elles sont déjà en mémoire à long terme.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECTION 3 : TEST -->
+  <div class="section-label">Section 3 — Test interactif</div>
+  <h2>Mesure ton pipeline visuel</h2>
+  <p>Ce test mesure ton temps de réaction visuel simple — sans identification de cible, sans décision complexe. C'est le <strong>plancher absolu</strong>. Dans R6, le temps réel est toujours ton score ici + 60 à 100ms minimum.</p>
+
+  <div id="rt-arena" class="rt-arena" onclick="handleClick()">
+    <svg width="48" height="48" viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="22" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>
+      <circle id="rt-dot" cx="24" cy="24" r="10" fill="#555"/>
+    </svg>
+    <div id="rt-msg" class="rt-msg">Clique pour démarrer</div>
+    <div id="rt-sub" class="rt-sub">Réagis dès que la cible devient rouge</div>
+  </div>
+
+  <div class="rt-stats">
+    <div class="rt-stat"><div class="rt-stat-label">Dernier</div><div class="rt-stat-val" id="rt-last">—</div></div>
+    <div class="rt-stat"><div class="rt-stat-label">Moyenne</div><div class="rt-stat-val" id="rt-avg">—</div></div>
+    <div class="rt-stat"><div class="rt-stat-label">Meilleur</div><div class="rt-stat-val" id="rt-best">—</div></div>
+  </div>
+  <div class="rt-analysis" id="rt-analysis">Lance le test pour obtenir une analyse de ton pipeline visuel.</div>
+
+  <hr class="divider">
+
+  <!-- SECTION 4 : IMPLICATIONS -->
+  <div class="section-label">Section 4</div>
+  <h2>Ce que ça change tactiquement</h2>
+  <p>Chaque maillon du pipeline a une traduction directe dans le jeu. Voici les cinq implications les plus importantes.</p>
+
+  <div class="impl-grid">
+    <div class="impl-card">
+      <div>
+        <div class="impl-tag">Peek</div>
+        <div class="impl-tag-sub">advantage</div>
+      </div>
+      <div>
+        <div class="impl-title">Pourquoi l'attaquant gagne presque toujours le duel à courte distance</div>
+        <p class="impl-text">L'attaquant initie son mouvement délibérément — son cerveau n'a pas de pipeline à traverser pour déclencher le mouvement, il l'a déjà planifié. Le défenseur doit traverser les 150–250ms complets depuis la détection visuelle. À courte distance où l'exposition dure moins de 200ms, le défenseur est biologiquement incapable de réagir à temps. Ce n'est pas un avantage de skill — c'est de la neurophysiologie.</p>
+      </div>
+    </div>
+
+    <div class="impl-card">
+      <div>
+        <div class="impl-tag">Pre-aim</div>
+        <div class="impl-tag-sub">proactif</div>
+      </div>
+      <div>
+        <div class="impl-title">Pourquoi pre-aim un angle annule complètement le pipeline visuel</div>
+        <p class="impl-text">Quand tu pre-aim un angle, tu contournes les 150ms biologiques. Ton cerveau n'a plus à détecter → identifier → décider → tirer. Il doit juste confirmer que quelque chose entre dans la zone déjà visée, et déclencher un programme moteur déjà préparé. Des études en neurosciences motrices montrent que les mouvements pré-planifiés déclenchent en 70–90ms contre 150–250ms pour les réactions. Le pre-aim n'est pas une astuce — c'est exploiter la différence entre un mouvement réactif et un mouvement proactif.</p>
+      </div>
+    </div>
+
+    <div class="impl-card">
+      <div>
+        <div class="impl-tag">Périphé-</div>
+        <div class="impl-tag-sub">rie visuelle</div>
+      </div>
+      <div>
+        <div class="impl-title">Pourquoi les mouvements en périphérie sont détectés plus vite</div>
+        <p class="impl-text">Les bâtonnets périphériques transmettent le signal au cortex en ~60ms contre ~100ms pour les cônes fovéaux. Un ennemi qui entre en périphérie de ton écran déclenche une alerte plus rapide qu'un ennemi qui apparaît dans ton centre de vision. Les joueurs expérimentés font des micro-mouvements de caméra pour scanner avec la périphérie plutôt que de tout regarder frontalement — ils maximisent la bande passante du système bâtonnets.</p>
+      </div>
+    </div>
+
+    <div class="impl-card">
+      <div>
+        <div class="impl-tag">Flash-</div>
+        <div class="impl-tag-sub">bang</div>
+      </div>
+      <div>
+        <div class="impl-title">Pourquoi un flash impacte encore après la fin de la cécité visible</div>
+        <p class="impl-text">La cécité après un flash provient d'une saturation des photorécepteurs. La récupération prend 2–3s pour la vision centrale, mais l'adaptation complète du contraste prend jusqu'à 8–10s. Pendant cette période, le temps de traitement V1 est rallongé — les signaux sont bruités. Un joueur flashé joue avec un pipeline visuel 30 à 40% plus lent, sans forcément s'en rendre compte.</p>
+      </div>
+    </div>
+
+    <div class="impl-card">
+      <div>
+        <div class="impl-tag">144</div>
+        <div class="impl-tag-sub">FPS</div>
+      </div>
+      <div>
+        <div class="impl-title">Pourquoi 144fps réduit réellement ton temps de réaction effectif</div>
+        <p class="impl-text">À 60fps une frame dure 16.6ms. À 144fps, 6.9ms. Cela ne change pas ton pipeline neurologique — mais ça réduit le frame sampling delay : le temps entre le moment où quelque chose se passe dans le jeu et le moment où ça apparaît sur ton écran. En passant de 60 à 144fps tu gagnes en moyenne 9.7ms de latence d'affichage. Sur un pipeline total de 220ms, c'est ~4.5% — mesurable en tournoi, mais la stabilité (absence de frame drops) et l'input lag du moniteur comptent bien davantage.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- NEXT CHAPTER -->
+<div class="next-chapter">
+  <div>
+    <div class="next-label">Prochain chapitre — II.2</div>
+    <div class="next-title">Charge cognitive &amp; mémoire de travail</div>
+  </div>
+  <a href="#" class="next-cta">Bientôt disponible →</a>
+</div>
+
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie II · Chapitre 2.1</span>
+</footer>
+
+<script>
+let state = 'idle', timer = null, startTime = null, results = [];
+
+function handleClick() {
+  const dot = document.getElementById('rt-dot');
+  const msg = document.getElementById('rt-msg');
+  const sub = document.getElementById('rt-sub');
+  const arena = document.getElementById('rt-arena');
+
+  if (state === 'idle' || state === 'result') {
+    state = 'waiting';
+    dot.setAttribute('fill', '#EF9F27');
+    msg.textContent = 'Attends...';
+    msg.style.color = '#EF9F27';
+    sub.textContent = 'Ne clique pas encore';
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      state = 'shoot';
+      dot.setAttribute('fill', '#E24B4A');
+      msg.textContent = 'TIRE !';
+      msg.style.color = '#E24B4A';
+      sub.textContent = 'Clique maintenant !';
+      startTime = performance.now();
+    }, 1500 + Math.random() * 2500);
+    return;
+  }
+  if (state === 'waiting') {
+    clearTimeout(timer);
+    state = 'idle';
+    dot.setAttribute('fill', '#555');
+    msg.textContent = 'Trop tôt — recommence';
+    msg.style.color = '#E24B4A';
+    sub.textContent = 'Attends que la cible devienne rouge';
+    return;
+  }
+  if (state === 'shoot') {
+    const rt = Math.round(performance.now() - startTime);
+    results.push(rt);
+    state = 'result';
+    dot.setAttribute('fill', '#1D9E75');
+    msg.textContent = rt + ' ms';
+    msg.style.color = '#1D9E75';
+    sub.textContent = 'Clique pour réessayer';
+    document.getElementById('rt-last').textContent = rt + 'ms';
+    document.getElementById('rt-avg').textContent = Math.round(results.reduce((a,b)=>a+b,0)/results.length) + 'ms';
+    document.getElementById('rt-best').textContent = Math.min(...results) + 'ms';
+    let analysis = '';
+    if (rt < 160) analysis = 'Niveau pro. Ton pipeline visuel et moteur est très court. Tu exploites probablement déjà la voie dorsale et le pre-aim instinctif.';
+    else if (rt < 200) analysis = 'Excellent — top 5% des joueurs. Le peek advantage joue massivement en ta faveur. Travaille le crosshair placement pour aller encore plus loin.';
+    else if (rt < 250) analysis = 'Bonne moyenne. Avec du pre-aim et de l\'anticipation, tu peux compenser les 250ms biologiques et jouer comme si tu réagissais plus vite.';
+    else if (rt < 300) analysis = 'Moyenne standard. L\'entraînement de l\'anticipation (pre-aim, game sense) est plus rentable pour toi que tenter de réduire le temps de réaction brut.';
+    else analysis = 'Marge de progression importante. Vérifie d\'abord ta chaîne hardware (input lag moniteur, polling rate souris) — une partie du délai peut venir de là, pas du cerveau.';
+    document.getElementById('rt-analysis').textContent = analysis;
+  }
+}
+</script>
+
+</body>
+</html>
