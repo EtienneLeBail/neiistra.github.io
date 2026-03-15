@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2.6 Stress & Performance — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --red-dim: #8a1f1a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+  .chapter-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .chapter-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%); }
+  .chapter-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .chapter-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .chapter-number { font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px,15vw,180px); line-height: 0.85; color: rgba(255,255,255,0.04); position: absolute; right: 48px; top: 80px; pointer-events: none; }
+  .chapter-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px,7vw,80px); letter-spacing: 2px; line-height: 1; margin-bottom: 12px; position: relative; }
+  .chapter-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 40px; position: relative; }
+  .chapter-meta { display: flex; gap: 32px; flex-wrap: wrap; position: relative; }
+  .meta-pill { background: var(--gray); border: 1px solid var(--border); border-radius: 4px; padding: 8px 16px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .meta-pill span { color: var(--white); margin-left: 6px; }
+  .content { max-width: 900px; margin: 0 auto; padding: 64px 48px; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; line-height: 1; }
+  p { font-size: 15px; color: var(--gray-text); line-height: 1.8; margin-bottom: 16px; }
+  p strong { color: var(--white); font-weight: 500; }
+  .highlight-box { background: var(--gray); border-left: 3px solid var(--red); padding: 20px 24px; margin: 24px 0; border-radius: 0 6px 6px 0; }
+  .highlight-box p { margin: 0; color: var(--white); font-size: 14px; line-height: 1.7; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .diagram-wrap { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin: 32px 0; overflow-x: auto; }
+  .diagram-caption { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 16px; text-align: center; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; margin: 32px 0; }
+  .stat-box { background: var(--gray); padding: 24px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 2px; line-height: 1; color: var(--white); }
+  .stat-num span { color: var(--red); }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .impl-grid { display: flex; flex-direction: column; gap: 2px; margin: 32px 0; }
+  .impl-card { background: var(--gray); padding: 24px 28px; display: grid; grid-template-columns: 120px 1fr; gap: 24px; align-items: start; transition: background 0.2s; }
+  .impl-card:hover { background: var(--gray-mid); }
+  .impl-tag { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: var(--red); line-height: 1; }
+  .impl-tag-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 4px; }
+  .impl-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 6px; }
+  .impl-text { font-size: 13px; color: var(--gray-text); line-height: 1.7; margin: 0; }
+  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; display: inline-block; }
+  .nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .nav-prev { flex: 1; } .nav-next { flex: 1; text-align: right; }
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .chapter-eyebrow{animation:fadeUp .6s ease both;} .chapter-title{animation:fadeUp .6s .1s ease both;} .chapter-subtitle{animation:fadeUp .6s .2s ease both;} .chapter-meta{animation:fadeUp .6s .3s ease both;}
+  @media(max-width:768px){ nav{padding:0 24px;} .chapter-hero{padding:100px 24px 48px;} .content{padding:48px 24px;} .stat-grid{grid-template-columns:repeat(2,1fr);} .impl-card{grid-template-columns:1fr;gap:8px;} .next-chapter{flex-direction:column;gap:24px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="../index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+
+<section class="chapter-hero">
+  <div class="chapter-eyebrow">Partie II — Neurosciences &amp; cognition</div>
+  <div class="chapter-number">2.6</div>
+  <h1 class="chapter-title">Stress &amp; Performance</h1>
+  <p class="chapter-subtitle">Cortisol, clutch factor &amp; physiologie de la pression dans R6</p>
+  <div class="chapter-meta">
+    <div class="meta-pill">Discipline <span>Psychophysiologie</span></div>
+    <div class="meta-pill">Mécanique <span>Clutch · Tilt · Ranked · Mental</span></div>
+    <div class="meta-pill">Niveau <span>Tous niveaux</span></div>
+  </div>
+</section>
+
+<div class="content">
+
+  <div class="section-label">Introduction</div>
+  <h2>Pourquoi les mains tremblent en clutch</h2>
+  <p>Tu es en 1v3, timer critique, site planté. Tes mains tremblent, ta visée est instable, tu prends de mauvaises décisions que tu n'aurais jamais prises en custom. Ce n'est pas "la pression" au sens vague — c'est une <strong>cascade neurochimique précise</strong> déclenchée par la perception d'un enjeu élevé, qui modifie physiquement ton système nerveux et tes capacités motrices.</p>
+  <p>Ce chapitre explique la physiologie du stress de performance dans R6 — et les techniques basées sur la neurologie pour le contrôler, pas l'éliminer.</p>
+
+  <div class="stat-grid">
+    <div class="stat-box"><span class="stat-num">~40<span>%</span></span><span class="stat-label">Dégradation motrice sous stress</span></div>
+    <div class="stat-box"><span class="stat-num">Yerkes<span>-</span></span><span class="stat-label">Loi fondamentale</span></div>
+    <div class="stat-box"><span class="stat-num">4<span>-7-8</span></span><span class="stat-label">Technique de respiration</span></div>
+    <div class="stat-box"><span class="stat-num">~90<span>bpm</span></span><span class="stat-label">FC optimale pour performer</span></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 1</div>
+  <h2>La loi de Yerkes-Dodson — le niveau de stress optimal</h2>
+  <p>La relation entre le niveau d'activation physiologique (stress/arousal) et la performance suit une <strong>courbe en U inversé</strong> — la loi de Yerkes-Dodson (1908). Trop peu de stress : sous-performance par manque d'activation. Trop de stress : dégradation par surcharge physiologique. Il existe une zone optimale où le niveau d'activation maximise la performance — et cette zone est différente selon la complexité de la tâche.</p>
+
+  <div class="diagram-wrap">
+    <canvas id="yerkesCanvas" height="260" style="width:100%;display:block;"></canvas>
+    <p class="diagram-caption">Loi de Yerkes-Dodson appliquée à R6 — la zone optimale dépend de la tâche</p>
+  </div>
+
+  <div class="highlight-box">
+    <p>Dans R6, les tâches complexes (décision tactique, lecture de round) ont leur zone optimale à un niveau d'activation <strong>plus bas</strong> que les tâches simples (réaction à une cible). Un clutch 1v3 exige à la fois des réflexes (activation haute) et de la réflexion tactique (activation modérée). La tension entre ces deux besoins est précisément ce qui rend les situations clutch si difficiles — tu as besoin simultanément d'être calme et réactif.</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 2 — Simulateur interactif</div>
+  <h2>Visualise l'impact du stress sur tes performances</h2>
+  <p>Ajuste ton niveau de stress estimé et vois comment chaque composante de ta performance est affectée.</p>
+
+  <div class="diagram-wrap">
+    <div style="margin-bottom:16px;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);margin-bottom:8px;">Niveau de stress — <span id="stress-label" style="color:var(--white);font-weight:500;">Modéré</span></div>
+      <input type="range" min="0" max="100" value="40" id="stress-slider" style="width:100%;" oninput="updateStress(this.value)">
+    </div>
+    <canvas id="stressCanvas" height="240" style="width:100%;display:block;border-radius:6px;"></canvas>
+    <div id="stress-verdict" style="margin-top:12px;background:rgba(0,0,0,0.3);padding:12px 16px;border-radius:4px;font-size:13px;color:var(--gray-text);line-height:1.6;"></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 3</div>
+  <h2>Gérer le stress de performance dans R6</h2>
+
+  <div class="impl-grid">
+    <div class="impl-card">
+      <div><div class="impl-tag">Respi-</div><div class="impl-tag-sub">ration</div></div>
+      <div>
+        <div class="impl-title">La respiration comme levier neurologique direct sur le stress</div>
+        <p class="impl-text">La respiration est le seul paramètre du système nerveux autonome accessible au contrôle volontaire. Ralentir la respiration active directement le nerf vague, qui stimule le système parasympathique (repos/digestion) et réduit l'activité du système sympathique (fight/flight). La technique 4-7-8 : inspire 4s, retiens 7s, expire 8s. Une seule répétition réduit la fréquence cardiaque de 5 à 10 bpm et le taux de cortisol en 30 à 60 secondes. Les pros utilisent cette technique entre les rounds, jamais pendant — l'expiration longue nécessite un focus sur la respiration incompatible avec le jeu actif.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Clutch</div><div class="impl-tag-sub">routine</div></div>
+      <div>
+        <div class="impl-title">Développer une routine de clutch — l'ancrage comportemental</div>
+        <p class="impl-text">Les clutch players les plus fiables ont des routines comportementales activées dès qu'ils détectent une situation clutch : une respiration, une phrase mentale, un micro-ajustement de posture. Ces routines fonctionnent par "ancrage" — un comportement répété associé à un état mental spécifique finit par induire cet état. En pratique : dans chaque situation clutch en custom, répète la même séquence (ex: inspire profond, mots "une cible à la fois", recenter le crosshair). Après des dizaines de répétitions, déclencher la routine en ranked active automatiquement l'état mental associé.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Tilt</div><div class="impl-tag-sub">physio.</div></div>
+      <div>
+        <div class="impl-title">La physiologie du tilt — et pourquoi "juste se calmer" ne fonctionne pas</div>
+        <p class="impl-text">Le tilt déclenche une activation sympathique (adrénaline + cortisol) avec une durée de décroissance biologique de 20 à 40 minutes. Dire à quelqu'un de "se calmer" pendant qu'il tilte est physiologiquement inefficace — les hormones sont déjà dans le sang. La seule stratégie réellement efficace est la prévention : sortir avant d'atteindre le point de tilt complet. Les signaux précoces sont identifiables : micro-accélérations de souris, décisions plus impulsives, montée de la température faciale. Identifier ces signaux personnels et prendre une pause de 5 minutes à ce stade est neuralement plus efficace que d'essayer de récupérer après un tilt complet.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Ranked</div><div class="impl-tag-sub">enjeu</div></div>
+      <div>
+        <div class="impl-title">Désensibilisation progressive — jouer ranked comme des customs</div>
+        <p class="impl-text">La différence de performance entre custom et ranked vient de la perception de l'enjeu — pas de la difficulté réelle. Le classement est un enjeu psychologique, pas physique. La désensibilisation progressive consiste à s'exposer répétitivement à des enjeux croissants jusqu'à ce que le niveau suivant devienne banal. Techniquement : jouer des customs avec enjeux artificiels (paris entre amis, enregistrement), puis ranked détente, puis ranked compétitif, puis tournois internes. Chaque niveau normalisé réduit la réponse de stress au niveau suivant. C'est exactement le processus utilisé par les athlètes de haut niveau pour préparer les grandes compétitions.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="next-chapter">
+  <div class="nav-prev"><a href="2-5-attention.html" class="nav-cta">← Chapitre 2.5</a></div>
+  <div class="nav-next"><a href="../partie-3/index.html" class="nav-cta">Partie III →</a></div>
+</div>
+
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie II · Chapitre 2.6</span>
+</footer>
+
+<script>
+function drawYerkes() {
+  const canvas = document.getElementById('yerkesCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 820;
+  canvas.width = W;
+  const H = 260;
+  ctx.clearRect(0, 0, W, H);
+
+  const padL = 50, padR = 20, padT = 20, padB = 40;
+  const cW = W - padL - padR, cH = H - padT - padB;
+
+  // Axes
+  ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + cH);
+  ctx.lineTo(padL + cW, padT + cH);
+  ctx.stroke();
+
+  ctx.fillStyle = '#555';
+  ctx.font = "10px 'Barlow Condensed', sans-serif";
+  ctx.textAlign = 'center';
+  ctx.fillText('Niveau d\'activation / stress →', padL + cW/2, H - 4);
+  ctx.save(); ctx.translate(12, padT + cH/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillText('Performance →', 0, 0);
+  ctx.restore();
+
+  // Curves
+  const curves = [
+    { label: 'Tâche simple (réflexes)', color: '#378ADD', peak: 0.75 },
+    { label: 'Tâche complexe (tactique)', color: '#1D9E75', peak: 0.35 },
+  ];
+
+  curves.forEach(curve => {
+    ctx.beginPath();
+    for (let x = 0; x <= cW; x++) {
+      const t = x / cW;
+      const y = Math.exp(-Math.pow((t - curve.peak) / 0.28, 2));
+      const px = padL + x;
+      const py = padT + cH - y * cH * 0.85;
+      x === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = curve.color;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = curve.color;
+    ctx.font = "11px 'Barlow Condensed', sans-serif";
+    ctx.textAlign = 'left';
+    const labelX = padL + curve.peak * cW + 8;
+    const labelY = padT + cH - Math.exp(0) * cH * 0.85 + (curve.peak > 0.5 ? -20 : 20);
+    ctx.fillText(curve.label, Math.min(labelX, W - 180), padT + (1 - Math.exp(0) * 0.85) * cH + (curve.color === '#378ADD' ? 30 : 60));
+  });
+
+  // Zone labels
+  const zones = [
+    { x: 0.1, label: 'Sous-activé', sub: 'Ennui · Focus faible', color: '#555' },
+    { x: 0.45, label: 'Zone optimale', sub: 'Peak performance', color: '#1D9E75' },
+    { x: 0.85, label: 'Suractivé', sub: 'Tilt · Freeze', color: '#c8302a' },
+  ];
+
+  zones.forEach(z => {
+    const x = padL + z.x * cW;
+    ctx.strokeStyle = z.color + '40';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, padT + cH); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = z.color;
+    ctx.font = "500 11px 'Barlow Condensed', sans-serif";
+    ctx.textAlign = 'center';
+    ctx.fillText(z.label, x, padT + 14);
+    ctx.fillStyle = '#555';
+    ctx.font = "10px 'Barlow Condensed', sans-serif";
+    ctx.fillText(z.sub, x, padT + 27);
+  });
+
+  // Optimal zone highlight
+  const optL = padL + 0.25 * cW;
+  const optR = padL + 0.58 * cW;
+  ctx.fillStyle = 'rgba(29,158,117,0.06)';
+  ctx.fillRect(optL, padT, optR - optL, cH);
+}
+
+function updateStress(val) {
+  val = parseInt(val);
+  const labels = ['Très faible', 'Faible', 'Modéré', 'Élevé', 'Très élevé — Tilt'];
+  document.getElementById('stress-label').textContent = labels[Math.floor(val/25)] || labels[4];
+  drawStressImpact(val);
+}
+
+function drawStressImpact(stress) {
+  const canvas = document.getElementById('stressCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 820;
+  canvas.width = W;
+  const H = 240;
+  ctx.clearRect(0, 0, W, H);
+
+  const s = stress / 100;
+
+  // Optimal zone: 30-55 out of 100
+  function perf(base, peak, s) {
+    const dist = Math.abs(s - peak/100);
+    return Math.max(0.1, base * Math.exp(-Math.pow(dist / 0.3, 2)));
+  }
+
+  const metrics = [
+    { label: 'Précision du aim', peak: 35, base: 1.0, color: '#c8302a' },
+    { label: 'Temps de réaction', peak: 60, base: 1.0, color: '#EF9F27' },
+    { label: 'Décision tactique', peak: 25, base: 1.0, color: '#1D9E75' },
+    { label: 'Contrôle du recul', peak: 30, base: 1.0, color: '#378ADD' },
+    { label: 'Lecture mini-map', peak: 20, base: 1.0, color: '#7F77DD' },
+  ];
+
+  const barH = 32, gap = 6, startY = 20, labelW = 160;
+
+  metrics.forEach((m, i) => {
+    const y = startY + i * (barH + gap);
+    const p = perf(m.base, m.peak, s);
+    const barW = (W - labelW - 60) * p;
+
+    ctx.fillStyle = m.color + '15';
+    ctx.fillRect(labelW, y, W - labelW - 60, barH);
+
+    ctx.fillStyle = m.color + '60';
+    ctx.fillRect(labelW, y, barW, barH);
+    ctx.strokeStyle = m.color;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(labelW, y, barW, barH);
+
+    ctx.fillStyle = '#aaa';
+    ctx.font = "12px 'Barlow Condensed', sans-serif";
+    ctx.textAlign = 'right';
+    ctx.fillText(m.label, labelW - 8, y + barH/2 + 4);
+
+    ctx.fillStyle = m.color;
+    ctx.font = "500 11px 'Barlow Condensed', sans-serif";
+    ctx.textAlign = 'left';
+    ctx.fillText(Math.round(p * 100) + '%', labelW + barW + 6, y + barH/2 + 4);
+  });
+
+  let verdict = '';
+  if (stress < 20) verdict = 'Niveau d\'activation trop bas — tu joues en mode autopilote. La performance plafonne par manque d\'engagement. Augmente les enjeux ou joue en ranked pour atteindre la zone optimale.';
+  else if (stress < 45) verdict = 'Zone optimale — ton niveau d\'activation est idéal pour les tâches complexes. La décision tactique et la lecture de jeu sont à leur maximum. C\'est le profil d\'un joueur "dans le flow".';
+  else if (stress < 65) verdict = 'Légère suractivation — les réflexes sont bons mais la décision tactique commence à se dégrader. Respiration consciente entre les rounds pour rester dans la zone.';
+  else if (stress < 80) verdict = 'Suractivation significative — tunnel vision probable, décisions impulsives. Les mains commencent à trembler, le recul est moins contrôlé. Pause recommandée.';
+  else verdict = 'Tilt ou état de stress critique — toutes les capacités cognitives supérieures sont dégradées. Jouer dans cet état n\'apporte rien et renforce de mauvaises habitudes. Stop + pause de 15 minutes minimum.';
+
+  document.getElementById('stress-verdict').textContent = verdict;
+}
+
+window.addEventListener('load', () => { drawYerkes(); updateStress(40); });
+window.addEventListener('resize', () => { drawYerkes(); updateStress(document.getElementById('stress-slider')?.value || 40); });
+</script>
+</body>
+</html>
