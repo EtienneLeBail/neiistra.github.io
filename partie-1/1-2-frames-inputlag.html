@@ -76,12 +76,6 @@
   @keyframes slideRight { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
 
-  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; }
-  .next-label { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 8px; }
-  .next-title { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 2px; color: var(--white); }
-  .next-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; }
-  .next-cta:hover { background: var(--red); border-color: var(--red); }
-
   footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
   .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
   .footer-logo span { color: var(--red); }
@@ -103,6 +97,13 @@
     .next-chapter{flex-direction:column;gap:24px;padding:32px 24px;}
     footer{padding:20px 24px;flex-direction:column;gap:8px;}
   }
+
+  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; display: inline-block; }
+  .nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .nav-cta.disabled { color: var(--gray-light); border-color: var(--border); cursor: default; pointer-events: none; }
+  .nav-prev { flex: 1; }
+  .nav-next { flex: 1; text-align: right; }
 </style>
 </head>
 <body>
@@ -347,11 +348,13 @@
 </div>
 
 <div class="next-chapter">
-  <div>
-    <div class="next-label">Prochain chapitre — I.3</div>
-    <div class="next-title">Hitboxes &amp; Collision</div>
+  <div class="nav-prev">
+    <a href="1-1-netcode.html" class="nav-cta prev-cta">← Chapitre 1.1</a>
   </div>
-  <a href="#" class="next-cta">Bientôt disponible →</a>
+  <div class="nav-next">
+    
+    <span class="nav-cta disabled">Bientôt disponible</span>
+  </div>
 </div>
 
 <footer>
