@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2.5 Attention Sélective & Focus — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --red-dim: #8a1f1a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+  .chapter-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .chapter-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%); }
+  .chapter-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .chapter-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .chapter-number { font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px,15vw,180px); line-height: 0.85; color: rgba(255,255,255,0.04); position: absolute; right: 48px; top: 80px; pointer-events: none; }
+  .chapter-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px,7vw,80px); letter-spacing: 2px; line-height: 1; margin-bottom: 12px; position: relative; }
+  .chapter-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 40px; position: relative; }
+  .chapter-meta { display: flex; gap: 32px; flex-wrap: wrap; position: relative; }
+  .meta-pill { background: var(--gray); border: 1px solid var(--border); border-radius: 4px; padding: 8px 16px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .meta-pill span { color: var(--white); margin-left: 6px; }
+  .content { max-width: 900px; margin: 0 auto; padding: 64px 48px; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; line-height: 1; }
+  p { font-size: 15px; color: var(--gray-text); line-height: 1.8; margin-bottom: 16px; }
+  p strong { color: var(--white); font-weight: 500; }
+  .highlight-box { background: var(--gray); border-left: 3px solid var(--red); padding: 20px 24px; margin: 24px 0; border-radius: 0 6px 6px 0; }
+  .highlight-box p { margin: 0; color: var(--white); font-size: 14px; line-height: 1.7; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .diagram-wrap { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin: 32px 0; overflow-x: auto; }
+  .diagram-caption { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 16px; text-align: center; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; margin: 32px 0; }
+  .stat-box { background: var(--gray); padding: 24px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 2px; line-height: 1; color: var(--white); }
+  .stat-num span { color: var(--red); }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .impl-grid { display: flex; flex-direction: column; gap: 2px; margin: 32px 0; }
+  .impl-card { background: var(--gray); padding: 24px 28px; display: grid; grid-template-columns: 120px 1fr; gap: 24px; align-items: start; transition: background 0.2s; }
+  .impl-card:hover { background: var(--gray-mid); }
+  .impl-tag { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: var(--red); line-height: 1; }
+  .impl-tag-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 4px; }
+  .impl-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 6px; }
+  .impl-text { font-size: 13px; color: var(--gray-text); line-height: 1.7; margin: 0; }
+  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; display: inline-block; }
+  .nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .nav-prev { flex: 1; } .nav-next { flex: 1; text-align: right; }
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .chapter-eyebrow{animation:fadeUp .6s ease both;} .chapter-title{animation:fadeUp .6s .1s ease both;} .chapter-subtitle{animation:fadeUp .6s .2s ease both;} .chapter-meta{animation:fadeUp .6s .3s ease both;}
+  @media(max-width:768px){ nav{padding:0 24px;} .chapter-hero{padding:100px 24px 48px;} .content{padding:48px 24px;} .stat-grid{grid-template-columns:repeat(2,1fr);} .impl-card{grid-template-columns:1fr;gap:8px;} .next-chapter{flex-direction:column;gap:24px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="../index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+
+<section class="chapter-hero">
+  <div class="chapter-eyebrow">Partie II — Neurosciences &amp; cognition</div>
+  <div class="chapter-number">2.5</div>
+  <h1 class="chapter-title">Attention Sélective</h1>
+  <p class="chapter-subtitle">Focus, scanning &amp; gestion de l'attention dans R6</p>
+  <div class="chapter-meta">
+    <div class="meta-pill">Discipline <span>Psychologie de l'attention</span></div>
+    <div class="meta-pill">Mécanique <span>Mini-map · Scanning · Priorités</span></div>
+    <div class="meta-pill">Niveau <span>Tous niveaux</span></div>
+  </div>
+</section>
+
+<div class="content">
+
+  <div class="section-label">Introduction</div>
+  <h2>L'attention est une ressource limitée</h2>
+  <p>Le cerveau humain ne peut pas traiter consciemment toutes les informations disponibles simultanément — c'est un fait neurologique fondamental. L'attention sélective est le mécanisme par lequel le cerveau <strong>filtre activement</strong> ce qui mérite d'être traité consciemment et ce qui peut être ignoré ou traité en périphérie. Dans R6, la gestion de cette ressource attentionnelle est aussi importante que le aim.</p>
+  <p>Les joueurs qui "ne voient pas" les ennemis sur la mini-map, qui "n'entendent pas" les sons pourtant audibles, ou qui "oublient" de vérifier certains angles ne manquent pas d'intelligence — ils ont juste une allocation d'attention sous-optimale.</p>
+
+  <div class="stat-grid">
+    <div class="stat-box"><span class="stat-num">1<span>foyer</span></span><span class="stat-label">Attention consciente à la fois</span></div>
+    <div class="stat-box"><span class="stat-num">~200<span>ms</span></span><span class="stat-label">Pour changer de foyer</span></div>
+    <div class="stat-box"><span class="stat-num">3<span>niv.</span></span><span class="stat-label">Profondeur d'attention</span></div>
+    <div class="stat-box"><span class="stat-num">Mini-<span>map</span></span><span class="stat-label">Zone la plus négligée</span></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 1</div>
+  <h2>La hiérarchie de l'attention dans R6</h2>
+  <p>Toutes les informations dans R6 n'ont pas la même valeur attentionnelle. Un système d'allocation efficace traite les informations <strong>par ordre de priorité dynamique</strong> — la priorité d'une information change selon la phase du round, la position, et le contexte.</p>
+
+  <div class="diagram-wrap">
+    <svg width="100%" viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg">
+      <!-- Pyramid layers -->
+      <!-- Layer 1 (top - highest priority) -->
+      <polygon points="340,20 220,100 460,100" fill="rgba(200,48,42,0.25)" stroke="#c8302a" stroke-width="1.5"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="14" fill="#F09595" x="340" y="62" text-anchor="middle">MENACE IMMÉDIATE</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#c8302a" x="340" y="78" text-anchor="middle">Ennemi visible · Tirs entrants · Son proche</text>
+
+      <!-- Layer 2 -->
+      <polygon points="220,104 100,184 460,104 580,184" fill="rgba(239,159,39,0.18)" stroke="#EF9F27" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="14" fill="#FAC775" x="340" y="145" text-anchor="middle">INTEL TACTIQUE</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#EF9F27" x="340" y="162" text-anchor="middle">Mini-map · Callouts équipe · Droning · Sons distants</text>
+
+      <!-- Layer 3 -->
+      <polygon points="100,188 40,248 640,248 580,188" fill="rgba(55,138,221,0.15)" stroke="#378ADD" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="14" fill="#85B7EB" x="340" y="220" text-anchor="middle">GESTION DES RESSOURCES</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#378ADD" x="340" y="237" text-anchor="middle">Munitions · Gadgets · HP · Timer du round</text>
+
+      <!-- Layer 4 (base) -->
+      <polygon points="40,252 20,300 660,300 640,252" fill="rgba(29,158,117,0.12)" stroke="#1D9E75" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="14" fill="#5DCAA5" x="340" y="278" text-anchor="middle">AUTOMATISÉ EN FOND</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#1D9E75" x="340" y="294" text-anchor="middle">Recul · Mouvement · Crosshair placement · Positionnement de base</text>
+
+      <!-- Labels right -->
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#555" x="640" y="65" text-anchor="start">Priorité 1</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#555" x="600" y="150" text-anchor="start">Priorité 2</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#555" x="648" y="225" text-anchor="start">Priorité 3</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#555" x="640" y="280" text-anchor="start">Fond</text>
+
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#444" x="340" y="328" text-anchor="middle">La hiérarchie est dynamique — un callout équipe monte en priorité 1 si la menace immédiate est résolue</text>
+    </svg>
+    <p class="diagram-caption">Pyramide d'attention dans R6 — hiérarchie dynamique selon le contexte</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 2 — Simulateur interactif</div>
+  <h2>Entraîne ton scanning de mini-map</h2>
+  <p>La mini-map est la zone la plus négligée par les joueurs intermédiaires. Ce test mesure ta capacité à scanner périodiquement des informations secondaires tout en maintenant un foyer d'attention principal.</p>
+
+  <div class="diagram-wrap">
+    <div style="margin-bottom:12px;font-size:13px;color:var(--gray-text);">Garde ton regard sur la <strong style="color:var(--white);">cible rouge</strong> au centre. Dès que tu vois un point blanc apparaître en périphérie, clique dessus sans perdre la cible centrale de vue.</div>
+    <canvas id="scanCanvas" height="320" style="width:100%;display:block;border-radius:6px;background:rgba(0,0,0,0.3);cursor:crosshair;"></canvas>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:2px;">
+      <div style="background:rgba(0,0,0,0.3);padding:10px 16px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-light);margin-bottom:2px;">Détections</div>
+        <div id="scan-hits" style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--white);">0</div>
+      </div>
+      <div style="background:rgba(0,0,0,0.3);padding:10px 16px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-light);margin-bottom:2px;">Manqués</div>
+        <div id="scan-miss" style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--white);">0</div>
+      </div>
+      <div style="background:rgba(0,0,0,0.3);padding:10px 16px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-light);margin-bottom:2px;">Score</div>
+        <div id="scan-score" style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--white);">—</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:8px;">
+      <button id="scan-start" onclick="startScan()" style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:8px 20px;border:1px solid var(--border);background:transparent;color:var(--gray-text);cursor:pointer;border-radius:4px;">Démarrer</button>
+      <button onclick="stopScan()" style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:8px 20px;border:1px solid rgba(200,48,42,0.3);background:transparent;color:var(--red);cursor:pointer;border-radius:4px;">Stop</button>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 3</div>
+  <h2>Optimiser son allocation d'attention dans R6</h2>
+
+  <div class="impl-grid">
+    <div class="impl-card">
+      <div><div class="impl-tag">Mini-</div><div class="impl-tag-sub">map scan</div></div>
+      <div>
+        <div class="impl-title">La technique du scan périodique — vérifier la mini-map sans perdre le focus</div>
+        <p class="impl-text">Les pros ne regardent pas la mini-map en continu — ils la scannent périodiquement selon un rythme appris. La technique : toutes les 3 à 5 secondes en phase de déplacement, 1 coup d'œil rapide (~150ms) à la mini-map, puis retour immédiat au jeu principal. Ce rythme de scan s'automatise avec la pratique jusqu'à devenir un réflexe inconscient. La clé est de ne jamais rester plus de 200ms sur la mini-map — un regard trop long crée un angle mort sur l'environnement immédiat.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Inattent.</div><div class="impl-tag-sub">blindness</div></div>
+      <div>
+        <div class="impl-title">L'inattentional blindness — ne pas voir ce qu'on ne cherche pas</div>
+        <p class="impl-text">L'inattentional blindness (cécité par inattention) est le phénomène par lequel le cerveau ne perçoit pas consciemment des stimuli pourtant visibles, parce que l'attention est focalisée ailleurs. Dans R6, ça se traduit par "je ne l'ai pas vu" alors que l'ennemi était pleinement visible — son modèle était dans le champ visuel mais pas dans le foyer d'attention. Solution : entraîner le scanning large périphérique plutôt que le focus tunnel sur un seul angle. Les joueurs avancés maintiennent une "attention diffuse" qui couvre davantage de l'écran.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Callouts</div><div class="impl-tag-sub">attention</div></div>
+      <div>
+        <div class="impl-title">Pourquoi les callouts d'équipe libèrent de l'attention</div>
+        <p class="impl-text">Un callout précis ("Jäger angle fenêtre côté escalier") permet à tes coéquipiers de déléguer une partie de leur surveillance à ta perception. Si un équipier couvre un angle et le callout, tu n'as pas besoin d'allouer ta propre attention à cet angle — ton cerveau peut l'exclure du scan actif et dédier cette capacité ailleurs. Les équipes qui calloutent bien jouent effectivement avec plus de capacité attentionnelle collective. C'est la multiplication de la ressource attentionnelle par 5 — le fondement de toute stratégie d'équipe efficace.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Tunnel</div><div class="impl-tag-sub">vision</div></div>
+      <div>
+        <div class="impl-title">Le tunnel vision — quand l'attention se focalise de façon contre-productive</div>
+        <p class="impl-text">Le tunnel vision est la restriction involontaire du foyer attentionnel à un seul élément — généralement un ennemi ou une zone — au détriment de toute autre information. Il survient typiquement sous stress élevé (clutch, timer critique) quand le système limbique prend le dessus et réduit le champ attentionnel comme mécanisme de survie. Dans R6, le tunnel vision sur un ennemi expose souvent à un second ennemi non détecté. La contre-mesure : entraîner la "scan after kill" — un mouvement délibéré de la caméra vers les zones adjacentes immédiatement après chaque élimination.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="next-chapter">
+  <div class="nav-prev"><a href="2-4-game-sense.html" class="nav-cta">← Chapitre 2.4</a></div>
+  <div class="nav-next"><a href="2-6-stress.html" class="nav-cta">Chapitre 2.6 →</a></div>
+</div>
+
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie II · Chapitre 2.5</span>
+</footer>
+
+<script>
+let scanRunning = false, scanTimer = null, dotTimer = null;
+let hits = 0, misses = 0, activeDot = null, dotTimeout = null;
+
+function startScan() {
+  hits = 0; misses = 0;
+  document.getElementById('scan-hits').textContent = '0';
+  document.getElementById('scan-miss').textContent = '0';
+  document.getElementById('scan-score').textContent = '—';
+  scanRunning = true;
+  drawScanBase();
+  scheduleDot();
+  clearTimeout(scanTimer);
+  scanTimer = setTimeout(stopScan, 30000);
+}
+
+function stopScan() {
+  scanRunning = false;
+  clearTimeout(dotTimer);
+  clearTimeout(dotTimeout);
+  activeDot = null;
+  if (hits + misses > 0) {
+    const pct = Math.round(hits / (hits + misses) * 100);
+    document.getElementById('scan-score').textContent = pct + '%';
+  }
+  drawScanBase();
+}
+
+function scheduleDot() {
+  if (!scanRunning) return;
+  const delay = 800 + Math.random() * 1800;
+  dotTimer = setTimeout(spawnDot, delay);
+}
+
+function spawnDot() {
+  if (!scanRunning) return;
+  const canvas = document.getElementById('scanCanvas');
+  const W = canvas.offsetWidth || 820;
+  const H = 320;
+  const margin = 40;
+  const cx = W/2, cy = H/2;
+  let x, y;
+  do {
+    x = margin + Math.random() * (W - margin*2);
+    y = margin + Math.random() * (H - margin*2);
+  } while (Math.hypot(x - cx, y - cy) < 80);
+
+  activeDot = {x, y, born: Date.now()};
+  drawScanBase();
+
+  dotTimeout = setTimeout(() => {
+    if (activeDot) { misses++; document.getElementById('scan-miss').textContent = misses; activeDot = null; drawScanBase(); }
+    scheduleDot();
+  }, 1200);
+}
+
+function drawScanBase() {
+  const canvas = document.getElementById('scanCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 820;
+  canvas.width = W;
+  const H = 320;
+  ctx.clearRect(0, 0, W, H);
+
+  // Center target
+  const cx = W/2, cy = H/2;
+  ctx.beginPath(); ctx.arc(cx, cy, 20, 0, Math.PI*2);
+  ctx.strokeStyle = '#c8302a'; ctx.lineWidth = 2; ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI*2);
+  ctx.fillStyle = '#c8302a'; ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(cx-30,cy); ctx.lineTo(cx-22,cy);
+  ctx.moveTo(cx+22,cy); ctx.lineTo(cx+30,cy);
+  ctx.moveTo(cx,cy-30); ctx.lineTo(cx,cy-22);
+  ctx.moveTo(cx,cy+22); ctx.lineTo(cx,cy+30);
+  ctx.strokeStyle = 'rgba(200,48,42,0.5)'; ctx.lineWidth = 1; ctx.stroke();
+
+  if (!scanRunning) {
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.font = "14px 'Barlow Condensed', sans-serif";
+    ctx.textAlign = 'center';
+    ctx.fillText('Clique sur Démarrer pour commencer', cx, cy + 60);
+    return;
+  }
+
+  // Timer
+  ctx.fillStyle = '#555';
+  ctx.font = "11px 'Barlow Condensed', sans-serif";
+  ctx.textAlign = 'left';
+  ctx.fillText('Durée : 30s — Détecte les points blancs sans quitter la cible rouge des yeux', 12, 20);
+
+  // Active dot
+  if (activeDot) {
+    const age = (Date.now() - activeDot.born) / 1200;
+    const alpha = 1 - age * 0.3;
+    ctx.beginPath(); ctx.arc(activeDot.x, activeDot.y, 12, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(245,242,237,${alpha})`; ctx.fill();
+    ctx.strokeStyle = `rgba(200,48,42,${alpha})`; ctx.lineWidth = 2; ctx.stroke();
+  }
+}
+
+function handleScanClick(e) {
+  if (!scanRunning || !activeDot) return;
+  const canvas = document.getElementById('scanCanvas');
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+  const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+  const dist = Math.hypot(x - activeDot.x, y - activeDot.y);
+  if (dist < 30) {
+    hits++;
+    document.getElementById('scan-hits').textContent = hits;
+    clearTimeout(dotTimeout);
+    activeDot = null;
+    drawScanBase();
+    scheduleDot();
+  }
+}
+
+window.addEventListener('load', () => {
+  const canvas = document.getElementById('scanCanvas');
+  if (canvas) { canvas.addEventListener('click', handleScanClick); drawScanBase(); }
+});
+window.addEventListener('resize', drawScanBase);
+</script>
+</body>
+</html>
