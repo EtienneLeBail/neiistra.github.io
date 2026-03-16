@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>6.1 Pratique Délibérée — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+  .chapter-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .chapter-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%); }
+  .chapter-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .chapter-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .chapter-number { font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px,15vw,180px); line-height: 0.85; color: rgba(255,255,255,0.04); position: absolute; right: 48px; top: 80px; pointer-events: none; }
+  .chapter-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px,7vw,80px); letter-spacing: 2px; line-height: 1; margin-bottom: 12px; position: relative; }
+  .chapter-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 40px; position: relative; }
+  .chapter-meta { display: flex; gap: 32px; flex-wrap: wrap; position: relative; }
+  .meta-pill { background: var(--gray); border: 1px solid var(--border); border-radius: 4px; padding: 8px 16px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .meta-pill span { color: var(--white); margin-left: 6px; }
+  .content { max-width: 900px; margin: 0 auto; padding: 64px 48px; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; line-height: 1; }
+  p { font-size: 15px; color: var(--gray-text); line-height: 1.8; margin-bottom: 16px; }
+  p strong { color: var(--white); font-weight: 500; }
+  .highlight-box { background: var(--gray); border-left: 3px solid var(--red); padding: 20px 24px; margin: 24px 0; border-radius: 0 6px 6px 0; }
+  .highlight-box p { margin: 0; color: var(--white); font-size: 14px; line-height: 1.7; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .diagram-wrap { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin: 32px 0; overflow-x: auto; }
+  .diagram-caption { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 16px; text-align: center; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; margin: 32px 0; }
+  .stat-box { background: var(--gray); padding: 24px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 2px; line-height: 1; color: var(--white); }
+  .stat-num span { color: var(--red); }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .impl-grid { display: flex; flex-direction: column; gap: 2px; margin: 32px 0; }
+  .impl-card { background: var(--gray); padding: 24px 28px; display: grid; grid-template-columns: 120px 1fr; gap: 24px; align-items: start; transition: background 0.2s; }
+  .impl-card:hover { background: var(--gray-mid); }
+  .impl-tag { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: var(--red); line-height: 1; }
+  .impl-tag-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 4px; }
+  .impl-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 6px; }
+  .impl-text { font-size: 13px; color: var(--gray-text); line-height: 1.7; margin: 0; }
+  .sim-btn { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; padding: 7px 14px; border: 1px solid var(--border); background: transparent; color: var(--gray-text); cursor: pointer; border-radius: 4px; transition: all 0.2s; }
+  .sim-btn.active, .sim-btn:hover { border-color: var(--red); color: var(--white); background: rgba(200,48,42,0.1); }
+  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; display: inline-block; }
+  .nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .nav-prev { flex: 1; } .nav-next { flex: 1; text-align: right; }
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .chapter-eyebrow{animation:fadeUp .6s ease both;} .chapter-title{animation:fadeUp .6s .1s ease both;} .chapter-subtitle{animation:fadeUp .6s .2s ease both;} .chapter-meta{animation:fadeUp .6s .3s ease both;}
+  @media(max-width:768px){ nav{padding:0 24px;} .chapter-hero{padding:100px 24px 48px;} .content{padding:48px 24px;} .stat-grid{grid-template-columns:repeat(2,1fr);} .impl-card{grid-template-columns:1fr;gap:8px;} .next-chapter{flex-direction:column;gap:24px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="../index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+<section class="chapter-hero">
+  <div class="chapter-eyebrow">Partie VI — Méthodologie d'entraînement</div>
+  <div class="chapter-number">6.1</div>
+  <h1 class="chapter-title">Pratique Délibérée</h1>
+  <p class="chapter-subtitle">vs pratique passive — la différence qui change tout</p>
+  <div class="chapter-meta">
+    <div class="meta-pill">Partie <span>VI</span></div>
+    <div class="meta-pill">Chapitre <span>6.1</span></div>
+    <div class="meta-pill">Niveau <span>Tous niveaux</span></div>
+  </div>
+</section>
+<div class="content">
+  <div class="section-label">Introduction</div>
+  <h2>Jouer plus ne veut pas dire progresser plus</h2>
+  <p>C'est le mythe le plus répandu dans la communauté R6 : "il faut juste jouer plus pour s'améliorer." La réalité neurologique est bien plus précise. Anders Ericsson, le chercheur à l'origine de la règle des 10 000 heures, a été explicite là-dessus : <strong>ce n'est pas le nombre d'heures qui compte, c'est la qualité de la pratique</strong>. 3 000 heures de pratique délibérée valent mieux que 10 000 heures de pratique passive.</p>
+  <p>Ce chapitre définit précisément la différence entre les deux types de pratique et comment basculer vers une pratique délibérée dans R6.</p>
+
+  <div class="stat-grid">
+    <div class="stat-box"><span class="stat-num">10<span>k</span></span><span class="stat-label">Heures — mythe déconstruit</span></div>
+    <div class="stat-box"><span class="stat-num">3<span>crit.</span></span><span class="stat-label">Objectif · Feedback · Correction</span></div>
+    <div class="stat-box"><span class="stat-num">~45<span>min</span></span><span class="stat-label">Session délibérée max</span></div>
+    <div class="stat-box"><span class="stat-num">VOD<span></span></span><span class="stat-label">Outil de feedback n°1</span></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 1</div>
+  <h2>Pratique passive vs délibérée — la comparaison</h2>
+
+  <div class="diagram-wrap">
+    <svg width="100%" viewBox="0 0 680 280" xmlns="http://www.w3.org/2000/svg">
+      <!-- Headers -->
+      <rect x="20" y="20" width="300" height="240" rx="8" fill="rgba(200,48,42,0.05)" stroke="rgba(200,48,42,0.2)" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="18" fill="#c8302a" x="170" y="50" text-anchor="middle" letter-spacing="2">PRATIQUE PASSIVE</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="170" y="68" text-anchor="middle">Ce que font la plupart des joueurs</text>
+      <line x1="40" y1="78" x2="300" y2="78" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#F09595" x="50" y="102">✗  Joue en pilote automatique</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#F09595" x="50" y="126">✗  Pas d'objectif défini par session</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#F09595" x="50" y="150">✗  Répète les mêmes erreurs</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#F09595" x="50" y="174">✗  Encode ses mauvaises habitudes</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#F09595" x="50" y="198">✗  Progression plateau rapide</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#F09595" x="50" y="222">✗  "Je joue pour m'amuser"</text>
+
+      <rect x="360" y="20" width="300" height="240" rx="8" fill="rgba(29,158,117,0.05)" stroke="rgba(29,158,117,0.2)" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="18" fill="#1D9E75" x="510" y="50" text-anchor="middle" letter-spacing="2">PRATIQUE DÉLIBÉRÉE</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="510" y="68" text-anchor="middle">Ce que font les joueurs qui progressent</text>
+      <line x1="380" y1="78" x2="640" y2="78" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#5DCAA5" x="390" y="102">✓  Objectif spécifique chaque session</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#5DCAA5" x="390" y="126">✓  Feedback immédiat sur les erreurs</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#5DCAA5" x="390" y="150">✓  Correction active en temps réel</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#5DCAA5" x="390" y="174">✓  Travail dans la zone d'inconfort</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#5DCAA5" x="390" y="198">✓  Progression continue</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#5DCAA5" x="390" y="222">✓  Fatigue cognitive après la session</text>
+    </svg>
+    <p class="diagram-caption">Pratique passive vs délibérée — les 6 différences fondamentales</p>
+  </div>
+
+  <div class="highlight-box">
+    <p>La pratique délibérée est <strong>inconfortable par nature</strong>. Si tu termines une session d'entraînement sans t'être senti en difficulté à un moment, tu n'as pas pratiqué de façon délibérée — tu as joué. Les sessions de pratique délibérée sont mentalement épuisantes et durent rarement plus de 45 minutes à haute intensité.</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 2 — Simulateur interactif</div>
+  <h2>Évalue ta session — délibérée ou passive ?</h2>
+  <p>Réponds aux questions suivantes sur ta dernière session de jeu.</p>
+
+  <div class="diagram-wrap">
+    <div id="pd-questions" style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;"></div>
+    <div style="background:rgba(0,0,0,0.3);border-radius:8px;padding:20px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);">Score de pratique délibérée</span>
+        <span id="pd-score" style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--white);">—</span>
+      </div>
+      <div style="height:10px;background:var(--gray-mid);border-radius:5px;overflow:hidden;margin-bottom:12px;">
+        <div id="pd-bar" style="height:100%;border-radius:5px;background:var(--red);width:0%;transition:width 0.4s ease,background 0.4s ease;"></div>
+      </div>
+      <div id="pd-verdict" style="font-size:13px;color:var(--gray-text);line-height:1.6;"></div>
+    </div>
+    <p class="diagram-caption">Auto-diagnostic de ta pratique — honnêteté requise</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 3</div>
+  <h2>Comment passer à la pratique délibérée dans R6</h2>
+
+  <div class="impl-grid">
+    <div class="impl-card">
+      <div><div class="impl-tag">Objec-</div><div class="impl-tag-sub">tif session</div></div>
+      <div>
+        <div class="impl-title">Définir un objectif unique et mesurable avant chaque session</div>
+        <p class="impl-text">Avant de lancer R6, définis un objectif précis pour la session. Pas "jouer mieux" — mais "vérifier systématiquement 3 angles avant d'entrer dans chaque pièce" ou "ne jamais recharger en position exposée" ou "callout chaque position ennemie vue en drone". Un seul objectif par session, mesurable, et spécifique à R6. À la fin de la session, évalue si tu l'as tenu. Cette discipline transforme chaque partie en données plutôt qu'en simple résultat W/L.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Zone</div><div class="impl-tag-sub">inconfort</div></div>
+      <div>
+        <div class="impl-title">Travailler dans la zone d'inconfort — pas dans la zone de confort</div>
+        <p class="impl-text">La zone de confort dans R6 c'est jouer les maps que tu connais bien, avec les opérateurs que tu maîtrises, contre des adversaires de ton niveau ou en dessous. C'est agréable mais ne génère pas de progression. La zone de développement : jouer des maps que tu connais mal, essayer des opérateurs inhabituels en custom, regarder des replays de tes morts les plus frustrantes. L'inconfort cognitif est le signal que le cerveau est en train de créer de nouvelles connexions. Sans inconfort, pas d'adaptation.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Feed-</div><div class="impl-tag-sub">back boucle</div></div>
+      <div>
+        <div class="impl-title">La boucle de feedback — l'élément le plus souvent manquant</div>
+        <p class="impl-text">La pratique délibérée exige un feedback immédiat sur chaque action. En R6, ce feedback existe mais est ignoré : chaque mort te montre comment l'ennemi t'a tué, depuis quelle position, avec quelle arme. Chaque mort est un feedback direct sur une erreur de positionnement, d'angle management, ou de décision. La pratique délibérée consiste à transformer ce feedback en question : "pourquoi j'étais dans cette situation ?" et à intégrer la réponse avant le round suivant — pas deux semaines plus tard.</p>
+      </div>
+    </div>
+  </div>
+
+<script>
+const pdQuestions = [
+  {q: "Avais-tu un objectif d'amélioration précis défini avant la session ?", score:20},
+  {q: "As-tu analysé au moins une de tes morts pour en comprendre la cause tactique ?", score:20},
+  {q: "As-tu travaillé quelque chose qui t'était inconfortable ou difficile ?", score:20},
+  {q: "As-tu été mentalement fatigué à un moment de la session (pas physiquement) ?", score:20},
+  {q: "As-tu changé quelque chose à ton comportement après avoir constaté une erreur répétée ?", score:20},
+];
+let pdAnswers = new Array(pdQuestions.length).fill(null);
+
+function buildPD() {
+  const cont = document.getElementById('pd-questions');
+  pdQuestions.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.style.cssText = 'background:var(--gray);border-radius:6px;padding:16px 20px;';
+    div.innerHTML = `
+      <div style="font-size:13px;color:var(--white);margin-bottom:10px;">${q.q}</div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="answerPD(${i},true,this)" style="font-family:Barlow Condensed,sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border:1px solid var(--border);background:transparent;color:var(--gray-text);cursor:pointer;border-radius:4px;flex:1;transition:all 0.2s;">Oui</button>
+        <button onclick="answerPD(${i},false,this)" style="font-family:Barlow Condensed,sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border:1px solid var(--border);background:transparent;color:var(--gray-text);cursor:pointer;border-radius:4px;flex:1;transition:all 0.2s;">Non</button>
+      </div>`;
+    cont.appendChild(div);
+  });
+}
+
+function answerPD(i, val, btn) {
+  pdAnswers[i] = val;
+  const parent = btn.parentElement;
+  parent.querySelectorAll('button').forEach(b => { b.style.borderColor='var(--border)'; b.style.color='var(--gray-text)'; b.style.background='transparent'; });
+  btn.style.borderColor = val ? '#1D9E75' : '#c8302a';
+  btn.style.color = val ? '#5DCAA5' : '#F09595';
+  btn.style.background = val ? 'rgba(29,158,117,0.1)' : 'rgba(200,48,42,0.1)';
+  const answered = pdAnswers.filter(a => a !== null).length;
+  if (answered === pdQuestions.length) updatePDScore();
+}
+
+function updatePDScore() {
+  const total = pdAnswers.filter(a => a === true).length * 20;
+  document.getElementById('pd-score').textContent = total + '%';
+  const bar = document.getElementById('pd-bar');
+  bar.style.width = total + '%';
+  bar.style.background = total >= 60 ? '#1D9E75' : total >= 40 ? '#EF9F27' : '#c8302a';
+  const verdicts = {
+    0: 'Session entièrement passive — tu as joué, pas progressé. Aucun des mécanismes de la pratique délibérée n'était présent. Fixe-toi un objectif précis avant ta prochaine session.',
+    20: 'Pratique quasi-passive — une légère intention de progression mais sans structure. Commence par définir un objectif unique avant chaque session.',
+    40: 'Pratique mixte — tu as quelques réflexes de progression mais sans cohérence. Travaille la boucle de feedback : analyse tes morts immédiatement.',
+    60: 'Pratique semi-délibérée — bonne base. Tu progresses, mais il y a encore des sessions entières en pilote automatique. Maintiens l'inconfort.',
+    80: 'Pratique délibérée soutenue — tu progresses efficacement. Assure-toi de varier tes objectifs pour ne pas stagnant sur les mêmes axes.',
+    100: 'Pratique délibérée complète — profil de joueur qui progresse très rapidement. Maintiens cette discipline et elle deviendra naturelle.',
+  };
+  document.getElementById('pd-verdict').textContent = verdicts[total] || verdicts[100];
+}
+window.addEventListener('load', buildPD);
+</script></div>
+<div class="next-chapter">
+  <div class="nav-prev"><a href="../partie-5/5-6-clutch-strategy.html" class="nav-cta">← Partie V</a></div>
+  <div class="nav-next"><a href="6-2-structure-sessions.html" class="nav-cta">Chapitre 6.2 →</a></div>
+</div>
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie VI · Chapitre 6.1</span>
+</footer>
+</body>
+</html>
