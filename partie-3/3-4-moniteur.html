@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.4 Moniteur &amp; Input Lag — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --red-dim: #8a1f1a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+  .chapter-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .chapter-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%); }
+  .chapter-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .chapter-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .chapter-number { font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px,15vw,180px); line-height: 0.85; color: rgba(255,255,255,0.04); position: absolute; right: 48px; top: 80px; pointer-events: none; }
+  .chapter-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px,7vw,80px); letter-spacing: 2px; line-height: 1; margin-bottom: 12px; position: relative; }
+  .chapter-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 40px; position: relative; }
+  .chapter-meta { display: flex; gap: 32px; flex-wrap: wrap; position: relative; }
+  .meta-pill { background: var(--gray); border: 1px solid var(--border); border-radius: 4px; padding: 8px 16px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .meta-pill span { color: var(--white); margin-left: 6px; }
+  .content { max-width: 900px; margin: 0 auto; padding: 64px 48px; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; line-height: 1; }
+  p { font-size: 15px; color: var(--gray-text); line-height: 1.8; margin-bottom: 16px; }
+  p strong { color: var(--white); font-weight: 500; }
+  .highlight-box { background: var(--gray); border-left: 3px solid var(--red); padding: 20px 24px; margin: 24px 0; border-radius: 0 6px 6px 0; }
+  .highlight-box p { margin: 0; color: var(--white); font-size: 14px; line-height: 1.7; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .diagram-wrap { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin: 32px 0; overflow-x: auto; }
+  .diagram-caption { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 16px; text-align: center; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; margin: 32px 0; }
+  .stat-box { background: var(--gray); padding: 24px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 2px; line-height: 1; color: var(--white); }
+  .stat-num span { color: var(--red); }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .impl-grid { display: flex; flex-direction: column; gap: 2px; margin: 32px 0; }
+  .impl-card { background: var(--gray); padding: 24px 28px; display: grid; grid-template-columns: 120px 1fr; gap: 24px; align-items: start; transition: background 0.2s; }
+  .impl-card:hover { background: var(--gray-mid); }
+  .impl-tag { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: var(--red); line-height: 1; }
+  .impl-tag-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 4px; }
+  .impl-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 6px; }
+  .impl-text { font-size: 13px; color: var(--gray-text); line-height: 1.7; margin: 0; }
+  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; display: inline-block; }
+  .nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .nav-prev { flex: 1; } .nav-next { flex: 1; text-align: right; }
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .chapter-eyebrow{animation:fadeUp .6s ease both;} .chapter-title{animation:fadeUp .6s .1s ease both;} .chapter-subtitle{animation:fadeUp .6s .2s ease both;} .chapter-meta{animation:fadeUp .6s .3s ease both;}
+  @media(max-width:768px){ nav{padding:0 24px;} .chapter-hero{padding:100px 24px 48px;} .content{padding:48px 24px;} .stat-grid{grid-template-columns:repeat(2,1fr);} .impl-card{grid-template-columns:1fr;gap:8px;} .next-chapter{flex-direction:column;gap:24px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="../index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+<section class="chapter-hero">
+  <div class="chapter-eyebrow">Partie III — Biomécanique &amp; Hardware</div>
+  <div class="chapter-number">3.4</div>
+  <h1 class="chapter-title">Moniteur &amp; Input Lag</h1>
+  <p class="chapter-subtitle">Temps de réponse, dalle &amp; latence totale de la chaîne</p>
+  <div class="chapter-meta">
+    <div class="meta-pill">Partie <span>III</span></div>
+    <div class="meta-pill">Chapitre <span>3.4</span></div>
+    <div class="meta-pill">Niveau <span>Tous niveaux</span></div>
+  </div>
+</section>
+<div class="content">
+
+  <div class="section-label">Introduction</div>
+  <h2>Le moniteur est le dernier maillon — et souvent le plus négligé</h2>
+  <p>Le pipeline complet entre ton input et ce que tu vois à l'écran comprend : souris → CPU → GPU → moniteur → tes yeux. Beaucoup de joueurs investissent massivement dans le CPU et le GPU mais négligent le moniteur — le dernier maillon qui peut annuler tous les gains des autres composants.</p>
+
+  <div class="stat-grid">
+    <div class="stat-box"><span class="stat-num">1<span>ms</span></span><span class="stat-label">GtG dalle TN</span></div>
+    <div class="stat-box"><span class="stat-num">4<span>ms</span></span><span class="stat-label">GtG dalle IPS</span></div>
+    <div class="stat-box"><span class="stat-num">360<span>Hz</span></span><span class="stat-label">Fréquence max actuelle</span></div>
+    <div class="stat-box"><span class="stat-num">~5<span>ms</span></span><span class="stat-label">Latence totale typique</span></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 1</div>
+  <h2>Types de dalles — TN, IPS, VA, OLED pour R6</h2>
+  <p>Chaque technologie de dalle offre des compromis différents entre temps de réponse, qualité d'image et latence. Pour R6 compétitif, la priorité est claire : <strong>temps de réponse et fréquence de rafraîchissement priment sur la qualité des couleurs</strong>.</p>
+
+  <div class="diagram-wrap">
+    <svg width="100%" viewBox="0 0 680 260" xmlns="http://www.w3.org/2000/svg">
+      <text font-family="'Bebas Neue',sans-serif" font-size="13" fill="#555" x="340" y="20" text-anchor="middle" letter-spacing="2">COMPARAISON DES DALLES POUR R6</text>
+      <!-- Headers -->
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#555" x="40" y="44" letter-spacing="1">TYPE</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#555" x="180" y="44" text-anchor="middle" letter-spacing="1">GtG (ms)</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#555" x="310" y="44" text-anchor="middle" letter-spacing="1">Max Hz</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#555" x="430" y="44" text-anchor="middle" letter-spacing="1">Couleurs</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#555" x="570" y="44" text-anchor="middle" letter-spacing="1">R6 Verdict</text>
+      <line x1="40" y1="50" x2="640" y2="50" stroke="var(--border)" stroke-width="0.5"/>
+
+      <!-- TN -->
+      <text font-family="'Bebas Neue',sans-serif" font-size="16" fill="#EF9F27" x="40" y="78">TN</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="13" fill="#1D9E75" x="180" y="78" text-anchor="middle">1ms</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="13" fill="#1D9E75" x="310" y="78" text-anchor="middle">360Hz</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="13" fill="#c8302a" x="430" y="78" text-anchor="middle">Médiocres</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#EF9F27" x="570" y="78" text-anchor="middle">Compétitif</text>
+      <line x1="40" y1="88" x2="640" y2="88" stroke="var(--border)" stroke-width="0.5"/>
+
+      <!-- IPS -->
+      <text font-family="'Bebas Neue',sans-serif" font-size="16" fill="#1D9E75" x="40" y="116">IPS</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="13" fill="#EF9F27" x="180" y="116" text-anchor="middle">1-4ms</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="13" fill="#1D9E75" x="310" y="116" text-anchor="middle">360Hz</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="13" fill="#1D9E75" x="430" y="116" text-anchor="middle">Excellentes</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#1D9E75" x="570" y="116" text-anchor="middle">Meilleur compromis</text>
+      <line x1="40" y1="126" x2="640" y2="126" stroke="var(--border)" stroke-width="0.5"/>
+
+      <!-- VA -->
+      <text font-family="'Bebas Neue',sans-serif" font-size="16" fill="#888" x="40" y="154">VA</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="13" fill="#c8302a" x="180" y="154" text-anchor="middle">4-8ms</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="13" fill="#EF9F27" x="310" y="154" text-anchor="middle">240Hz</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="13" fill="#1D9E75" x="430" y="154" text-anchor="middle">Très bonnes</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#c8302a" x="570" y="154" text-anchor="middle">Déconseillé R6</text>
+      <line x1="40" y1="164" x2="640" y2="164" stroke="var(--border)" stroke-width="0.5"/>
+
+      <!-- OLED -->
+      <text font-family="'Bebas Neue',sans-serif" font-size="16" fill="#7F77DD" x="40" y="192">OLED</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="13" fill="#1D9E75" x="180" y="192" text-anchor="middle">0.03ms</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="13" fill="#1D9E75" x="310" y="192" text-anchor="middle">480Hz</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="13" fill="#1D9E75" x="430" y="192" text-anchor="middle">Parfaites</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#7F77DD" x="570" y="192" text-anchor="middle">Idéal (prix élevé)</text>
+      <line x1="40" y1="202" x2="640" y2="202" stroke="var(--border)" stroke-width="0.5"/>
+
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#444" x="340" y="240" text-anchor="middle">GtG = Gray to Gray — temps de changement d'un pixel de gris à gris. Mesure réelle de réactivité.</text>
+    </svg>
+    <p class="diagram-caption">Comparaison des technologies de dalle pour R6 Siege</p>
+  </div>
+
+  <div class="highlight-box">
+    <p>En 2026, la recommandation pour R6 compétitif est un <strong>moniteur IPS 240Hz ou 360Hz</strong>. L'IPS offre la même réactivité que le TN mais avec des couleurs qui permettent de mieux distinguer les ennemis dans des zones sombres. Le VA est à éviter absolument — son temps de réponse lent crée du ghosting sur les ennemis en mouvement rapide.</p>
+  </div>
+
+  <div class="impl-grid">
+    <div class="impl-card">
+      <div><div class="impl-tag">Over-</div><div class="impl-tag-sub">drive</div></div>
+      <div>
+        <div class="impl-title">L'overdrive — accélérer la dalle sans créer d'overshoot</div>
+        <p class="impl-text">L'overdrive est une tension électrique supplémentaire appliquée aux pixels pour accélérer leur changement d'état. Un overdrive trop faible laisse du ghosting (traîne visible). Un overdrive trop fort crée de l'inverse ghosting (halo clair devant les objets sombres en mouvement). Le réglage optimal est spécifique à chaque moniteur et fréquence de rafraîchissement — certains moniteurs ajustent automatiquement l'overdrive selon le Hz sélectionné. En R6, le ghosting sur un ennemi qui court peut masquer sa hitbox pendant quelques frames.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">G-Sync</div><div class="impl-tag-sub">FreeSync</div></div>
+      <div>
+        <div class="impl-title">G-Sync et FreeSync — utiles pour R6 ou inutiles ?</div>
+        <p class="impl-text">G-Sync et FreeSync synchronisent le moniteur avec le GPU pour éliminer le screen tearing sans V-Sync. Pour R6, leur utilité est limitée si ton GPU maintient un framerate supérieur à 200fps en permanence — la plage VRR ne s'active que si le framerate est dans la plage du moniteur. En pratique : active G-Sync/FreeSync si ton GPU a des drops occasionnels sous 200fps. Désactive si tu joues constamment au-dessus de 200fps — le mode fixe a une latence légèrement inférieure. Dans les deux cas, V-Sync doit rester DÉSACTIVÉ.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="next-chapter">
+  <div class="nav-prev"><a href="3-3-souris.html" class="nav-cta">← Précédent</a></div>
+  <div class="nav-next"><a href="3-5-ergonomie.html" class="nav-cta">Suivant →</a></div>
+</div>
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie III · Chapitre 3.4</span>
+</footer>
+
+</body>
+</html>
