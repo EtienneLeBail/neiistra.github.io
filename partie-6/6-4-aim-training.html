@@ -146,6 +146,270 @@
     </div>
   </div>
 </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 3 — Tracker interactif</div>
+  <h2>Suis ta progression hebdomadaire</h2>
+  <p>Entre tes scores Kovaak's ou Aimlabs chaque semaine sur les mêmes scénarios. Le tracker calcule ta tendance sur la durée — c'est la seule mesure objective de ta progression en aim training.</p>
+
+  <div class="diagram-wrap">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;align-items:end;">
+      <div>
+        <label style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);display:block;margin-bottom:8px;">Scénario</label>
+        <select id="tracker-scenario" style="width:100%;padding:10px 14px;background:var(--gray-mid);border:1px solid var(--border);color:var(--white);font-family:'Barlow Condensed',sans-serif;font-size:13px;border-radius:4px;">
+          <option value="tracking">Close-range tracking</option>
+          <option value="micro">Micro-adjustment</option>
+          <option value="click">Click timing</option>
+          <option value="custom">Scénario personnalisé</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);display:block;margin-bottom:8px;">Score cette semaine</label>
+        <input type="number" id="tracker-score" placeholder="ex: 8450" min="0" max="999999"
+          style="width:100%;padding:10px 14px;background:var(--gray-mid);border:1px solid var(--border);color:var(--white);font-family:'Barlow Condensed',sans-serif;font-size:13px;border-radius:4px;">
+      </div>
+      <div>
+        <button onclick="addScore()" style="width:100%;padding:11px 14px;background:rgba(200,48,42,0.15);border:1px solid var(--red);color:var(--red);font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:4px;transition:all 0.2s;">
+          Ajouter
+        </button>
+      </div>
+    </div>
+
+    <canvas id="trackerCanvas" height="240" style="width:100%;display:block;border-radius:6px;background:rgba(0,0,0,0.15);"></canvas>
+
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:2px;">
+      <div style="background:rgba(0,0,0,0.3);padding:10px 16px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-light);margin-bottom:2px;">Entrées</div>
+        <div id="tracker-count" style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--white);">0</div>
+      </div>
+      <div style="background:rgba(0,0,0,0.3);padding:10px 16px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-light);margin-bottom:2px;">Meilleur score</div>
+        <div id="tracker-best" style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--white);">—</div>
+      </div>
+      <div style="background:rgba(0,0,0,0.3);padding:10px 16px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-light);margin-bottom:2px;">Tendance</div>
+        <div id="tracker-trend" style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--white);">—</div>
+      </div>
+      <div style="background:rgba(0,0,0,0.3);padding:10px 16px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-light);margin-bottom:2px;">Progression</div>
+        <div id="tracker-progress" style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--white);">—</div>
+      </div>
+    </div>
+
+    <div id="tracker-log" style="margin-top:2px;max-height:160px;overflow-y:auto;display:flex;flex-direction:column;gap:1px;"></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:8px;">
+      <button onclick="clearScores()" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:var(--gray-light);cursor:pointer;border-radius:4px;">Effacer les données</button>
+    </div>
+    <p class="diagram-caption">Tracker personnel — données stockées localement dans ton navigateur</p>
+  </div>
+
+<script>
+// Load saved data
+function getKey() {
+  return 'aim_tracker_' + (document.getElementById('tracker-scenario')?.value || 'tracking');
+}
+
+function loadScores() {
+  try {
+    const raw = localStorage.getItem(getKey());
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+
+function saveScores(scores) {
+  try { localStorage.setItem(getKey(), JSON.stringify(scores)); } catch(e) {}
+}
+
+function addScore() {
+  const val = parseInt(document.getElementById('tracker-score').value);
+  if(!val || val <= 0) return;
+  const scores = loadScores();
+  const now = new Date();
+  const label = 'S' + (scores.length + 1) + ' (' + now.getDate() + '/' + (now.getMonth()+1) + ')';
+  scores.push({ score: val, label, date: now.toISOString() });
+  saveScores(scores);
+  document.getElementById('tracker-score').value = '';
+  renderTracker();
+}
+
+function clearScores() {
+  if(!confirm('Effacer toutes les entrées pour ce scénario ?')) return;
+  localStorage.removeItem(getKey());
+  renderTracker();
+}
+
+function renderTracker() {
+  const scores = loadScores();
+  drawTrackerCanvas(scores);
+  updateTrackerStats(scores);
+  renderLog(scores);
+}
+
+function drawTrackerCanvas(scores) {
+  const canvas = document.getElementById('trackerCanvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 820;
+  canvas.width = W;
+  const H = 240;
+  ctx.clearRect(0,0,W,H);
+
+  if(scores.length === 0) {
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.font = "13px 'Barlow Condensed', sans-serif";
+    ctx.textAlign = 'center';
+    ctx.fillText('Ajoute ton premier score pour démarrer le suivi', W/2, H/2);
+    return;
+  }
+
+  const padL=50, padR=20, padT=20, padB=50;
+  const cW=W-padL-padR, cH=H-padT-padB;
+  const vals = scores.map(s=>s.score);
+  const minV = Math.min(...vals) * 0.95;
+  const maxV = Math.max(...vals) * 1.05;
+  const range = maxV - minV || 1;
+
+  // Grid lines
+  [0,0.25,0.5,0.75,1].forEach(t => {
+    const y = padT + cH * (1-t);
+    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
+    const val = Math.round(minV + t * range);
+    ctx.fillStyle = '#444';
+    ctx.font = "10px 'Barlow Condensed', sans-serif";
+    ctx.textAlign = 'right';
+    ctx.fillText(val.toLocaleString(), padL-6, y+4);
+  });
+
+  if(scores.length < 2) {
+    const x = padL + cW/2;
+    const y = padT + cH - ((vals[0]-minV)/range)*cH;
+    ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI*2);
+    ctx.fillStyle = '#c8302a'; ctx.fill();
+    ctx.fillStyle = '#888';
+    ctx.font = "10px 'Barlow Condensed', sans-serif";
+    ctx.textAlign = 'center';
+    ctx.fillText(scores[0].label, x, H-padB+18);
+    return;
+  }
+
+  // Gradient area fill
+  const grad = ctx.createLinearGradient(0, padT, 0, padT+cH);
+  grad.addColorStop(0, 'rgba(200,48,42,0.3)');
+  grad.addColorStop(1, 'rgba(200,48,42,0.02)');
+  ctx.beginPath();
+  scores.forEach((s,i) => {
+    const x = padL + (i/(scores.length-1))*cW;
+    const y = padT + cH - ((s.score-minV)/range)*cH;
+    i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  });
+  ctx.lineTo(padL+cW, padT+cH);
+  ctx.lineTo(padL, padT+cH);
+  ctx.closePath();
+  ctx.fillStyle = grad; ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  scores.forEach((s,i) => {
+    const x = padL + (i/(scores.length-1))*cW;
+    const y = padT + cH - ((s.score-minV)/range)*cH;
+    i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  });
+  ctx.strokeStyle = '#c8302a'; ctx.lineWidth = 2.5; ctx.stroke();
+
+  // Trend line (linear regression)
+  if(scores.length >= 3) {
+    const n = scores.length;
+    const xs = scores.map((_,i)=>i);
+    const ys = scores.map(s=>s.score);
+    const mx = xs.reduce((a,b)=>a+b)/n;
+    const my = ys.reduce((a,b)=>a+b)/n;
+    const num = xs.reduce((s,x,i)=>s+(x-mx)*(ys[i]-my),0);
+    const den = xs.reduce((s,x)=>s+(x-mx)**2,0);
+    const slope = den ? num/den : 0;
+    const intercept = my - slope*mx;
+
+    const x0=padL, x1=padL+cW;
+    const y0=padT+cH-((intercept-minV)/range)*cH;
+    const y1=padT+cH-((intercept+slope*(n-1)-minV)/range)*cH;
+    ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1);
+    ctx.strokeStyle = slope>0 ? 'rgba(29,158,117,0.5)' : 'rgba(239,159,39,0.5)';
+    ctx.lineWidth=1.5; ctx.setLineDash([6,4]); ctx.stroke(); ctx.setLineDash([]);
+  }
+
+  // Dots + labels
+  scores.forEach((s,i) => {
+    const x = padL + (i/(scores.length-1))*cW;
+    const y = padT + cH - ((s.score-minV)/range)*cH;
+    const isMax = s.score === Math.max(...vals);
+    ctx.beginPath(); ctx.arc(x,y,isMax?6:4,0,Math.PI*2);
+    ctx.fillStyle = isMax ? '#1D9E75' : '#f5f2ed'; ctx.fill();
+    ctx.fillStyle = '#666';
+    ctx.font = "9px 'Barlow Condensed', sans-serif";
+    ctx.textAlign = 'center';
+    ctx.fillText(s.label, x, H-padB+18);
+  });
+}
+
+function updateTrackerStats(scores) {
+  document.getElementById('tracker-count').textContent = scores.length;
+
+  if(scores.length === 0) {
+    ['tracker-best','tracker-trend','tracker-progress'].forEach(id => {
+      document.getElementById(id).textContent = '—';
+      document.getElementById(id).style.color = 'var(--white)';
+    });
+    return;
+  }
+
+  const vals = scores.map(s=>s.score);
+  const best = Math.max(...vals);
+  document.getElementById('tracker-best').textContent = best.toLocaleString();
+
+  if(scores.length >= 2) {
+    const recent = vals.slice(-3);
+    const old = vals.slice(0, Math.max(1, vals.length-3));
+    const recentAvg = recent.reduce((a,b)=>a+b)/recent.length;
+    const oldAvg = old.reduce((a,b)=>a+b)/old.length;
+    const diff = recentAvg - oldAvg;
+    const pct = Math.round((diff/oldAvg)*100);
+    const trendEl = document.getElementById('tracker-trend');
+    trendEl.textContent = (diff>0?'+':'')+pct+'%';
+    trendEl.style.color = diff>0?'#1D9E75':diff<0?'#c8302a':'#EF9F27';
+
+    const first = vals[0], last = vals[vals.length-1];
+    const totalPct = Math.round(((last-first)/first)*100);
+    const progEl = document.getElementById('tracker-progress');
+    progEl.textContent = (totalPct>0?'+':'')+totalPct+'%';
+    progEl.style.color = totalPct>0?'#1D9E75':totalPct<0?'#c8302a':'#EF9F27';
+  }
+}
+
+function renderLog(scores) {
+  const log = document.getElementById('tracker-log');
+  if(!log) return;
+  const vals = scores.map(s=>s.score);
+  const best = vals.length ? Math.max(...vals) : 0;
+  log.innerHTML = [...scores].reverse().map((s,i,arr) => {
+    const prev = arr[i+1];
+    const delta = prev ? s.score - prev.score : null;
+    const deltaStr = delta !== null ? (delta>0?' <span style="color:#1D9E75">+'+delta.toLocaleString()+'</span>': delta<0?' <span style="color:#c8302a">'+delta.toLocaleString()+'</span>':'') : '';
+    const isBest = s.score === best;
+    return \`<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.2);padding:8px 16px;font-family:Barlow Condensed,sans-serif;font-size:13px;">
+      <span style="color:var(--gray-text)">\${s.label}</span>
+      <span style="color:\${isBest?'#1D9E75':'var(--white)'};">\${s.score.toLocaleString()}\${isBest?' <span style="font-size:10px;letter-spacing:1px;color:#1D9E75">BEST</span>':''}$\{deltaStr}</span>
+    </div>\`;
+  }).join('');
+}
+
+// Re-render when scenario changes
+document.getElementById('tracker-scenario')?.addEventListener('change', renderTracker);
+
+window.addEventListener('load', renderTracker);
+window.addEventListener('resize', renderTracker);
+</script>
 <div class="next-chapter">
   <div class="nav-prev"><a href="6-3-vod-review.html" class="nav-cta">← Chapitre 6.3</a></div>
   <div class="nav-next"><a href="6-5-axes-progression.html" class="nav-cta">Chapitre 6.5 →</a></div>
