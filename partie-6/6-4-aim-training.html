@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>6.4 Aim Training pour R6 — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+  .chapter-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .chapter-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%); }
+  .chapter-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .chapter-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .chapter-number { font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px,15vw,180px); line-height: 0.85; color: rgba(255,255,255,0.04); position: absolute; right: 48px; top: 80px; pointer-events: none; }
+  .chapter-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px,7vw,80px); letter-spacing: 2px; line-height: 1; margin-bottom: 12px; position: relative; }
+  .chapter-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 40px; position: relative; }
+  .chapter-meta { display: flex; gap: 32px; flex-wrap: wrap; position: relative; }
+  .meta-pill { background: var(--gray); border: 1px solid var(--border); border-radius: 4px; padding: 8px 16px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .meta-pill span { color: var(--white); margin-left: 6px; }
+  .content { max-width: 900px; margin: 0 auto; padding: 64px 48px; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; line-height: 1; }
+  p { font-size: 15px; color: var(--gray-text); line-height: 1.8; margin-bottom: 16px; }
+  p strong { color: var(--white); font-weight: 500; }
+  .highlight-box { background: var(--gray); border-left: 3px solid var(--red); padding: 20px 24px; margin: 24px 0; border-radius: 0 6px 6px 0; }
+  .highlight-box p { margin: 0; color: var(--white); font-size: 14px; line-height: 1.7; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .diagram-wrap { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin: 32px 0; overflow-x: auto; }
+  .diagram-caption { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 16px; text-align: center; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; margin: 32px 0; }
+  .stat-box { background: var(--gray); padding: 24px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 2px; line-height: 1; color: var(--white); }
+  .stat-num span { color: var(--red); }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .impl-grid { display: flex; flex-direction: column; gap: 2px; margin: 32px 0; }
+  .impl-card { background: var(--gray); padding: 24px 28px; display: grid; grid-template-columns: 120px 1fr; gap: 24px; align-items: start; transition: background 0.2s; }
+  .impl-card:hover { background: var(--gray-mid); }
+  .impl-tag { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: var(--red); line-height: 1; }
+  .impl-tag-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 4px; }
+  .impl-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 6px; }
+  .impl-text { font-size: 13px; color: var(--gray-text); line-height: 1.7; margin: 0; }
+  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; display: inline-block; }
+  .nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .nav-prev { flex: 1; } .nav-next { flex: 1; text-align: right; }
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .chapter-eyebrow{animation:fadeUp .6s ease both;} .chapter-title{animation:fadeUp .6s .1s ease both;} .chapter-subtitle{animation:fadeUp .6s .2s ease both;} .chapter-meta{animation:fadeUp .6s .3s ease both;}
+  @media(max-width:768px){ nav{padding:0 24px;} .chapter-hero{padding:100px 24px 48px;} .content{padding:48px 24px;} .stat-grid{grid-template-columns:repeat(2,1fr);} .impl-card{grid-template-columns:1fr;gap:8px;} .next-chapter{flex-direction:column;gap:24px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="../index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+<section class="chapter-hero">
+  <div class="chapter-eyebrow">Partie VI — Méthodologie d'entraînement</div>
+  <div class="chapter-number">6.4</div>
+  <h1 class="chapter-title">Aim Training pour R6</h1>
+  <p class="chapter-subtitle">Scénarios efficaces, durée &amp; mesure de progression</p>
+  <div class="chapter-meta">
+    <div class="meta-pill">Partie <span>VI</span></div>
+    <div class="meta-pill">Chapitre <span>6.4</span></div>
+    <div class="meta-pill">Niveau <span>Tous niveaux</span></div>
+  </div>
+</section>
+<div class="content">
+
+  <div class="section-label">Introduction</div>
+  <h2>Tout l'aim training ne se transfère pas à R6</h2>
+  <p>L'aim training est efficace seulement si les scénarios entraînés correspondent aux situations réelles du jeu ciblé. R6 a des caractéristiques de combat distinctes qui le différencient de CS2 ou Valorant : les duels sont souvent à très courte distance, les ennemis sont souvent partiellement derrière un cover, et le pré-aim prend le dessus sur le flick réactif. Un aim training optimisé pour R6 doit refléter ces réalités.</p>
+  <div class="stat-grid">
+    <div class="stat-box"><span class="stat-num">15<span>min</span></span><span class="stat-label">Durée optimale par session</span></div>
+    <div class="stat-box"><span class="stat-num">3<span>types</span></span><span class="stat-label">Tracking · Micro-adj · Flick</span></div>
+    <div class="stat-box"><span class="stat-num">60<span>%</span></span><span class="stat-label">Tracking dans le mix</span></div>
+    <div class="stat-box"><span class="stat-num">Score<span></span></span><span class="stat-label">Mesure objective hebdo</span></div>
+  </div>
+  <hr class="divider">
+  <div class="section-label">Section 1</div>
+  <h2>Les scénarios d'aim training les plus transférables à R6</h2>
+  <div class="diagram-wrap">
+    <svg width="100%" viewBox="0 0 680 240" xmlns="http://www.w3.org/2000/svg">
+      <text font-family="'Bebas Neue',sans-serif" font-size="14" fill="#555" x="340" y="20" text-anchor="middle" letter-spacing="2">TRANSFERABILITÉ DES SCÉNARIOS À R6</text>
+      <rect x="20" y="34" width="195" height="190" rx="8" fill="rgba(29,158,117,0.08)" stroke="#1D9E75" stroke-width="1.5"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="16" fill="#5DCAA5" x="117" y="60" text-anchor="middle">HAUTE</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#1D9E75" x="117" y="78" text-anchor="middle">Transfert direct à R6</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#888" x="117" y="104" text-anchor="middle">Close-range tracking</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#888" x="117" y="124" text-anchor="middle">Micro-adjustment</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#888" x="117" y="144" text-anchor="middle">Click timing</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#888" x="117" y="164" text-anchor="middle">Strafing target</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#1D9E75" x="117" y="204" text-anchor="middle">→ Priorité dans le mix</text>
+
+      <rect x="243" y="34" width="195" height="190" rx="8" fill="rgba(239,159,39,0.08)" stroke="#EF9F27" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="16" fill="#FAC775" x="340" y="60" text-anchor="middle">MOYENNE</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#EF9F27" x="340" y="78" text-anchor="middle">Transférable avec contexte</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#888" x="340" y="104" text-anchor="middle">Medium-range flick</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#888" x="340" y="124" text-anchor="middle">Dynamic target</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#888" x="340" y="144" text-anchor="middle">Reaction time</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#EF9F27" x="340" y="204" text-anchor="middle">→ Utile en complément</text>
+
+      <rect x="466" y="34" width="195" height="190" rx="8" fill="rgba(200,48,42,0.08)" stroke="rgba(200,48,42,0.4)" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="16" fill="#F09595" x="563" y="60" text-anchor="middle">FAIBLE</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#c8302a" x="563" y="78" text-anchor="middle">Peu applicable à R6</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#888" x="563" y="104" text-anchor="middle">Long-range flick</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#888" x="563" y="124" text-anchor="middle">Speed challenge</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#888" x="563" y="144" text-anchor="middle">Multi-target speed</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#c8302a" x="563" y="204" text-anchor="middle">→ Éviter en priorité</text>
+    </svg>
+    <p class="diagram-caption">Transferabilité des scénarios d'aim training à R6 — priorise les scénarios haute valeur</p>
+  </div>
+  <hr class="divider">
+  <div class="section-label">Section 2</div>
+  <h2>Mesurer et suivre sa progression</h2>
+  <div class="impl-grid">
+    <div class="impl-card">
+      <div><div class="impl-tag">Score</div><div class="impl-tag-sub">référence</div></div>
+      <div>
+        <div class="impl-title">Établir des scores de référence hebdomadaires</div>
+        <p class="impl-text">La mesure objective de la progression en aim training passe par des scores de référence. Choisis 2 à 3 scénarios fixes dans Kovaak's ou Aimlabs et joue-les chaque semaine dans les mêmes conditions (même heure, après le même échauffement). Note tes scores. La progression n'est pas linéaire — attends-toi à des semaines de régression. Ce qui compte est la tendance sur 4 à 6 semaines. Si le score moyen monte, tu progresses. Si il stagne depuis 3 semaines, change ton approche d'entraînement.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Contexte</div><div class="impl-tag-sub">R6</div></div>
+      <div>
+        <div class="impl-title">Intégrer le contexte R6 dans l'aim training</div>
+        <p class="impl-text">L'aim training générique améliore les capacités motrices mais pas leur application dans R6. Après chaque session d'aim training, passe 10 minutes en custom game R6 pour ancrer les améliorations dans un contexte réel : pratique les duels depuis les angles spécifiques des maps que tu joues, avec les distances réelles de ces maps. Ce pont entre aim training et jeu réel est ce qui permet la transfer d'apprentissage — sans lui, les scores d'aim trainer montent mais le jeu ne s'améliore pas.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Kovaak's</div><div class="impl-tag-sub">vs Aimlabs</div></div>
+      <div>
+        <div class="impl-title">Kovaak's vs Aimlabs — lequel choisir pour R6</div>
+        <p class="impl-text">Les deux plateformes sont valides pour R6. Kovaak's a une plus grande bibliothèque de scénarios créés par la communauté, dont des scénarios spécifiquement optimisés pour R6 (cherche "R6" dans la bibliothèque). Aimlabs est plus accessible, gratuit, et intègre des statistiques de progression plus visuelles. La différence n'est pas assez significative pour justifier une préférence absolue — choisis celui que tu utiliseras régulièrement et tiens-t'y. L'outil change moins que la régularité et la qualité de la pratique.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="next-chapter">
+  <div class="nav-prev"><a href="6-3-vod-review.html" class="nav-cta">← Chapitre 6.3</a></div>
+  <div class="nav-next"><a href="6-5-axes-progression.html" class="nav-cta">Chapitre 6.5 →</a></div>
+</div>
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie VI · Chapitre 6.4</span>
+</footer>
+</body>
+</html>

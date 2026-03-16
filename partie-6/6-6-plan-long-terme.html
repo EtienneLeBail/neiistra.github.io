@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>6.6 Plan de Progression Long Terme — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+  .chapter-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .chapter-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%); }
+  .chapter-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .chapter-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .chapter-number { font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px,15vw,180px); line-height: 0.85; color: rgba(255,255,255,0.04); position: absolute; right: 48px; top: 80px; pointer-events: none; }
+  .chapter-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px,7vw,80px); letter-spacing: 2px; line-height: 1; margin-bottom: 12px; position: relative; }
+  .chapter-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 40px; position: relative; }
+  .chapter-meta { display: flex; gap: 32px; flex-wrap: wrap; position: relative; }
+  .meta-pill { background: var(--gray); border: 1px solid var(--border); border-radius: 4px; padding: 8px 16px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .meta-pill span { color: var(--white); margin-left: 6px; }
+  .content { max-width: 900px; margin: 0 auto; padding: 64px 48px; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; line-height: 1; }
+  p { font-size: 15px; color: var(--gray-text); line-height: 1.8; margin-bottom: 16px; }
+  p strong { color: var(--white); font-weight: 500; }
+  .highlight-box { background: var(--gray); border-left: 3px solid var(--red); padding: 20px 24px; margin: 24px 0; border-radius: 0 6px 6px 0; }
+  .highlight-box p { margin: 0; color: var(--white); font-size: 14px; line-height: 1.7; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .diagram-wrap { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin: 32px 0; overflow-x: auto; }
+  .diagram-caption { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 16px; text-align: center; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; margin: 32px 0; }
+  .stat-box { background: var(--gray); padding: 24px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 2px; line-height: 1; color: var(--white); }
+  .stat-num span { color: var(--red); }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .impl-grid { display: flex; flex-direction: column; gap: 2px; margin: 32px 0; }
+  .impl-card { background: var(--gray); padding: 24px 28px; display: grid; grid-template-columns: 120px 1fr; gap: 24px; align-items: start; transition: background 0.2s; }
+  .impl-card:hover { background: var(--gray-mid); }
+  .impl-tag { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: var(--red); line-height: 1; }
+  .impl-tag-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 4px; }
+  .impl-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 6px; }
+  .impl-text { font-size: 13px; color: var(--gray-text); line-height: 1.7; margin: 0; }
+  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; display: inline-block; }
+  .nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .nav-prev { flex: 1; } .nav-next { flex: 1; text-align: right; }
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .chapter-eyebrow{animation:fadeUp .6s ease both;} .chapter-title{animation:fadeUp .6s .1s ease both;} .chapter-subtitle{animation:fadeUp .6s .2s ease both;} .chapter-meta{animation:fadeUp .6s .3s ease both;}
+  @media(max-width:768px){ nav{padding:0 24px;} .chapter-hero{padding:100px 24px 48px;} .content{padding:48px 24px;} .stat-grid{grid-template-columns:repeat(2,1fr);} .impl-card{grid-template-columns:1fr;gap:8px;} .next-chapter{flex-direction:column;gap:24px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="../index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+<section class="chapter-hero">
+  <div class="chapter-eyebrow">Partie VI — Méthodologie d'entraînement</div>
+  <div class="chapter-number">6.6</div>
+  <h1 class="chapter-title">Plan de Progression Long Terme</h1>
+  <p class="chapter-subtitle">Objectifs mesurables, jalons &amp; gestion des plateaux</p>
+  <div class="chapter-meta">
+    <div class="meta-pill">Partie <span>VI</span></div>
+    <div class="meta-pill">Chapitre <span>6.6</span></div>
+    <div class="meta-pill">Niveau <span>Tous niveaux</span></div>
+  </div>
+</section>
+<div class="content">
+
+  <div class="section-label">Introduction</div>
+  <h2>La progression dans R6 est un marathon, pas un sprint</h2>
+  <p>Monter de Gold à Diamant dans R6 ne se fait pas en deux semaines de jeu intense. C'est un processus de plusieurs mois qui implique l'accumulation progressive de compétences, la consolidation neurologique, et la gestion des inévitables plateaux et régressions. Ce chapitre propose un cadre pour construire et maintenir un plan de progression sur 3 à 6 mois.</p>
+  <div class="stat-grid">
+    <div class="stat-box"><span class="stat-num">3<span>mois</span></span><span class="stat-label">Durée plan court terme</span></div>
+    <div class="stat-box"><span class="stat-num">6<span>mois</span></span><span class="stat-label">Durée plan complet</span></div>
+    <div class="stat-box"><span class="stat-num">Plateau</span><span class="stat-label">Normal — pas une régression</span></div>
+    <div class="stat-box"><span class="stat-num">Hebdo<span></span></span><span class="stat-label">Fréquence de review</span></div>
+  </div>
+  <hr class="divider">
+  <div class="section-label">Section 1 — Simulateur interactif</div>
+  <h2>Construis ton plan de progression</h2>
+  <p>Définis ton rang actuel, ton objectif, et ton temps disponible. Le simulateur génère un plan structuré sur 3 mois.</p>
+  <div class="diagram-wrap">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;">
+      <div>
+        <label style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);display:block;margin-bottom:8px;">Rang actuel</label>
+        <select id="rank-from" onchange="buildPlan()" style="width:100%;padding:10px 14px;background:var(--gray-mid);border:1px solid var(--border);color:var(--white);font-family:'Barlow Condensed',sans-serif;font-size:14px;border-radius:4px;">
+          <option>Copper</option><option>Bronze</option><option selected>Silver</option><option>Gold</option><option>Platinum</option><option>Diamond</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);display:block;margin-bottom:8px;">Rang objectif</label>
+        <select id="rank-to" onchange="buildPlan()" style="width:100%;padding:10px 14px;background:var(--gray-mid);border:1px solid var(--border);color:var(--white);font-family:'Barlow Condensed',sans-serif;font-size:14px;border-radius:4px;">
+          <option>Bronze</option><option>Silver</option><option>Gold</option><option selected>Platinum</option><option>Diamond</option><option>Champion</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);display:block;margin-bottom:8px;">Sessions / semaine</label>
+        <select id="sessions-pw" onchange="buildPlan()" style="width:100%;padding:10px 14px;background:var(--gray-mid);border:1px solid var(--border);color:var(--white);font-family:'Barlow Condensed',sans-serif;font-size:14px;border-radius:4px;">
+          <option value="2">2 sessions</option><option value="3" selected>3 sessions</option><option value="4">4 sessions</option><option value="5">5 sessions</option>
+        </select>
+      </div>
+    </div>
+    <canvas id="planCanvas" height="260" style="width:100%;display:block;border-radius:6px;"></canvas>
+    <div id="plan-phases" style="display:flex;flex-direction:column;gap:2px;margin-top:2px;"></div>
+    <p class="diagram-caption">Plan de progression sur 12 semaines — focus évolutif par phase</p>
+  </div>
+  <hr class="divider">
+  <div class="section-label">Section 2</div>
+  <h2>Gérer les plateaux et maintenir la motivation</h2>
+  <div class="impl-grid">
+    <div class="impl-card">
+      <div><div class="impl-tag">Plateau</div><div class="impl-tag-sub">normal</div></div>
+      <div>
+        <div class="impl-title">Comprendre les plateaux — ils font partie du processus</div>
+        <p class="impl-text">Un plateau de progression est une période pendant laquelle les performances semblent stagnantes malgré un entraînement régulier. Neurologiquement, c'est souvent le moment où le cerveau consolide les apprentissages récents avant de passer au niveau suivant. Les plateaux durent généralement 1 à 3 semaines. Le signal qu'un plateau est terminé : une amélioration soudaine qui semble "venue de nulle part". La réaction correcte face à un plateau : ne pas changer radicalement d'approche, maintenir la régularité, et travailler le renforcement des fondamentaux.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Review</div><div class="impl-tag-sub">hebdo</div></div>
+      <div>
+        <div class="impl-title">La review hebdomadaire — ajuster le plan en temps réel</div>
+        <p class="impl-text">Chaque semaine, prends 10 minutes pour faire le bilan : l'objectif de la semaine a-t-il été tenu ? La progression est-elle visible sur les indicateurs choisis ? Y a-t-il eu des régressions ? Ce bilan hebdomadaire permet d'ajuster le plan avant qu'un problème non détecté ne persiste pendant un mois. Un plan rigide qui ne s'adapte pas à la réalité de la progression est moins efficace qu'un plan flexible avec des objectifs clairs et des ajustements réguliers.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Moti-</div><div class="impl-tag-sub">vation</div></div>
+      <div>
+        <div class="impl-title">Maintenir la motivation sur 6 mois — les techniques qui fonctionnent</div>
+        <p class="impl-text">La motivation fluctue — c'est inévitable. Les stratégies pour maintenir l'engagement sur la durée : célébrer les petits jalons intermédiaires (pas seulement le rang final), varier les activités d'entraînement pour éviter la monotonie, jouer avec des amis qui ont des objectifs similaires, et documenter sa progression (capture d'écran du rank chaque semaine). La discipline régulière est plus puissante que les sessions intensives sporadiques. 3 sessions de 90 minutes par semaine, 52 semaines par an, représente 234 heures de pratique délibérée — largement suffisant pour passer plusieurs rangs.</p>
+      </div>
+    </div>
+  </div>
+<script>
+const rankColors = {'Copper':'#c8302a','Bronze':'#CD7F32','Silver':'#C0C0C0','Gold':'#FFD700','Platinum':'#E5E4E2','Diamond':'#378ADD','Champion':'#7F77DD'};
+const rankOrder = ['Copper','Bronze','Silver','Gold','Platinum','Diamond','Champion'];
+
+function buildPlan(){
+  const from = document.getElementById('rank-from').value;
+  const to = document.getElementById('rank-to').value;
+  const spw = parseInt(document.getElementById('sessions-pw').value);
+  const fromIdx = rankOrder.indexOf(from);
+  const toIdx = rankOrder.indexOf(to);
+  const diff = Math.max(1, toIdx - fromIdx);
+  const weeks = Math.max(8, diff * 4);
+
+  const phases = [
+    {label:'Phase 1 — Fondamentaux', weeks:Math.ceil(weeks*0.33), color:'#EF9F27', focus:'Crosshair placement · Map knowledge · Droning'},
+    {label:'Phase 2 — Application', weeks:Math.ceil(weeks*0.33), color:'#378ADD', focus:'Ranked + VOD review · Communication · Synergies'},
+    {label:'Phase 3 — Consolidation', weeks:Math.floor(weeks*0.34), color:'#1D9E75', focus:'Ajustements ciblés · Ranked compétitif · Game sense avancé'},
+  ];
+
+  drawPlan(phases, weeks, from, to, fromIdx, toIdx);
+
+  const detail = document.getElementById('plan-phases');
+  detail.innerHTML = '';
+  phases.forEach(p => {
+    const div = document.createElement('div');
+    div.style.cssText = 'display:grid;grid-template-columns:180px 1fr;gap:16px;background:rgba(0,0,0,0.25);padding:14px 18px;align-items:center;';
+    div.innerHTML = `<div><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:500;color:${p.color};">${p.label}</div><div style="font-size:11px;color:var(--gray-text);">${p.weeks} semaines · ${p.weeks*spw} sessions</div></div><div style="font-size:12px;color:var(--gray-text);">${p.focus}</div>`;
+    detail.appendChild(div);
+  });
+}
+
+function drawPlan(phases, totalWeeks, from, to, fromIdx, toIdx){
+  const canvas = document.getElementById('planCanvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth||820; canvas.width=W;
+  const H = 260; ctx.clearRect(0,0,W,H);
+
+  const padL=60, padR=20, padT=30, padB=50;
+  const cW=W-padL-padR, cH=H-padT-padB;
+
+  // Rank progression curve
+  const rankDiff = toIdx - fromIdx;
+  ctx.beginPath();
+  for(let w=0;w<=totalWeeks;w++){
+    const t = w/totalWeeks;
+    const progress = Math.pow(t, 0.7) * rankDiff;
+    const x = padL + (w/totalWeeks)*cW;
+    const y = padT + cH - (progress/Math.max(1,rankDiff))*cH*0.85;
+    w===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }
+  ctx.strokeStyle = '#c8302a'; ctx.lineWidth=2.5; ctx.stroke();
+
+  // Plateau simulation (slight flatten in middle)
+  ctx.beginPath();
+  const plateauStart = Math.floor(totalWeeks*0.4);
+  const plateauEnd = Math.floor(totalWeeks*0.55);
+  for(let w=plateauStart;w<=plateauEnd;w++){
+    const t = plateauStart/totalWeeks;
+    const progress = Math.pow(t,0.7)*rankDiff;
+    const x = padL + (w/totalWeeks)*cW;
+    const y = padT + cH - (progress/Math.max(1,rankDiff))*cH*0.85;
+    w===plateauStart?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }
+  ctx.strokeStyle = 'rgba(200,48,42,0.4)'; ctx.lineWidth=3; ctx.stroke();
+  const plateauX = padL + ((plateauStart+plateauEnd)/2/totalWeeks)*cW;
+  ctx.fillStyle='#EF9F27'; ctx.font='10px "Barlow Condensed",sans-serif'; ctx.textAlign='center';
+  ctx.fillText('Plateau normal', plateauX, padT+10);
+
+  // Phase backgrounds
+  let wx=0;
+  phases.forEach(p => {
+    const pw = (p.weeks/totalWeeks)*cW;
+    ctx.fillStyle = p.color+'12';
+    ctx.fillRect(padL+wx, padT, pw, cH);
+    ctx.strokeStyle = p.color+'30'; ctx.lineWidth=0.5;
+    ctx.beginPath(); ctx.moveTo(padL+wx,padT); ctx.lineTo(padL+wx,padT+cH); ctx.stroke();
+    ctx.fillStyle=p.color; ctx.font='10px "Barlow Condensed",sans-serif'; ctx.textAlign='center';
+    ctx.fillText(p.label.split(' — ')[0], padL+wx+pw/2, padT+cH+16);
+    wx += pw;
+  });
+
+  // Rank labels
+  [from, to].forEach((rank, i) => {
+    const y = i===0 ? padT+cH : padT+cH*0.15;
+    ctx.fillStyle = rankColors[rank]||'#888';
+    ctx.font='500 12px "Barlow Condensed",sans-serif'; ctx.textAlign='right';
+    ctx.fillText(rank, padL-6, y+4);
+    ctx.strokeStyle=rankColors[rank]+'30'; ctx.lineWidth=0.5; ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(padL+cW,y); ctx.stroke(); ctx.setLineDash([]);
+  });
+
+  ctx.fillStyle='#555'; ctx.font='10px "Barlow Condensed",sans-serif'; ctx.textAlign='center';
+  ctx.fillText('Semaines →', padL+cW/2, H-4);
+}
+window.addEventListener('load',buildPlan);
+window.addEventListener('resize',buildPlan);
+</script>
+</div>
+<div class="next-chapter">
+  <div class="nav-prev"><a href="6-5-axes-progression.html" class="nav-cta">← Chapitre 6.5</a></div>
+  <div class="nav-next"><a href="../index.html" class="nav-cta">← Retour à l'accueil</a></div>
+</div>
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie VI · Chapitre 6.6</span>
+</footer>
+</body>
+</html>

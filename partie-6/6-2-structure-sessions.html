@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>6.2 Structure des Sessions — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+  .chapter-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .chapter-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%); }
+  .chapter-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .chapter-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .chapter-number { font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px,15vw,180px); line-height: 0.85; color: rgba(255,255,255,0.04); position: absolute; right: 48px; top: 80px; pointer-events: none; }
+  .chapter-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px,7vw,80px); letter-spacing: 2px; line-height: 1; margin-bottom: 12px; position: relative; }
+  .chapter-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 40px; position: relative; }
+  .chapter-meta { display: flex; gap: 32px; flex-wrap: wrap; position: relative; }
+  .meta-pill { background: var(--gray); border: 1px solid var(--border); border-radius: 4px; padding: 8px 16px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .meta-pill span { color: var(--white); margin-left: 6px; }
+  .content { max-width: 900px; margin: 0 auto; padding: 64px 48px; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; line-height: 1; }
+  p { font-size: 15px; color: var(--gray-text); line-height: 1.8; margin-bottom: 16px; }
+  p strong { color: var(--white); font-weight: 500; }
+  .highlight-box { background: var(--gray); border-left: 3px solid var(--red); padding: 20px 24px; margin: 24px 0; border-radius: 0 6px 6px 0; }
+  .highlight-box p { margin: 0; color: var(--white); font-size: 14px; line-height: 1.7; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .diagram-wrap { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin: 32px 0; overflow-x: auto; }
+  .diagram-caption { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 16px; text-align: center; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; margin: 32px 0; }
+  .stat-box { background: var(--gray); padding: 24px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 2px; line-height: 1; color: var(--white); }
+  .stat-num span { color: var(--red); }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .impl-grid { display: flex; flex-direction: column; gap: 2px; margin: 32px 0; }
+  .impl-card { background: var(--gray); padding: 24px 28px; display: grid; grid-template-columns: 120px 1fr; gap: 24px; align-items: start; transition: background 0.2s; }
+  .impl-card:hover { background: var(--gray-mid); }
+  .impl-tag { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: var(--red); line-height: 1; }
+  .impl-tag-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 4px; }
+  .impl-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 6px; }
+  .impl-text { font-size: 13px; color: var(--gray-text); line-height: 1.7; margin: 0; }
+  .sim-btn { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; padding: 7px 14px; border: 1px solid var(--border); background: transparent; color: var(--gray-text); cursor: pointer; border-radius: 4px; transition: all 0.2s; }
+  .sim-btn.active, .sim-btn:hover { border-color: var(--red); color: var(--white); background: rgba(200,48,42,0.1); }
+  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; display: inline-block; }
+  .nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .nav-prev { flex: 1; } .nav-next { flex: 1; text-align: right; }
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .chapter-eyebrow{animation:fadeUp .6s ease both;} .chapter-title{animation:fadeUp .6s .1s ease both;} .chapter-subtitle{animation:fadeUp .6s .2s ease both;} .chapter-meta{animation:fadeUp .6s .3s ease both;}
+  @media(max-width:768px){ nav{padding:0 24px;} .chapter-hero{padding:100px 24px 48px;} .content{padding:48px 24px;} .stat-grid{grid-template-columns:repeat(2,1fr);} .impl-card{grid-template-columns:1fr;gap:8px;} .next-chapter{flex-direction:column;gap:24px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="../index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+<section class="chapter-hero">
+  <div class="chapter-eyebrow">Partie VI — Méthodologie d'entraînement</div>
+  <div class="chapter-number">6.2</div>
+  <h1 class="chapter-title">Structure des Sessions</h1>
+  <p class="chapter-subtitle">Aim training · Custom game · Ranked · VOD review</p>
+  <div class="chapter-meta">
+    <div class="meta-pill">Partie <span>VI</span></div>
+    <div class="meta-pill">Chapitre <span>6.2</span></div>
+    <div class="meta-pill">Niveau <span>Tous niveaux</span></div>
+  </div>
+</section>
+<div class="content">
+  <div class="section-label">Introduction</div>
+  <h2>Une session sans structure est une session sans direction</h2>
+  <p>La question n'est pas "combien de temps jouer" mais "comment organiser ce temps pour maximiser la progression". Une session de 2 heures structurée produit plus de progression qu'une session de 5 heures en vrac. Ce chapitre présente la structure optimale d'une session d'entraînement dans R6 selon l'objectif.</p>
+
+  <div class="stat-grid">
+    <div class="stat-box"><span class="stat-num">15<span>min</span></span><span class="stat-label">Aim training optimal</span></div>
+    <div class="stat-box"><span class="stat-num">30<span>min</span></span><span class="stat-label">VOD review hebdo</span></div>
+    <div class="stat-box"><span class="stat-num">90<span>min</span></span><span class="stat-label">Max ranked efficace</span></div>
+    <div class="stat-box"><span class="stat-num">3<span>phases</span></span><span class="stat-label">Warm-up · Travail · Review</span></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 1 — Simulateur interactif</div>
+  <h2>Construis ta session type</h2>
+  <p>Sélectionne ton objectif principal et le temps disponible. Le simulateur te propose une structure de session optimale.</p>
+
+  <div class="diagram-wrap">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+      <div>
+        <label style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);display:block;margin-bottom:8px;">Objectif principal</label>
+        <select id="goal-select" onchange="buildSession()" style="width:100%;padding:10px 14px;background:var(--gray-mid);border:1px solid var(--border);color:var(--white);font-family:'Barlow Condensed',sans-serif;font-size:14px;border-radius:4px;">
+          <option value="aim">Améliorer mon aim</option>
+          <option value="game">Améliorer mon game sense</option>
+          <option value="rank">Monter en ranked</option>
+          <option value="map">Apprendre une nouvelle map</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);display:block;margin-bottom:8px;">Temps disponible</label>
+        <select id="time-select" onchange="buildSession()" style="width:100%;padding:10px 14px;background:var(--gray-mid);border:1px solid var(--border);color:var(--white);font-family:'Barlow Condensed',sans-serif;font-size:14px;border-radius:4px;">
+          <option value="60">1 heure</option>
+          <option value="90" selected>1h30</option>
+          <option value="120">2 heures</option>
+          <option value="180">3 heures</option>
+        </select>
+      </div>
+    </div>
+    <canvas id="sessionCanvas" height="200" style="width:100%;display:block;border-radius:6px;"></canvas>
+    <div id="session-detail" style="display:flex;flex-direction:column;gap:2px;margin-top:2px;"></div>
+    <p class="diagram-caption">Structure de session recommandée — durée et ordre des phases</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 2</div>
+  <h2>Les 4 types d'activités et leur rôle</h2>
+
+  <div class="impl-grid">
+    <div class="impl-card">
+      <div><div class="impl-tag">Aim</div><div class="impl-tag-sub">training</div></div>
+      <div>
+        <div class="impl-title">Aim training (Kovaak's / Aimlabs) — 15 à 20 minutes maximum</div>
+        <p class="impl-text">L'aim training est une activité de haute intensité cognitive et motrice. Au-delà de 20 minutes, la fatigue dégrade la qualité des répétitions et tu commences à encoder des mouvements de basse qualité. La règle : 15 à 20 minutes d'aim training focalisé en début de session (après échauffement), pas plus. Les scénarios les plus transférables à R6 sont le close-range tracking (simulant les duels à courte distance) et le micro-adjustment (simulant le crosshair placement). Le flick pur est moins applicable car R6 récompense davantage le pré-aim que le flick réactif.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Custom</div><div class="impl-tag-sub">game</div></div>
+      <div>
+        <div class="impl-title">Custom game — laboratoire de pratique délibérée</div>
+        <p class="impl-text">Le custom game est l'espace idéal pour la pratique délibérée dans R6 car il retire la pression du résultat. Tu peux tester des positions, des angles, des timings, des gadgets dans un environnement sans enjeu. Utilisations optimales : droner en solo pour mémoriser les routes et zones de chaque map, pratiquer des setups défensifs spécifiques, travailler les wall bangs depuis des positions précises, ou s'entraîner à des techniques comme le Bandit trick. 20 à 30 minutes de custom game ciblé par semaine sur une map spécifique produit plus de connaissance de map que des dizaines de rounds ranked.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Ranked</div><div class="impl-tag-sub">application</div></div>
+      <div>
+        <div class="impl-title">Ranked — appliquer sous pression, pas s'entraîner</div>
+        <p class="impl-text">Le ranked n'est pas fait pour apprendre — c'est fait pour appliquer ce qu'on a appris ailleurs. C'est la distinction que font tous les athlètes professionnels : l'entraînement et la compétition sont deux activités distinctes avec des objectifs différents. En ranked, l'objectif est d'appliquer ton objectif de session sous pression réelle. Jouer ranked sans avoir travaillé quelque chose en amont, c'est participer à une compétition sans s'être entraîné. Maximum 2 à 3 parties ranked par session pour maintenir un focus de qualité.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">VOD</div><div class="impl-tag-sub">review</div></div>
+      <div>
+        <div class="impl-title">VOD review — à faire après, pas pendant la session</div>
+        <p class="impl-text">La VOD review ne doit jamais être faite dans la même session que le jeu actif — la fatigue cognitive altère l'analyse. Le protocole optimal : joue ta session, puis 24 heures après, revois 1 à 2 rounds avec un objectif d'analyse précis. Pas "voir tout ce que j'ai mal fait" — mais "analyser pourquoi j'ai été tué dans ces 3 situations spécifiques". Une VOD review de 20 minutes ciblée vaut plus qu'une heure de visionnage passif. Les éléments à analyser en priorité : les morts (angles non vérifiés, positions non droned), et les rounds perdus malgré un avantage en nombre.</p>
+      </div>
+    </div>
+  </div>
+
+<script>
+const sessions = {
+  aim: {
+    60:  [{label:'Échauffement léger',dur:10,color:'#555'},{label:'Aim training (Kovaak's)',dur:20,color:'#c8302a'},{label:'Custom game — angles',dur:15,color:'#EF9F27'},{label:'1 partie ranked',dur:15,color:'#378ADD'}],
+    90:  [{label:'Échauffement',dur:15,color:'#555'},{label:'Aim training intensif',dur:20,color:'#c8302a'},{label:'Custom game — crosshair',dur:20,color:'#EF9F27'},{label:'2 parties ranked',dur:35,color:'#378ADD'}],
+    120: [{label:'Échauffement',dur:15,color:'#555'},{label:'Aim training',dur:20,color:'#c8302a'},{label:'Custom game',dur:25,color:'#EF9F27'},{label:'2-3 parties ranked',dur:50,color:'#378ADD'},{label:'Mini VOD review',dur:10,color:'#7F77DD'}],
+    180: [{label:'Échauffement',dur:15,color:'#555'},{label:'Aim training',dur:20,color:'#c8302a'},{label:'Custom aim context',dur:30,color:'#EF9F27'},{label:'3 parties ranked',dur:75,color:'#378ADD'},{label:'VOD review (20min)',dur:20,color:'#7F77DD'},{label:'Custom correction',dur:20,color:'#1D9E75'}],
+  },
+  game: {
+    60:  [{label:'Échauffement',dur:10,color:'#555'},{label:'Custom game map study',dur:25,color:'#EF9F27'},{label:'1-2 parties ranked',dur:25,color:'#378ADD'}],
+    90:  [{label:'Échauffement',dur:10,color:'#555'},{label:'VOD review (15min)',dur:15,color:'#7F77DD'},{label:'Custom game',dur:25,color:'#EF9F27'},{label:'2 parties ranked',dur:40,color:'#378ADD'}],
+    120: [{label:'Échauffement',dur:10,color:'#555'},{label:'VOD review pro',dur:20,color:'#7F77DD'},{label:'Custom game',dur:30,color:'#EF9F27'},{label:'3 parties ranked',dur:60,color:'#378ADD'}],
+    180: [{label:'Échauffement',dur:10,color:'#555'},{label:'VOD review',dur:30,color:'#7F77DD'},{label:'Custom game focus',dur:30,color:'#EF9F27'},{label:'3 parties ranked',dur:75,color:'#378ADD'},{label:'VOD own review',dur:15,color:'#7F77DD'},{label:'Notes session',dur:10,color:'#555'}],
+  },
+  rank: {
+    60:  [{label:'Aim training (10min)',dur:10,color:'#c8302a'},{label:'Échauffement custom',dur:10,color:'#EF9F27'},{label:'2 parties ranked focus',dur:40,color:'#378ADD'}],
+    90:  [{label:'Aim training',dur:15,color:'#c8302a'},{label:'Échauffement',dur:10,color:'#EF9F27'},{label:'3 parties ranked',dur:65,color:'#378ADD'}],
+    120: [{label:'Aim training',dur:15,color:'#c8302a'},{label:'Échauffement',dur:15,color:'#EF9F27'},{label:'3-4 parties ranked',dur:75,color:'#378ADD'},{label:'Analyse post-session',dur:15,color:'#7F77DD'}],
+    180: [{label:'Aim training',dur:15,color:'#c8302a'},{label:'Échauffement',dur:15,color:'#EF9F27'},{label:'4-5 parties ranked',dur:110,color:'#378ADD'},{label:'VOD 1 round',dur:20,color:'#7F77DD'},{label:'Pause obligatoire',dur:20,color:'#555'}],
+  },
+  map: {
+    60:  [{label:'Custom — droning map',dur:20,color:'#EF9F27'},{label:'Custom — setups',dur:20,color:'#1D9E75'},{label:'1 partie ranked map',dur:20,color:'#378ADD'}],
+    90:  [{label:'Custom — droning',dur:20,color:'#EF9F27'},{label:'Custom — angles',dur:25,color:'#1D9E75'},{label:'2 parties ranked map',dur:45,color:'#378ADD'}],
+    120: [{label:'Échauffement',dur:10,color:'#555'},{label:'Custom — full map study',dur:30,color:'#EF9F27'},{label:'Custom — setups déf.',dur:20,color:'#1D9E75'},{label:'2 parties ranked',dur:60,color:'#378ADD'}],
+    180: [{label:'Échauffement',dur:10,color:'#555'},{label:'VOD pro sur cette map',dur:25,color:'#7F77DD'},{label:'Custom map study',dur:35,color:'#EF9F27'},{label:'3 parties ranked',dur:75,color:'#378ADD'},{label:'Review erreurs',dur:15,color:'#555'}],
+  }
+};
+
+function buildSession() {
+  const goal = document.getElementById('goal-select').value;
+  const time = parseInt(document.getElementById('time-select').value);
+  const phases = sessions[goal][time] || sessions[goal][90];
+  drawSession(phases, time);
+}
+
+function drawSession(phases, totalMin) {
+  const canvas = document.getElementById('sessionCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 820;
+  canvas.width = W; const H = 200;
+  ctx.clearRect(0,0,W,H);
+
+  const totalDur = phases.reduce((s,p) => s+p.dur, 0);
+  let x = 20;
+  const barH = 60, barY = 60;
+  const availW = W - 40;
+
+  phases.forEach(p => {
+    const w = (p.dur / totalDur) * availW;
+    ctx.fillStyle = p.color + '40';
+    ctx.fillRect(x, barY, w, barH);
+    ctx.strokeStyle = p.color;
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(x, barY, w, barH);
+
+    ctx.fillStyle = p.color;
+    ctx.font = '500 11px "Barlow Condensed", sans-serif';
+    ctx.textAlign = 'center';
+    if (w > 60) ctx.fillText(p.dur+'min', x+w/2, barY+barH/2+4);
+    x += w;
+  });
+
+  // Time axis
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(20,barY+barH+8); ctx.lineTo(W-20,barY+barH+8); ctx.stroke();
+  ctx.fillStyle = '#555'; ctx.font = '10px "Barlow Condensed", sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText('0', 20, barY+barH+22);
+  ctx.textAlign = 'right';
+  ctx.fillText(totalMin+'min', W-20, barY+barH+22);
+
+  // Legend
+  const detail = document.getElementById('session-detail');
+  detail.innerHTML = '';
+  phases.forEach(p => {
+    const div = document.createElement('div');
+    div.style.cssText = `display:flex;align-items:center;gap:12px;background:rgba(0,0,0,0.25);padding:10px 16px;`;
+    div.innerHTML = `<div style="width:12px;height:12px;border-radius:2px;background:${p.color};flex-shrink:0;"></div><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--white);flex:1;">${p.label}</div><div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:${p.color};">${p.dur}<span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:${p.color};letter-spacing:1px;">min</span></div>`;
+    detail.appendChild(div);
+  });
+}
+
+window.addEventListener('load', buildSession);
+window.addEventListener('resize', buildSession);
+</script></div>
+<div class="next-chapter">
+  <div class="nav-prev"><a href="6-1-pratique-deliberee.html" class="nav-cta">← Chapitre 6.1</a></div>
+  <div class="nav-next"><a href="6-3-vod-review.html" class="nav-cta">Chapitre 6.3 →</a></div>
+</div>
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie VI · Chapitre 6.2</span>
+</footer>
+</body>
+</html>

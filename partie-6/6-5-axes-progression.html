@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>6.5 Identifier ses Axes de Progression — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+  .chapter-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .chapter-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%); }
+  .chapter-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .chapter-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .chapter-number { font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px,15vw,180px); line-height: 0.85; color: rgba(255,255,255,0.04); position: absolute; right: 48px; top: 80px; pointer-events: none; }
+  .chapter-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px,7vw,80px); letter-spacing: 2px; line-height: 1; margin-bottom: 12px; position: relative; }
+  .chapter-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 40px; position: relative; }
+  .chapter-meta { display: flex; gap: 32px; flex-wrap: wrap; position: relative; }
+  .meta-pill { background: var(--gray); border: 1px solid var(--border); border-radius: 4px; padding: 8px 16px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .meta-pill span { color: var(--white); margin-left: 6px; }
+  .content { max-width: 900px; margin: 0 auto; padding: 64px 48px; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; line-height: 1; }
+  p { font-size: 15px; color: var(--gray-text); line-height: 1.8; margin-bottom: 16px; }
+  p strong { color: var(--white); font-weight: 500; }
+  .highlight-box { background: var(--gray); border-left: 3px solid var(--red); padding: 20px 24px; margin: 24px 0; border-radius: 0 6px 6px 0; }
+  .highlight-box p { margin: 0; color: var(--white); font-size: 14px; line-height: 1.7; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .diagram-wrap { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin: 32px 0; overflow-x: auto; }
+  .diagram-caption { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 16px; text-align: center; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; margin: 32px 0; }
+  .stat-box { background: var(--gray); padding: 24px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 2px; line-height: 1; color: var(--white); }
+  .stat-num span { color: var(--red); }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .impl-grid { display: flex; flex-direction: column; gap: 2px; margin: 32px 0; }
+  .impl-card { background: var(--gray); padding: 24px 28px; display: grid; grid-template-columns: 120px 1fr; gap: 24px; align-items: start; transition: background 0.2s; }
+  .impl-card:hover { background: var(--gray-mid); }
+  .impl-tag { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: var(--red); line-height: 1; }
+  .impl-tag-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 4px; }
+  .impl-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 6px; }
+  .impl-text { font-size: 13px; color: var(--gray-text); line-height: 1.7; margin: 0; }
+  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; display: inline-block; }
+  .nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .nav-prev { flex: 1; } .nav-next { flex: 1; text-align: right; }
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .chapter-eyebrow{animation:fadeUp .6s ease both;} .chapter-title{animation:fadeUp .6s .1s ease both;} .chapter-subtitle{animation:fadeUp .6s .2s ease both;} .chapter-meta{animation:fadeUp .6s .3s ease both;}
+  @media(max-width:768px){ nav{padding:0 24px;} .chapter-hero{padding:100px 24px 48px;} .content{padding:48px 24px;} .stat-grid{grid-template-columns:repeat(2,1fr);} .impl-card{grid-template-columns:1fr;gap:8px;} .next-chapter{flex-direction:column;gap:24px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="../index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+<section class="chapter-hero">
+  <div class="chapter-eyebrow">Partie VI — Méthodologie d'entraînement</div>
+  <div class="chapter-number">6.5</div>
+  <h1 class="chapter-title">Identifier ses Axes de Progression</h1>
+  <p class="chapter-subtitle">Auto-diagnostic honnête &amp; priorités d'amélioration</p>
+  <div class="chapter-meta">
+    <div class="meta-pill">Partie <span>VI</span></div>
+    <div class="meta-pill">Chapitre <span>6.5</span></div>
+    <div class="meta-pill">Niveau <span>Tous niveaux</span></div>
+  </div>
+</section>
+<div class="content">
+
+  <div class="section-label">Introduction</div>
+  <h2>Tu ne peux pas améliorer ce que tu ne mesures pas</h2>
+  <p>L'erreur classique : travailler sur ce qu'on aime travailler plutôt que sur ce dont on a besoin. Beaucoup de joueurs intermédiaires passent des heures en aim training parce que c'est quantifiable et satisfaisant — et négligent leur game sense ou leur connaissance des maps, qui sont pourtant leurs vraies limitations. Ce chapitre présente un cadre d'auto-diagnostic honnête pour identifier tes axes de progression réels dans R6.</p>
+  <div class="stat-grid">
+    <div class="stat-box"><span class="stat-num">5<span>axes</span></span><span class="stat-label">Aim · Map · Sens · Comms · Déc.</span></div>
+    <div class="stat-box"><span class="stat-num">1</div><div class="stat-label">Axe à travailler à la fois</span></div>
+    <div class="stat-box"><span class="stat-num">VOD<span></span></span><span class="stat-label">Meilleur outil de diagnostic</span></div>
+    <div class="stat-box"><span class="stat-num">WL<span></span></span><span class="stat-label">Indicateur trompeur seul</span></div>
+  </div>
+  <hr class="divider">
+  <div class="section-label">Section 1 — Auto-diagnostic interactif</div>
+  <h2>Évalue tes 5 axes de progression</h2>
+  <p>Réponds honnêtement pour chaque axe. La seule règle : sois plus sévère que tu ne le serais naturellement.</p>
+  <div class="diagram-wrap">
+    <div id="diag-items" style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;"></div>
+    <canvas id="diagCanvas" height="280" style="width:100%;display:block;border-radius:6px;"></canvas>
+    <div id="diag-prio" style="margin-top:12px;background:rgba(0,0,0,0.3);padding:14px 18px;border-radius:4px;font-size:13px;color:var(--gray-text);line-height:1.6;min-height:44px;"></div>
+    <p class="diagram-caption">Radar de progression — axe le plus bas = priorité numéro 1</p>
+  </div>
+  <hr class="divider">
+  <div class="section-label">Section 2</div>
+  <h2>Travailler un seul axe à la fois</h2>
+  <div class="impl-grid">
+    <div class="impl-card">
+      <div><div class="impl-tag">Un seul</div><div class="impl-tag-sub">axe</div></div>
+      <div>
+        <div class="impl-title">Pourquoi se concentrer sur un seul axe à la fois est plus efficace</div>
+        <p class="impl-text">Le cerveau consolide les apprentissages moteurs et cognitifs pendant le sommeil. Travailler plusieurs axes simultanément crée des interférences — les neurones qui seraient dédiés à consolider un pattern sont sollicités pour un autre. La pratique délibérée recommande de fixer un axe de travail pour 2 à 4 semaines avant de passer au suivant. L'exception : l'aim training et le game sense peuvent être travaillés en parallèle car ils font appel à des systèmes cérébraux différents (cervelet pour l'aim, cortex préfrontal pour le game sense).</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Mesure</div><div class="impl-tag-sub">progrès</div></div>
+      <div>
+        <div class="impl-title">Comment mesurer la progression sur chaque axe dans R6</div>
+        <p class="impl-text">Chaque axe nécessite un indicateur de mesure différent. Aim : scores d'aim trainer hebdomadaires, KOST (Kill, Objective, Survive, Trade) par partie. Map knowledge : capacité à nommer tous les angles importants sans consulter de références. Game sense : pourcentage de positions ennemies correctement anticipées avant de les voir (évalue en VOD review). Communication : nombre de callouts précis par round (demande à un équipier de compter). Decision making : ratio de morts évitables vs inévitables en VOD review.</p>
+      </div>
+    </div>
+  </div>
+<script>
+const diagAxes = [
+  {id:'aim', label:'Aim & Précision', q:'Comment évalues-tu ton aim dans les duels R6 ?', color:'#c8302a'},
+  {id:'map', label:'Connaissance des Maps', q:'Connais-tu les angles clés et soft walls des maps que tu joues ?', color:'#EF9F27'},
+  {id:'sense', label:'Game Sense', q:'Anticipes-tu correctement les positions et mouvements ennemis ?', color:'#1D9E75'},
+  {id:'comm', label:'Communication', q:'Callout-tu précisément et régulièrement les positions ennemies ?', color:'#378ADD'},
+  {id:'decision', label:'Décision', q:'Prends-tu les bonnes décisions sous pression (peek, plant, clutch) ?', color:'#7F77DD'},
+];
+const scores = {};
+const opts = ['1 — Très faible', '2 — Faible', '3 — Moyen', '4 — Bon', '5 — Excellent'];
+
+function buildDiag() {
+  const cont = document.getElementById('diag-items');
+  diagAxes.forEach(ax => {
+    const div = document.createElement('div');
+    div.style.cssText = 'background:var(--gray);border-radius:6px;padding:14px 18px;';
+    div.innerHTML = `<div style="font-size:13px;color:var(--white);margin-bottom:8px;">${ax.q}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        ${[1,2,3,4,5].map(v=>`<button onclick="setScore('${ax.id}',${v},this)" style="font-family:Barlow Condensed,sans-serif;font-size:11px;letter-spacing:1px;padding:5px 10px;border:1px solid ${ax.color}40;background:transparent;color:var(--gray-text);cursor:pointer;border-radius:3px;transition:all 0.2s;" data-ax="${ax.id}" data-val="${v}">${v}</button>`).join('')}
+      </div>`;
+    cont.appendChild(div);
+  });
+}
+
+function setScore(id, val, btn) {
+  scores[id] = val;
+  document.querySelectorAll(`[data-ax="${id}"]`).forEach(b => {
+    const ax = diagAxes.find(a => a.id===id);
+    const v = parseInt(b.getAttribute('data-val'));
+    if(v === val) { b.style.background=ax.color+'40'; b.style.color=ax.color; b.style.borderColor=ax.color; }
+    else { b.style.background='transparent'; b.style.color='var(--gray-text)'; b.style.borderColor=ax.color+'40'; }
+  });
+  if(Object.keys(scores).length === diagAxes.length) drawRadar();
+}
+
+function drawRadar() {
+  const canvas = document.getElementById('diagCanvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth||820; canvas.width=W;
+  const H = 280; ctx.clearRect(0,0,W,H);
+  const cx=W/2, cy=H/2, maxR=Math.min(W,H)*0.38;
+  const n=diagAxes.length;
+
+  // Grid circles
+  [1,2,3,4,5].forEach(level => {
+    ctx.beginPath();
+    for(let i=0;i<=n;i++){
+      const angle=(i/n)*Math.PI*2-Math.PI/2;
+      const r=(level/5)*maxR;
+      const x=cx+r*Math.cos(angle), y=cy+r*Math.sin(angle);
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=1; ctx.stroke();
+  });
+
+  // Axis lines and labels
+  diagAxes.forEach((ax,i)=>{
+    const angle=(i/n)*Math.PI*2-Math.PI/2;
+    const x=cx+maxR*Math.cos(angle), y=cy+maxR*Math.sin(angle);
+    ctx.strokeStyle='rgba(255,255,255,0.08)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x,y); ctx.stroke();
+    const lx=cx+(maxR+28)*Math.cos(angle), ly=cy+(maxR+28)*Math.sin(angle);
+    ctx.fillStyle=ax.color; ctx.font='11px "Barlow Condensed",sans-serif'; ctx.textAlign='center';
+    ctx.fillText(ax.label,lx,ly+4);
+  });
+
+  // Data polygon
+  ctx.beginPath();
+  diagAxes.forEach((ax,i)=>{
+    const angle=(i/n)*Math.PI*2-Math.PI/2;
+    const r=((scores[ax.id]||0)/5)*maxR;
+    const x=cx+r*Math.cos(angle), y=cy+r*Math.sin(angle);
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.closePath();
+  ctx.fillStyle='rgba(200,48,42,0.2)'; ctx.fill();
+  ctx.strokeStyle='#c8302a'; ctx.lineWidth=2; ctx.stroke();
+
+  // Find lowest axis
+  const minAx = diagAxes.reduce((min,ax)=>(!scores[ax.id]||scores[ax.id]<(scores[min.id]||6))?ax:min);
+  if(scores[minAx.id]) {
+    document.getElementById('diag-prio').innerHTML=`<strong style="color:var(--white)">Priorité d'amélioration : ${minAx.label}</strong><br>C'est ton axe le plus bas (${scores[minAx.id]}/5). Focalise tes 2 prochaines semaines exclusivement sur cet axe. Consulte les chapitres correspondants de cette thèse pour les méthodes spécifiques.`;
+  }
+}
+window.addEventListener('load',buildDiag);
+</script>
+</div>
+<div class="next-chapter">
+  <div class="nav-prev"><a href="6-4-aim-training.html" class="nav-cta">← Chapitre 6.4</a></div>
+  <div class="nav-next"><a href="6-6-plan-long-terme.html" class="nav-cta">Chapitre 6.6 →</a></div>
+</div>
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie VI · Chapitre 6.5</span>
+</footer>
+</body>
+</html>
