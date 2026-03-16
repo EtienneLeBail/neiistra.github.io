@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5.1 Économie de Round & Sélection d'Opérateurs — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+  .chapter-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .chapter-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%); }
+  .chapter-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .chapter-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .chapter-number { font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px,15vw,180px); line-height: 0.85; color: rgba(255,255,255,0.04); position: absolute; right: 48px; top: 80px; pointer-events: none; }
+  .chapter-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px,7vw,80px); letter-spacing: 2px; line-height: 1; margin-bottom: 12px; position: relative; }
+  .chapter-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 40px; position: relative; }
+  .chapter-meta { display: flex; gap: 32px; flex-wrap: wrap; position: relative; }
+  .meta-pill { background: var(--gray); border: 1px solid var(--border); border-radius: 4px; padding: 8px 16px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .meta-pill span { color: var(--white); margin-left: 6px; }
+  .content { max-width: 900px; margin: 0 auto; padding: 64px 48px; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; line-height: 1; }
+  p { font-size: 15px; color: var(--gray-text); line-height: 1.8; margin-bottom: 16px; }
+  p strong { color: var(--white); font-weight: 500; }
+  .highlight-box { background: var(--gray); border-left: 3px solid var(--red); padding: 20px 24px; margin: 24px 0; border-radius: 0 6px 6px 0; }
+  .highlight-box p { margin: 0; color: var(--white); font-size: 14px; line-height: 1.7; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .diagram-wrap { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin: 32px 0; overflow-x: auto; }
+  .diagram-caption { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 16px; text-align: center; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; margin: 32px 0; }
+  .stat-box { background: var(--gray); padding: 24px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 2px; line-height: 1; color: var(--white); }
+  .stat-num span { color: var(--red); }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .impl-grid { display: flex; flex-direction: column; gap: 2px; margin: 32px 0; }
+  .impl-card { background: var(--gray); padding: 24px 28px; display: grid; grid-template-columns: 120px 1fr; gap: 24px; align-items: start; transition: background 0.2s; }
+  .impl-card:hover { background: var(--gray-mid); }
+  .impl-tag { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: var(--red); line-height: 1; }
+  .impl-tag-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 4px; }
+  .impl-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 6px; }
+  .impl-text { font-size: 13px; color: var(--gray-text); line-height: 1.7; margin: 0; }
+  .sim-btn { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; padding: 7px 14px; border: 1px solid var(--border); background: transparent; color: var(--gray-text); cursor: pointer; border-radius: 4px; transition: all 0.2s; }
+  .sim-btn.active, .sim-btn:hover { border-color: var(--red); color: var(--white); background: rgba(200,48,42,0.1); }
+  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; display: inline-block; }
+  .nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .nav-prev { flex: 1; } .nav-next { flex: 1; text-align: right; }
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .chapter-eyebrow{animation:fadeUp .6s ease both;} .chapter-title{animation:fadeUp .6s .1s ease both;} .chapter-subtitle{animation:fadeUp .6s .2s ease both;} .chapter-meta{animation:fadeUp .6s .3s ease both;}
+  @media(max-width:768px){ nav{padding:0 24px;} .chapter-hero{padding:100px 24px 48px;} .content{padding:48px 24px;} .stat-grid{grid-template-columns:repeat(2,1fr);} .impl-card{grid-template-columns:1fr;gap:8px;} .next-chapter{flex-direction:column;gap:24px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="../index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+<section class="chapter-hero">
+  <div class="chapter-eyebrow">Partie V — Stratégie &amp; Théorie</div>
+  <div class="chapter-number">5.1</div>
+  <h1 class="chapter-title">Économie de Round &amp; Opérateurs</h1>
+  <p class="chapter-subtitle">Compositions, synergies &amp; picks selon le site</p>
+  <div class="chapter-meta">
+    <div class="meta-pill">Discipline <span>Théorie des jeux</span></div>
+    <div class="meta-pill">Mécanique <span>Opérateurs · Méta · Composition</span></div>
+    <div class="meta-pill">Niveau <span>Intermédiaire — Avancé</span></div>
+  </div>
+</section>
+
+<div class="content">
+  <div class="section-label">Introduction</div>
+  <h2>La composition d'équipe est une décision stratégique, pas un choix cosmétique</h2>
+  <p>Dans R6, le choix des opérateurs avant chaque round n'est pas anodin — c'est une décision qui détermine les outils disponibles pour toute l'équipe pendant ce round. Un opérateur mal sélectionné ne peut pas être remplacé en cours de round. Une composition sans hard breach sur un site à murs renforcés est une composition incomplète structurellement, quelle que soit la skill individuelle des joueurs.</p>
+  <p>Ce chapitre déconstruit la logique de sélection des opérateurs dans R6 — les synergies, les rôles, les picks selon le site, et comment la méta évolue au fil des saisons.</p>
+
+  <div class="stat-grid">
+    <div class="stat-box"><span class="stat-num">60<span>+</span></span><span class="stat-label">Opérateurs dans R6</span></div>
+    <div class="stat-box"><span class="stat-num">2<span>bans</span></span><span class="stat-label">Par équipe en ranked</span></div>
+    <div class="stat-box"><span class="stat-num">5<span>rôles</span></span><span class="stat-label">Hard breach · Support · Frag…</span></div>
+    <div class="stat-box"><span class="stat-num">Méta<span></span></span><span class="stat-label">Change chaque saison</span></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 1 — Simulateur interactif</div>
+  <h2>Construis ta composition — bilan des rôles</h2>
+  <p>Sélectionne les rôles que tu as dans ta composition. Le simulateur identifie les manques et les doublons.</p>
+
+  <div class="diagram-wrap">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;" id="role-grid"></div>
+    <canvas id="compCanvas" height="180" style="width:100%;display:block;border-radius:6px;"></canvas>
+    <div id="comp-feedback" style="margin-top:12px;background:rgba(0,0,0,0.3);padding:14px 18px;border-radius:4px;font-size:13px;color:var(--gray-text);line-height:1.6;min-height:48px;"></div>
+    <p class="diagram-caption">Équilibre des rôles — une composition complète couvre tous les piliers</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 2</div>
+  <h2>Les synergies fondamentales dans R6</h2>
+
+  <div class="diagram-wrap">
+    <svg width="100%" viewBox="0 0 680 260" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <!-- Synergie 1: Thermite + Thatcher -->
+      <rect x="20" y="20" width="195" height="100" rx="8" fill="rgba(200,48,42,0.08)" stroke="#c8302a" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="14" fill="#F09595" x="117" y="44" text-anchor="middle">THERMITE + THATCHER</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="117" y="62" text-anchor="middle">Thatcher détruit les gadgets sur</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="117" y="78" text-anchor="middle">les renforts (Bandit, Kaid, ADS)</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="117" y="94" text-anchor="middle">puis Thermite ouvre le mur renforcé</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#c8302a" x="117" y="110" text-anchor="middle">Synergie hard breach — obligatoire</text>
+
+      <!-- Synergie 2: Hibana + Thatcher -->
+      <rect x="243" y="20" width="195" height="100" rx="8" fill="rgba(239,159,39,0.08)" stroke="#EF9F27" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="14" fill="#FAC775" x="340" y="44" text-anchor="middle">HIBANA + THATCHER</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="340" y="62" text-anchor="middle">Hibana perce à distance via</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="340" y="78" text-anchor="middle">X-KAIROS (safer que Thermite)</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="340" y="94" text-anchor="middle">Thatcher + IQ contre gadgets</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#EF9F27" x="340" y="110" text-anchor="middle">Alternative hard breach distante</text>
+
+      <!-- Synergie 3: Twitch + hard breach -->
+      <rect x="466" y="20" width="195" height="100" rx="8" fill="rgba(55,138,221,0.08)" stroke="#378ADD" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="14" fill="#85B7EB" x="563" y="44" text-anchor="middle">TWITCH + HARD BREACH</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="563" y="62" text-anchor="middle">Twitch détruit les gadgets</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="563" y="78" text-anchor="middle">électroniques défensifs via drone</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="563" y="94" text-anchor="middle">sans risque — permet hard breach</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#378ADD" x="563" y="110" text-anchor="middle">Alternative à Thatcher</text>
+
+      <!-- Synergie 4: Lion/Jackal + fragger -->
+      <rect x="20" y="145" width="195" height="100" rx="8" fill="rgba(29,158,117,0.08)" stroke="#1D9E75" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="14" fill="#5DCAA5" x="117" y="169" text-anchor="middle">LION/JACKAL + FRAG</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="117" y="187" text-anchor="middle">Lion force les défenseurs à</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="117" y="203" text-anchor="middle">s'arrêter ou révèle leurs positions</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="117" y="219" text-anchor="middle">Jackal traque les roamers</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#1D9E75" x="117" y="235" text-anchor="middle">Intel collectif → duels favorables</text>
+
+      <!-- Synergie 5: Ash + Sledge soft -->
+      <rect x="243" y="145" width="195" height="100" rx="8" fill="rgba(127,119,221,0.08)" stroke="#7F77DD" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="14" fill="#AFA9EC" x="340" y="169" text-anchor="middle">ASH + SLEDGE</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="340" y="187" text-anchor="middle">Ash détruit barricades, gadgets</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="340" y="203" text-anchor="middle">et renforts légers à distance</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="340" y="219" text-anchor="middle">Sledge ouvre les soft walls vite</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#7F77DD" x="340" y="235" text-anchor="middle">Création d'angles polyvalente</text>
+
+      <!-- Synergie 6: Drone intel -->
+      <rect x="466" y="145" width="195" height="100" rx="8" fill="rgba(200,48,42,0.06)" stroke="rgba(200,48,42,0.3)" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="13" fill="#F09595" x="563" y="169" text-anchor="middle">VALKYRIE + MOZZIE (DEF)</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="563" y="187" text-anchor="middle">Valkyrie multiplie les caméras</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="563" y="203" text-anchor="middle">Mozzie vole les drones attaquants</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="563" y="219" text-anchor="middle">pour les retourner contre eux</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#c8302a" x="563" y="235" text-anchor="middle">Intel défensif maximal</text>
+    </svg>
+    <p class="diagram-caption">6 synergies fondamentales dans R6 — attaque et défense</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 3</div>
+  <h2>Implications stratégiques</h2>
+
+  <div class="impl-grid">
+    <div class="impl-card">
+      <div><div class="impl-tag">Hard</div><div class="impl-tag-sub">breach must</div></div>
+      <div>
+        <div class="impl-title">Pourquoi Thermite ou Hibana sont quasi-obligatoires en attaque</div>
+        <p class="impl-text">La grande majorité des sites dans R6 ont au moins 2 à 3 murs renforcés sur les axes d'entrée critiques. Sans hard breach, ces murs sont permanents et les défenseurs peuvent concentrer leur défense sur les angles non renforcés. Thermite et Hibana sont les seuls opérateurs attaquants capables de percer les renforts. En ranked à haut niveau, ne pas en avoir dans la composition est considéré comme une erreur de draft, peu importe le skill individuel de l'équipe.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Bans</div><div class="impl-tag-sub">stratégie</div></div>
+      <div>
+        <div class="impl-title">La stratégie des bans — cibler les synergies ennemies</div>
+        <p class="impl-text">En ranked, chaque équipe peut bannir 2 opérateurs adverses. L'approche optimale ne consiste pas à bannir les opérateurs "les plus forts" en général — c'est de bannir ceux qui créent les synergies les plus dangereuses contre ta composition. Bannir Thatcher force l'adversaire à trouver une alternative pour détruire les gadgets sur tes renforts. Bannir Jäger expose l'équipe adverse aux grenades. La logique des bans doit être site-spécifique et composition-spécifique, pas universelle.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Méta</div><div class="impl-tag-sub">saisons</div></div>
+      <div>
+        <div class="impl-title">La méta change — et tu dois changer avec elle</div>
+        <p class="impl-text">Ubisoft modifie régulièrement les statistiques des opérateurs (buffs et nerfs) à chaque nouvelle saison. Ce qui était la composition optimale en Year 8 peut être sous-optimal en Year 9. La méta actuelle (consulte les tier lists officielles des joueurs Pro League) reflète l'équilibre du moment. L'essentiel à comprendre : ce ne sont pas les opérateurs individuels qui définissent la méta, mais les synergies. Quand un opérateur est nerfé, c'est souvent toute une synergie qui devient moins viable.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Flex</div><div class="impl-tag-sub">picking</div></div>
+      <div>
+        <div class="impl-title">Le flex picking — s'adapter à la composition ennemie</div>
+        <p class="impl-text">Un flex pick est un opérateur que tu sélectionnes en réponse à ce que l'adversaire a déjà sélectionné, pas en fonction d'un plan préétabli. En ranked, attendre de voir les picks adverses avant de finaliser les tiens est une technique avancée. Si l'adversaire joue sans hard breach counter (pas de Bandit trick), ton Thermite est garanti d'être efficace. Si l'adversaire joue Mozzie en masse, un Twitch devient plus précieux. Cette lecture de draft prend de l'importance à haut niveau.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="next-chapter">
+  <div class="nav-prev"><a href="../partie-4/4-6-communication.html" class="nav-cta">← Partie IV</a></div>
+  <div class="nav-next"><a href="5-2-control-map.html" class="nav-cta">Chapitre 5.2 →</a></div>
+</div>
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie V · Chapitre 5.1</span>
+</footer>
+
+<script>
+const roles = [
+  { id:'hardBreach', label:'Hard Breach', desc:'Thermite / Hibana', color:'#c8302a', required:true },
+  { id:'softBreach', label:'Soft Breach', desc:'Sledge / Ash / Buck', color:'#EF9F27', required:true },
+  { id:'antiGadget', label:'Anti-Gadget', desc:'Thatcher / Twitch / IQ', color:'#378ADD', required:true },
+  { id:'intel', label:'Intel', desc:'Lion / Jackal / Zero', color:'#1D9E75', required:true },
+  { id:'frag', label:'Fragger', desc:'Ash / Zofia / Iana', color:'#7F77DD', required:false },
+  { id:'support', label:'Support', desc:'Doc / Rook (déf)', color:'#888', required:false },
+];
+let selected = {};
+
+function buildRoles() {
+  const grid = document.getElementById('role-grid');
+  roles.forEach(r => {
+    const div = document.createElement('div');
+    div.style.cssText = `display:flex;align-items:center;gap:10px;background:var(--gray);padding:12px 16px;border-radius:6px;cursor:pointer;border:1px solid ${r.required ? r.color+'40' : 'var(--border)'};transition:all 0.2s;`;
+    div.innerHTML = `
+      <div id="chk-${r.id}" style="width:18px;height:18px;border-radius:3px;border:1.5px solid ${r.color};flex-shrink:0;display:flex;align-items:center;justify-content:center;"></div>
+      <div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:500;letter-spacing:1px;color:var(--white);">${r.label}${r.required ? ' <span style="color:'+r.color+';font-size:10px;">●</span>' : ''}</div>
+        <div style="font-size:11px;color:var(--gray-text);">${r.desc}</div>
+      </div>`;
+    div.addEventListener('click', () => {
+      selected[r.id] = !selected[r.id];
+      const chk = document.getElementById('chk-'+r.id);
+      if (selected[r.id]) {
+        chk.style.background = r.color+'50';
+        chk.style.borderColor = r.color;
+        chk.innerHTML = `<svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="${r.color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+      } else {
+        chk.style.background = '';
+        chk.innerHTML = '';
+      }
+      updateComp();
+    });
+    grid.appendChild(div);
+  });
+  updateComp();
+}
+
+function updateComp() {
+  const canvas = document.getElementById('compCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 820;
+  canvas.width = W;
+  const H = 180;
+  ctx.clearRect(0, 0, W, H);
+
+  const total = roles.length;
+  const barW = (W - 48) / total;
+
+  roles.forEach((r, i) => {
+    const x = 24 + i * barW;
+    const filled = selected[r.id] ? 1 : 0;
+    const barH = filled ? 100 : 20;
+    const y = H - 40 - barH;
+
+    // Background bar
+    ctx.fillStyle = 'rgba(255,255,255,0.04)';
+    ctx.fillRect(x + 4, H - 40 - 100, barW - 8, 100);
+
+    // Filled bar
+    ctx.fillStyle = filled ? r.color + '60' : 'rgba(200,48,42,0.15)';
+    ctx.fillRect(x + 4, y, barW - 8, barH);
+    ctx.strokeStyle = filled ? r.color : (r.required ? '#c8302a' : 'var(--border)');
+    ctx.lineWidth = filled ? 1.5 : 0.8;
+    ctx.strokeRect(x + 4, y, barW - 8, barH);
+
+    if (!filled && r.required) {
+      ctx.fillStyle = '#c8302a';
+      ctx.font = "14px 'Bebas Neue', sans-serif";
+      ctx.textAlign = 'center';
+      ctx.fillText('!', x + barW/2, H - 40 - 50 + 8);
+    }
+
+    ctx.fillStyle = filled ? r.color : (r.required ? '#c8302a80' : '#444');
+    ctx.font = "10px 'Barlow Condensed', sans-serif";
+    ctx.textAlign = 'center';
+    ctx.fillText(r.label, x + barW/2, H - 20);
+  });
+
+  const missing = roles.filter(r => r.required && !selected[r.id]);
+  const extra = roles.filter(r => !r.required && selected[r.id]);
+  let feedback = '';
+  if (missing.length === 0) {
+    feedback = '✓ Composition complète — tous les rôles obligatoires sont couverts. ' + (extra.length > 0 ? 'Rôles bonus : ' + extra.map(r => r.label).join(', ') + '.' : '');
+  } else {
+    feedback = '⚠ Rôles manquants : ' + missing.map(r => r.label + ' (' + r.desc + ')').join(', ') + '. Sans ces rôles, la composition a des angles morts structurels.';
+  }
+  document.getElementById('comp-feedback').textContent = feedback;
+}
+
+window.addEventListener('load', buildRoles);
+</script>
+</body>
+</html>
