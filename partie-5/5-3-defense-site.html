@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5.3 Défense du Site & Renforts — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+  .chapter-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .chapter-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%); }
+  .chapter-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .chapter-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .chapter-number { font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px,15vw,180px); line-height: 0.85; color: rgba(255,255,255,0.04); position: absolute; right: 48px; top: 80px; pointer-events: none; }
+  .chapter-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px,7vw,80px); letter-spacing: 2px; line-height: 1; margin-bottom: 12px; position: relative; }
+  .chapter-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 40px; position: relative; }
+  .chapter-meta { display: flex; gap: 32px; flex-wrap: wrap; position: relative; }
+  .meta-pill { background: var(--gray); border: 1px solid var(--border); border-radius: 4px; padding: 8px 16px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .meta-pill span { color: var(--white); margin-left: 6px; }
+  .content { max-width: 900px; margin: 0 auto; padding: 64px 48px; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; line-height: 1; }
+  p { font-size: 15px; color: var(--gray-text); line-height: 1.8; margin-bottom: 16px; }
+  p strong { color: var(--white); font-weight: 500; }
+  .highlight-box { background: var(--gray); border-left: 3px solid var(--red); padding: 20px 24px; margin: 24px 0; border-radius: 0 6px 6px 0; }
+  .highlight-box p { margin: 0; color: var(--white); font-size: 14px; line-height: 1.7; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .diagram-wrap { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin: 32px 0; overflow-x: auto; }
+  .diagram-caption { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 16px; text-align: center; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; margin: 32px 0; }
+  .stat-box { background: var(--gray); padding: 24px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 2px; line-height: 1; color: var(--white); }
+  .stat-num span { color: var(--red); }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .impl-grid { display: flex; flex-direction: column; gap: 2px; margin: 32px 0; }
+  .impl-card { background: var(--gray); padding: 24px 28px; display: grid; grid-template-columns: 120px 1fr; gap: 24px; align-items: start; transition: background 0.2s; }
+  .impl-card:hover { background: var(--gray-mid); }
+  .impl-tag { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: var(--red); line-height: 1; }
+  .impl-tag-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 4px; }
+  .impl-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 6px; }
+  .impl-text { font-size: 13px; color: var(--gray-text); line-height: 1.7; margin: 0; }
+  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; display: inline-block; }
+  .nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .nav-prev { flex: 1; } .nav-next { flex: 1; text-align: right; }
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .chapter-eyebrow{animation:fadeUp .6s ease both;} .chapter-title{animation:fadeUp .6s .1s ease both;} .chapter-subtitle{animation:fadeUp .6s .2s ease both;} .chapter-meta{animation:fadeUp .6s .3s ease both;}
+  @media(max-width:768px){ nav{padding:0 24px;} .chapter-hero{padding:100px 24px 48px;} .content{padding:48px 24px;} .stat-grid{grid-template-columns:repeat(2,1fr);} .impl-card{grid-template-columns:1fr;gap:8px;} .next-chapter{flex-direction:column;gap:24px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="../index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+<section class="chapter-hero">
+  <div class="chapter-eyebrow">Partie V — Stratégie &amp; Théorie</div>
+  <div class="chapter-number">5.3</div>
+  <h1 class="chapter-title">Défense du Site &amp; Renforts</h1>
+  <p class="chapter-subtitle">Renforts stratégiques, positions &amp; défense proactive</p>
+  <div class="chapter-meta">
+    <div class="meta-pill">Partie <span>V</span></div>
+    <div class="meta-pill">Chapitre <span>5.3</span></div>
+    <div class="meta-pill">Niveau <span>Intermédiaire — Avancé</span></div>
+  </div>
+</section>
+<div class="content">
+  <div class="section-label">Introduction</div>
+  <h2>Les renforts ne sont pas une décision aléatoire</h2>
+  <p>La phase de préparation en défense dure 45 secondes. C'est le temps pour renforcer les murs critiques, placer les gadgets, et établir les positions défensives. Chaque décision prise pendant cette phase a un impact direct sur la viabilité de la défense pour tout le round. Renforcer les mauvais murs, ou ne pas renforcer les bons, peut rendre un site indéfendable quelle que soit la skill individuelle.</p>
+    <p>Ce chapitre couvre la logique du renforcement stratégique et les principes de la défense efficace du site dans R6.</p>
+  <div class="stat-grid">
+    <div class="stat-box"><span class="stat-num">3-4<span>murs</span></span><span class="stat-label">À renforcer par site</span></div>
+    <div class="stat-box"><span class="stat-num">Bandit<span></span></span><span class="stat-label">Trick anti-Thermite</span></div>
+    <div class="stat-box"><span class="stat-num">2<span>anchors</span></span><span class="stat-label">Standard sur site</span></div>
+    <div class="stat-box"><span class="stat-num">Son<span></span></span><span class="stat-label">Guide le repositionnement</span></div></div>
+  <hr class="divider">
+  <div class="section-label">Section 1</div>
+  <h2>Schéma — Vue d'ensemble</h2>
+  <div class="diagram-wrap">
+    <svg width="100%" viewBox="0 0 680 260" xmlns="http://www.w3.org/2000/svg">
+      <!-- Site room top view simplified -->
+      <rect x="160" y="20" width="360" height="220" rx="6" fill="rgba(200,48,42,0.05)" stroke="rgba(200,48,42,0.2)" stroke-width="1"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="rgba(200,48,42,0.4)" x="340" y="40" text-anchor="middle" letter-spacing="2">SITE</text>
+      <!-- Walls with reinforcement states -->
+      <!-- North wall (reinforced) -->
+      <rect x="160" y="20" width="360" height="10" fill="#c8302a" opacity="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#c8302a" x="340" y="16" text-anchor="middle">RENFORCÉ — Thermite requis</text>
+      <!-- South wall (soft) -->
+      <rect x="160" y="230" width="360" height="10" fill="#EF9F27" opacity="0.6"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#EF9F27" x="340" y="252" text-anchor="middle">SOFT — Angle à surveiller</text>
+      <!-- West wall (reinforced) -->
+      <rect x="160" y="20" width="10" height="220" fill="#c8302a" opacity="0.8"/>
+      <!-- East wall (soft with hole) -->
+      <rect x="510" y="20" width="10" height="100" fill="#EF9F27" opacity="0.5"/>
+      <rect x="510" y="160" width="10" height="80" fill="#EF9F27" opacity="0.5"/>
+      <rect x="510" y="118" width="10" height="44" fill="rgba(0,0,0,0.8)"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#1D9E75" x="540" y="142" text-anchor="start">Trou roaming</text>
+      <!-- Defenders -->
+      <circle cx="260" cy="130" r="14" fill="rgba(200,48,42,0.8)" stroke="#c8302a" stroke-width="1.5"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="9" fill="#F09595" x="260" y="134" text-anchor="middle">DEF 1</text>
+      <circle cx="420" cy="160" r="14" fill="rgba(200,48,42,0.8)" stroke="#c8302a" stroke-width="1.5"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="9" fill="#F09595" x="420" y="164" text-anchor="middle">DEF 2</text>
+      <!-- Gadgets -->
+      <rect x="175" y="110" width="20" height="20" rx="3" fill="rgba(239,159,39,0.5)" stroke="#EF9F27" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="8" fill="#EF9F27" x="185" y="124" text-anchor="middle">BBQ</text>
+      <rect x="460" y="80" width="20" height="20" rx="3" fill="rgba(55,138,221,0.5)" stroke="#378ADD" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="8" fill="#85B7EB" x="470" y="94" text-anchor="middle">CAM</text>
+      <!-- Angles coverage arcs -->
+      <path d="M 260 130 L 200 60 M 260 130 L 170 130 M 260 130 L 200 195" stroke="rgba(200,48,42,0.2)" stroke-width="1" fill="none" stroke-dasharray="4 3"/>
+      <path d="M 420 160 L 500 100 M 420 160 L 510 160 M 420 160 L 500 210" stroke="rgba(200,48,42,0.2)" stroke-width="1" fill="none" stroke-dasharray="4 3"/>
+    </svg>
+    <p class="diagram-caption">Vue de dessus d'un site — renforts, positions et couverture d'angles</p>
+  </div>
+  <hr class="divider">
+  <div class="section-label">Section 2</div>
+  <h2>Implications pratiques dans R6</h2>
+  <div class="impl-grid">
+    <div class="impl-card">
+      <div><div class="impl-tag">Quels</div><div class="impl-tag-sub">murs renf.</div></div>
+      <div>
+        <div class="impl-title">Comment décider quels murs renforcer</div>
+        <p class="impl-text">La règle générale : renforcer les murs qui donnent accès direct au site depuis les axes d'entrée principaux, et les murs qui créent des angles de wall bang contre les défenseurs. Pour identifier les murs prioritaires : si un attaquant peut percer ce mur et obtenir une ligne de tir directe sur la zone de défense principale, il doit être renforcé. Les murs secondaires qui donneraient seulement accès à une zone de flanc peuvent rester soft pour permettre des repositionnements défensifs.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Bandit</div><div class="impl-tag-sub">trick</div></div>
+      <div>
+        <div class="impl-title">Le Bandit trick — protéger les renforts de Thermite</div>
+        <p class="impl-text">Le Bandit trick consiste à placer continuellement des batteries électriques de Bandit sur un mur renforcé pendant que Thermite tente de le percer. L'électricité détruit la charge de brèche de Thermite avant qu'elle explose. La contre de Thatcher — ses grenades EMP détruisent les batteries. La contre de la contre : retirer la batterie pendant que la grenade EMP est en l'air, puis la replacer immédiatement après. C'est un jeu de timing au dixième de seconde qui se pratique en custom game.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Déf.</div><div class="impl-tag-sub">proactive</div></div>
+      <div>
+        <div class="impl-title">Défense proactive vs défense passive — trouver l'équilibre</div>
+        <p class="impl-text">Une défense entièrement passive (tous les défenseurs sur le site dès le départ) est prédictible et facile à exécuter pour des attaquants organisés. Une défense entièrement proactive (tous les défenseurs qui roament) laisse le site vide. L'équilibre optimal pour la plupart des sites en ranked : 2 anchors sur le site dès le début, 1 à 2 roamers dans les couloirs adjacents. Les roamers créent de la pression et consomment du temps attaquant, pendant que les anchors établissent et maintiennent les positions défensives clés.</p>
+      </div>
+    </div></div>
+</div>
+<div class="next-chapter">
+  <div class="nav-prev"><a href="5-2-control-map.html" class="nav-cta">← Chapitre 5.2</a></div>
+  <div class="nav-next"><a href="5-4-adaptation.html" class="nav-cta">Chapitre 5.4 →</a></div>
+</div>
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie V · Chapitre 5.3</span>
+</footer>
+</body>
+</html>
