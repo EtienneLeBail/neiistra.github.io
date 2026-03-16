@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Partie III — Biomécanique & Hardware — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+  .part-hero { padding: 120px 48px 80px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: end; }
+  .part-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 80% at 80% 30%, rgba(200,48,42,0.08) 0%, transparent 70%); }
+  .part-hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 60px 60px; mask-image: linear-gradient(180deg, transparent 0%, black 40%, black 60%, transparent 100%); }
+  .part-roman { font-family: 'Bebas Neue', sans-serif; font-size: clamp(120px,20vw,240px); line-height: 0.85; letter-spacing: 4px; color: rgba(255,255,255,0.04); position: absolute; right: 0; top: 40px; pointer-events: none; }
+  .part-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; position: relative; }
+  .part-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .part-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(48px,8vw,96px); letter-spacing: 2px; line-height: 0.95; margin-bottom: 20px; position: relative; }
+  .part-desc { font-size: 15px; color: var(--gray-text); line-height: 1.8; position: relative; max-width: 480px; }
+  .part-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; position: relative; }
+  .part-stat { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 24px; }
+  .part-stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 52px; letter-spacing: 2px; line-height: 1; color: var(--white); }
+  .part-stat-num span { color: var(--red); }
+  .part-stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); margin-top: 4px; }
+  .chapters-section { padding: 64px 48px; max-width: 1100px; margin: 0 auto; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 32px; display: flex; align-items: center; gap: 10px; }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  .chapter-list { display: flex; flex-direction: column; gap: 2px; }
+  .chapter-card { display: grid; grid-template-columns: 80px 1fr auto; gap: 24px; align-items: center; background: var(--gray); padding: 28px 32px; text-decoration: none; color: inherit; transition: background 0.2s; position: relative; overflow: hidden; }
+  .chapter-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--red); transform: scaleY(0); transform-origin: bottom; transition: transform 0.3s ease; }
+  .chapter-card:hover { background: var(--gray-mid); }
+  .chapter-card:hover::before { transform: scaleY(1); }
+  .chap-num { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 2px; color: var(--red); line-height: 1; }
+  .chap-title { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 6px; }
+  .chap-desc { font-size: 13px; color: var(--gray-text); line-height: 1.5; }
+  .chap-right { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+  .chap-status { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 4px 10px; border-radius: 3px; white-space: nowrap; }
+  .status-live { background: rgba(200,48,42,0.15); color: var(--red); border: 1px solid rgba(200,48,42,0.3); }
+  .chap-arrow { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; color: var(--gray-light); transition: color 0.2s; }
+  .chapter-card:hover .chap-arrow { color: var(--white); }
+  .part-nav { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; }
+  .part-nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; display: inline-block; }
+  .part-nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .part-nav-cta.disabled { color: var(--gray-light); border-color: var(--border); cursor: default; pointer-events: none; }
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .part-eyebrow{animation:fadeUp .6s ease both;} .part-title{animation:fadeUp .6s .1s ease both;} .part-desc{animation:fadeUp .6s .2s ease both;}
+  @media(max-width:768px){ nav{padding:0 24px;} .part-hero{grid-template-columns:1fr;padding:100px 24px 48px;gap:32px;} .chapters-section{padding:48px 24px;} .chapter-card{grid-template-columns:56px 1fr;gap:16px;padding:20px;} .chap-right{display:none;} .part-nav{flex-direction:column;gap:16px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="../index.html" class="nav-back">← Retour à l'accueil</a>
+</nav>
+
+<section class="part-hero">
+  <div class="part-hero-grid"></div>
+  <div class="part-roman">III</div>
+  <div>
+    <div class="part-eyebrow">Partie III — R6 Process</div>
+    <h1 class="part-title">Biomécanique<br>&amp;<br>Hardware</h1>
+    <p class="part-desc">Le corps et l'équipement comme système physique. Loi de Fitts, mémoire musculaire, sensibilité optimale, polling rate, dalle de moniteur, ergonomie et protocoles d'échauffement — tout ce qui se trouve entre ton cerveau et le serveur de jeu.</p>
+  </div>
+  <div class="part-stats">
+    <div class="part-stat"><div class="part-stat-num"><span>6</span></div><div class="part-stat-label">Chapitres</div></div>
+    <div class="part-stat"><div class="part-stat-num"><span>6</span></div><div class="part-stat-label">Disponibles</div></div>
+    <div class="part-stat"><div class="part-stat-num">Bio<span>.</span></div><div class="part-stat-label">Discipline</div></div>
+    <div class="part-stat"><div class="part-stat-num">1954<span></span></div><div class="part-stat-label">Loi de Fitts</div></div>
+  </div>
+</section>
+
+<div class="chapters-section">
+  <div class="section-label">Chapitres de la Partie III</div>
+  <div class="chapter-list">
+
+    <a href="3-1-controle-moteur.html" class="chapter-card">
+      <div class="chap-num">3.1</div>
+      <div>
+        <div class="chap-title">Contrôle Moteur Fin &amp; Loi de Fitts</div>
+        <div class="chap-desc">Pourquoi viser vite et viser précis sont en tension permanente. Les deux phases du mouvement de aim (balistique et correctif), la loi de Fitts interactive, et ce que ça implique pour le flick shot dans R6.</div>
+      </div>
+      <div class="chap-right"><span class="chap-status status-live">Disponible</span><span class="chap-arrow">Lire →</span></div>
+    </a>
+
+    <a href="3-2-sensibilite.html" class="chapter-card">
+      <div class="chap-num">3.2</div>
+      <div>
+        <div class="chap-title">Sensibilité Optimale — eDPI &amp; cm/360°</div>
+        <div class="chap-desc">Calculateur eDPI et cm/360° en temps réel, jeu poignet vs jeu bras, données des pros R6, et la méthode pour trouver sa sensibilité sans détruire sa mémoire musculaire.</div>
+      </div>
+      <div class="chap-right"><span class="chap-status status-live">Disponible</span><span class="chap-arrow">Lire →</span></div>
+    </a>
+
+    <a href="3-3-souris.html" class="chapter-card">
+      <div class="chap-num">3.3</div>
+      <div>
+        <div class="chap-title">Souris &amp; Polling Rate</div>
+        <div class="chap-desc">Le polling rate comme paramètre critique d'input lag, capteur optique vs laser, DPI natif vs interpolé, et lift-off distance. Ce qui compte vraiment dans une souris gaming pour R6.</div>
+      </div>
+      <div class="chap-right"><span class="chap-status status-live">Disponible</span><span class="chap-arrow">Lire →</span></div>
+    </a>
+
+    <a href="3-4-moniteur.html" class="chapter-card">
+      <div class="chap-num">3.4</div>
+      <div>
+        <div class="chap-title">Moniteur &amp; Input Lag</div>
+        <div class="chap-desc">Comparatif TN/IPS/VA/OLED pour R6, temps de réponse GtG, overdrive, G-Sync et FreeSync. Le dernier maillon de la chaîne — et pourquoi il peut annuler tous les autres gains hardware.</div>
+      </div>
+      <div class="chap-right"><span class="chap-status status-live">Disponible</span><span class="chap-arrow">Lire →</span></div>
+    </a>
+
+    <a href="3-5-ergonomie.html" class="chapter-card">
+      <div class="chap-num">3.5</div>
+      <div>
+        <div class="chap-title">Ergonomie &amp; Posture</div>
+        <div class="chap-desc">Setup optimal schématisé, hauteur de bureau, distance au moniteur, grip souris et tapis. Une mauvaise posture n'est pas qu'un problème de santé — c'est un handicap de performance immédiat.</div>
+      </div>
+      <div class="chap-right"><span class="chap-status status-live">Disponible</span><span class="chap-arrow">Lire →</span></div>
+    </a>
+
+    <a href="3-6-echauffement.html" class="chapter-card">
+      <div class="chap-num">3.6</div>
+      <div>
+        <div class="chap-title">Échauffement &amp; Pic de Performance</div>
+        <div class="chap-desc">La courbe de performance en session, le protocole d'échauffement en 3 phases, et comment identifier le moment où continuer à jouer nuit à la progression. La performance ne commence pas à la première partie.</div>
+      </div>
+      <div class="chap-right"><span class="chap-status status-live">Disponible</span><span class="chap-arrow">Lire →</span></div>
+    </a>
+
+  </div>
+</div>
+
+<div class="part-nav">
+  <a href="../partie-2/index.html" class="part-nav-cta">← Partie II</a>
+  <a href="../partie-4/index.html" class="part-nav-cta disabled">Partie IV →</a>
+</div>
+
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie III</span>
+</footer>
+
+</body>
+</html>
