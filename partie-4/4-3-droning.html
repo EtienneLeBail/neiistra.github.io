@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4.3 Droning — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--black:#0a0a0a;--white:#f5f2ed;--red:#c8302a;--gray:#1c1c1c;--gray-mid:#2e2e2e;--gray-light:#555;--gray-text:#999;--border:rgba(255,255,255,0.08);}
+  html{scroll-behavior:smooth;}
+  body{background:var(--black);color:var(--white);font-family:'Barlow',sans-serif;font-weight:300;line-height:1.7;overflow-x:hidden;}
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:64px;border-bottom:1px solid var(--border);background:rgba(10,10,10,0.88);backdrop-filter:blur(12px);}
+  .nav-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--white);text-decoration:none;}
+  .nav-logo span{color:var(--red);}
+  .nav-back{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);text-decoration:none;transition:color 0.2s;}
+  .nav-back:hover{color:var(--white);}
+  .chapter-hero{padding:120px 48px 64px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+  .chapter-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 80% at 80% 50%,rgba(200,48,42,0.07) 0%,transparent 70%);}
+  .chapter-eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:16px;display:flex;align-items:center;gap:12px;}
+  .chapter-eyebrow::before{content:'';display:block;width:28px;height:1px;background:var(--red);}
+  .chapter-number{font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,15vw,180px);line-height:0.85;color:rgba(255,255,255,0.04);position:absolute;right:48px;top:80px;pointer-events:none;}
+  .chapter-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,7vw,80px);letter-spacing:2px;line-height:1;margin-bottom:12px;position:relative;}
+  .chapter-subtitle{font-family:'Barlow Condensed',sans-serif;font-size:18px;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text);margin-bottom:40px;position:relative;}
+  .chapter-meta{display:flex;gap:32px;flex-wrap:wrap;position:relative;}
+  .meta-pill{background:var(--gray);border:1px solid var(--border);border-radius:4px;padding:8px 16px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);}
+  .meta-pill span{color:var(--white);margin-left:6px;}
+  .content{max-width:900px;margin:0 auto;padding:64px 48px;}
+  .section-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+  .section-label::before{content:'';display:block;width:20px;height:1px;background:var(--red);}
+  h2{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;color:var(--white);margin-bottom:20px;line-height:1;}
+  p{font-size:15px;color:var(--gray-text);line-height:1.8;margin-bottom:16px;}
+  p strong{color:var(--white);font-weight:500;}
+  .highlight-box{background:var(--gray);border-left:3px solid var(--red);padding:20px 24px;margin:24px 0;border-radius:0 6px 6px 0;}
+  .highlight-box p{margin:0;color:var(--white);font-size:14px;line-height:1.7;}
+  .divider{border:none;border-top:1px solid var(--border);margin:48px 0;}
+  .diagram-wrap{background:var(--gray);border:1px solid var(--border);border-radius:8px;padding:32px;margin:32px 0;overflow-x:auto;}
+  .diagram-caption{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-light);margin-top:16px;text-align:center;}
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin:32px 0;}
+  .stat-box{background:var(--gray);padding:24px 20px;display:flex;flex-direction:column;gap:6px;}
+  .stat-num{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:2px;line-height:1;color:var(--white);}
+  .stat-num span{color:var(--red);}
+  .stat-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);}
+  .impl-grid{display:flex;flex-direction:column;gap:2px;margin:32px 0;}
+  .impl-card{background:var(--gray);padding:24px 28px;display:grid;grid-template-columns:120px 1fr;gap:24px;align-items:start;transition:background 0.2s;}
+  .impl-card:hover{background:var(--gray-mid);}
+  .impl-tag{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:var(--red);line-height:1;}
+  .impl-tag-sub{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-light);margin-top:4px;}
+  .impl-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:500;letter-spacing:1px;color:var(--white);margin-bottom:6px;}
+  .impl-text{font-size:13px;color:var(--gray-text);line-height:1.7;margin:0;}
+  .next-chapter{border-top:1px solid var(--border);padding:48px;display:flex;justify-content:space-between;align-items:center;gap:16px;}
+  .nav-cta{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--white);text-decoration:none;padding:14px 28px;border:1px solid rgba(255,255,255,0.2);transition:all 0.25s;white-space:nowrap;display:inline-block;}
+  .nav-cta:hover{background:var(--red);border-color:var(--red);}
+  .nav-prev{flex:1;}.nav-next{flex:1;text-align:right;}
+  footer{border-top:1px solid var(--border);padding:24px 48px;display:flex;justify-content:space-between;align-items:center;}
+  .footer-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;color:var(--gray-text);}
+  .footer-logo span{color:var(--red);}
+  .footer-text{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;color:var(--gray-light);text-transform:uppercase;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+  .chapter-eyebrow{animation:fadeUp .6s ease both;}.chapter-title{animation:fadeUp .6s .1s ease both;}.chapter-subtitle{animation:fadeUp .6s .2s ease both;}.chapter-meta{animation:fadeUp .6s .3s ease both;}
+  @media(max-width:768px){nav{padding:0 24px;}.chapter-hero{padding:100px 24px 48px;}.content{padding:48px 24px;}.stat-grid{grid-template-columns:repeat(2,1fr);}.impl-card{grid-template-columns:1fr;gap:8px;}.next-chapter{flex-direction:column;gap:24px;padding:32px 24px;}footer{padding:20px 24px;flex-direction:column;gap:8px;}}
+</style>
+</head>
+<body>
+<nav><a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a><a href="../index.html" class="nav-back">← Retour aux chapitres</a></nav>
+<section class="chapter-hero">
+  <div class="chapter-eyebrow">Partie IV — Mécanique de jeu</div>
+  <div class="chapter-number">4.3</div>
+  <h1 class="chapter-title">Droning</h1>
+  <p class="chapter-subtitle">Intel collection, survie du drone &amp; timing optimal</p>
+  <div class="chapter-meta">
+    <div class="meta-pill">Discipline <span>Tactique offensive</span></div>
+    <div class="meta-pill">Mécanique <span>Drone · Intel · Positionnement</span></div>
+    <div class="meta-pill">Niveau <span>Tous niveaux</span></div>
+  </div>
+</section>
+<div class="content">
+  <div class="section-label">Introduction</div>
+  <h2>Le drone est la plus grande asymétrie d'information du jeu</h2>
+  <p>Dans un jeu sans mini-map, le drone est le seul outil qui permet de voir directement les positions ennemies. Bien utilisé, il crée une asymétrie d'information massive : tu sais où ils sont, ils ne savent pas où tu es. Mal utilisé — perdu trop vite, droning trop long, positions non mémorisées — il n'apporte rien et te laisse dans une position statique vulnérable pendant 20 à 40 secondes.</p>
+
+  <div class="stat-grid">
+    <div class="stat-box"><span class="stat-num">2<span></span></span><span class="stat-label">Drones par attaquant</span></div>
+    <div class="stat-box"><span class="stat-num">~20<span>s</span></span><span class="stat-label">Droning optimal max</span></div>
+    <div class="stat-box"><span class="stat-num">0<span></span></span><span class="stat-label">Mini-map en R6</span></div>
+    <div class="stat-box"><span class="stat-num">∞<span></span></span><span class="stat-label">Intel si drone survivant</span></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 1</div>
+  <h2>Les 3 objectifs du drone en attaque</h2>
+  <p>Chaque session de droning doit servir au moins un de ces trois objectifs. Droner sans objectif clair est une perte de temps et de position.</p>
+
+  <div class="diagram-wrap">
+    <svg width="100%" viewBox="0 0 680 200" xmlns="http://www.w3.org/2000/svg">
+      <rect x="40" y="20" width="180" height="160" rx="8" fill="rgba(55,138,221,0.08)" stroke="#378ADD" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="16" fill="#85B7EB" x="130" y="50" text-anchor="middle">LOCALISER</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#378ADD" x="130" y="70" text-anchor="middle">Trouver les défenseurs</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#555" x="130" y="90" text-anchor="middle">et le site choisi</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#378ADD" x="130" y="115" text-anchor="middle">Priorité absolue</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="130" y="132" text-anchor="middle">Surtout 1ère round</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="130" y="148" text-anchor="middle">sans info préalable</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="130" y="164" text-anchor="middle">→ Plan d'attaque</text>
+
+      <rect x="250" y="20" width="180" height="160" rx="8" fill="rgba(239,159,39,0.08)" stroke="#EF9F27" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="16" fill="#FAC775" x="340" y="50" text-anchor="middle">GARDER</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#EF9F27" x="340" y="70" text-anchor="middle">Placer le drone</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#555" x="340" y="90" text-anchor="middle">en position cachée</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#EF9F27" x="340" y="115" text-anchor="middle">Intel en temps réel</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="340" y="132" text-anchor="middle">Pendant l'exécution</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="340" y="148" text-anchor="middle">du round</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="340" y="164" text-anchor="middle">→ Callout positions</text>
+
+      <rect x="460" y="20" width="180" height="160" rx="8" fill="rgba(200,48,42,0.08)" stroke="#c8302a" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="16" fill="#F09595" x="550" y="50" text-anchor="middle">FLASH</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#c8302a" x="550" y="70" text-anchor="middle">Utiliser le drone</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#555" x="550" y="90" text-anchor="middle">comme distraction</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#c8302a" x="550" y="115" text-anchor="middle">Attirer l'attention</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="550" y="132" text-anchor="middle">ennemie pour</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="550" y="148" text-anchor="middle">couvrir une entrée</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="550" y="164" text-anchor="middle">→ Sacrifice délibéré</text>
+    </svg>
+    <p class="diagram-caption">Les 3 objectifs du drone — Localiser, Garder, Flash</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 2 — Simulateur interactif</div>
+  <h2>Entraîne ta gestion du drone — route optimale</h2>
+  <p>Clique sur la carte pour tracer le trajet de ton drone. L'objectif est de récupérer le maximum d'informations (opérateurs surlignés) en survivant le plus longtemps possible. Les fenêtres et zones ouvertes sont dangereuses.</p>
+
+  <div class="diagram-wrap">
+    <canvas id="droneCanvas" height="300" style="width:100%;display:block;cursor:crosshair;border-radius:6px;background:rgba(0,0,0,0.2);"></canvas>
+    <div style="display:flex;gap:8px;margin-top:12px;align-items:center;flex-wrap:wrap;">
+      <div style="background:rgba(0,0,0,0.3);padding:10px 16px;border-radius:4px;flex:1;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-light);margin-bottom:2px;">Opérateurs localisés</div>
+        <div id="drone-found" style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--white);">0/3</div>
+      </div>
+      <div style="background:rgba(0,0,0,0.3);padding:10px 16px;border-radius:4px;flex:1;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-light);margin-bottom:2px;">Statut drone</div>
+        <div id="drone-status" style="font-family:'Barlow Condensed',sans-serif;font-size:15px;color:var(--white);padding-top:4px;">En vie</div>
+      </div>
+      <button onclick="resetDrone()" style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:8px 16px;border:1px solid rgba(200,48,42,0.3);background:transparent;color:var(--red);cursor:pointer;border-radius:4px;">Reset</button>
+    </div>
+    <p class="diagram-caption">Schéma d'intérieur simplifié — évite les zones ouvertes (rouge) pour survivre</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 3</div>
+  <h2>Maîtriser le drone dans R6</h2>
+
+  <div class="impl-grid">
+    <div class="impl-card">
+      <div><div class="impl-tag">Survie</div><div class="impl-tag-sub">drone</div></div>
+      <div>
+        <div class="impl-title">Faire survivre son drone — la compétence la plus sous-évaluée</div>
+        <p class="impl-text">Un drone survivant qui reste caché dans le site après la phase de préparation est l'outil d'intel le plus puissant du jeu. Il peut être réactivé à n'importe quel moment du round pour localiser les défenseurs en temps réel, confirmer un roamer, ou guider un équipier. La règle fondamentale : ne jamais rouler en zone ouverte. Les angles visibles depuis les positions défensives classiques sont les tueurs de drones. Utilise les murs, les coins, les dessous de meubles. Un drone qui avance lentement en collant les murs survit 3 fois plus longtemps qu'un drone qui fonce en ligne droite.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Info</div><div class="impl-tag-sub">mémo</div></div>
+      <div>
+        <div class="impl-title">Mémoriser l'intel — pas seulement la voir</div>
+        <p class="impl-text">Voir une position ennemie avec le drone ne suffit pas — il faut la mémoriser et la communiquer. Les erreurs classiques : voir un défenseur en drone puis l'oublier 30 secondes après pendant l'entrée, ou callout une position sans préciser si c'est une position actuelle ou observée il y a 20 secondes. La discipline : quand tu vois un ennemi en drone, callout immédiatement sa position précise (pièce + coin/angle) à voix haute pour ton équipe, et ancre mentalement sa position sur ta carte mémorisée de la map.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Drone</div><div class="impl-tag-sub">en entrée</div></div>
+      <div>
+        <div class="impl-title">Utiliser le drone pendant l'entrée — coordination avec son équipe</div>
+        <p class="impl-text">La technique avancée : un joueur entre en action pendant qu'un équipier pilote un drone en temps réel pour lui donner les positions défensives. Le joueur en action dit "go drone" au moment où il est prêt à entrer, le joueur au drone avance dans la zone cible et callout en continu. Cette coordination réduit la nécessité de peek et permet des entrées beaucoup plus sûres. Elle nécessite une communication concise — pas de monologues, juste "DEF angle fenêtre", "DEF derrière bureau", "clear".</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="next-chapter">
+  <div class="nav-prev"><a href="4-2-destruction-offensive.html" class="nav-cta">← Chapitre 4.2</a></div>
+  <div class="nav-next"><a href="4-4-rappel.html" class="nav-cta">Chapitre 4.4 →</a></div>
+</div>
+<footer><span class="footer-logo">NEI<span>I</span>STRA</span><span class="footer-text">R6 Process — Partie IV · Chapitre 4.3</span></footer>
+
+<script>
+const defPositions = [{x:0.65,y:0.3,found:false},{x:0.72,y:0.65,found:false},{x:0.55,y:0.5,found:false}];
+const dangerZones = [{x:0.3,y:0.1,r:0.08},{x:0.5,y:0.2,r:0.06},{x:0.75,y:0.15,r:0.07}];
+let droneAlive=true, dronePos={x:0.1,y:0.8}, droneTrail=[];
+
+function resetDrone(){
+  droneAlive=true; dronePos={x:0.1,y:0.8}; droneTrail=[];
+  defPositions.forEach(d=>d.found=false);
+  document.getElementById('drone-found').textContent='0/3';
+  document.getElementById('drone-status').textContent='En vie';
+  document.getElementById('drone-status').style.color='var(--white)';
+  drawDrone();
+}
+
+function drawDrone(){
+  const canvas=document.getElementById('droneCanvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.offsetWidth||820; canvas.width=W;
+  const H=300; ctx.clearRect(0,0,W,H);
+
+  // Room layout
+  ctx.strokeStyle='rgba(255,255,255,0.1)'; ctx.lineWidth=1;
+  ctx.strokeRect(W*0.05,H*0.05,W*0.35,H*0.9);
+  ctx.strokeRect(W*0.42,H*0.05,W*0.52,H*0.9);
+  ctx.strokeRect(W*0.38,H*0.3,W*0.06,H*0.4);
+  ctx.fillStyle='rgba(255,255,255,0.04)';
+  ctx.fillRect(W*0.05,H*0.05,W*0.35,H*0.9);
+  ctx.fillRect(W*0.42,H*0.05,W*0.52,H*0.9);
+
+  ctx.fillStyle='rgba(55,138,221,0.15)'; ctx.fillRect(W*0.05,H*0.05,W*0.35,H*0.9);
+  ctx.fillStyle='rgba(200,48,42,0.1)'; ctx.fillRect(W*0.42,H*0.05,W*0.52,H*0.9);
+
+  ctx.fillStyle='rgba(55,138,221,0.3)'; ctx.font="10px 'Barlow Condensed',sans-serif"; ctx.textAlign='center';
+  ctx.fillText('SPAWN ATK',W*0.225,H*0.15);
+  ctx.fillStyle='rgba(200,48,42,0.3)'; ctx.fillText('SITE',W*0.68,H*0.15);
+
+  // Danger zones
+  dangerZones.forEach(z=>{
+    ctx.beginPath(); ctx.arc(W*z.x,H*z.y,W*z.r,0,Math.PI*2);
+    ctx.fillStyle='rgba(200,48,42,0.15)'; ctx.fill();
+    ctx.strokeStyle='rgba(200,48,42,0.4)'; ctx.lineWidth=1; ctx.stroke();
+    ctx.fillStyle='rgba(200,48,42,0.5)'; ctx.font="9px 'Barlow Condensed',sans-serif"; ctx.textAlign='center';
+    ctx.fillText('DANGER',W*z.x,H*z.y+4);
+  });
+
+  // Trail
+  if(droneTrail.length>1){
+    ctx.beginPath(); ctx.moveTo(droneTrail[0].x*W,droneTrail[0].y*H);
+    droneTrail.forEach(p=>ctx.lineTo(p.x*W,p.y*H));
+    ctx.strokeStyle='rgba(239,159,39,0.4)'; ctx.lineWidth=1.5; ctx.setLineDash([4,3]); ctx.stroke(); ctx.setLineDash([]);
+  }
+
+  // Defenders
+  defPositions.forEach(d=>{
+    const x=d.x*W, y=d.y*H;
+    if(d.found){
+      ctx.beginPath(); ctx.arc(x,y,14,0,Math.PI*2);
+      ctx.fillStyle='rgba(200,48,42,0.8)'; ctx.fill();
+      ctx.strokeStyle='#c8302a'; ctx.lineWidth=1.5; ctx.stroke();
+      ctx.fillStyle='#F09595'; ctx.font="9px 'Barlow Condensed',sans-serif"; ctx.textAlign='center';
+      ctx.fillText('DEF',x,y+4);
+    } else {
+      ctx.beginPath(); ctx.arc(x,y,14,0,Math.PI*2);
+      ctx.fillStyle='rgba(255,255,255,0.05)'; ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,0.1)'; ctx.lineWidth=1; ctx.stroke();
+    }
+  });
+
+  // Drone
+  if(droneAlive){
+    ctx.beginPath(); ctx.arc(dronePos.x*W,dronePos.y*H,8,0,Math.PI*2);
+    ctx.fillStyle='#EF9F27'; ctx.fill();
+    ctx.strokeStyle='#FAC775'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle='#EF9F27'; ctx.font="8px 'Barlow Condensed',sans-serif"; ctx.textAlign='center';
+    ctx.fillText('DRONE',dronePos.x*W,dronePos.y*H+18);
+  }
+}
+
+function handleDroneClick(e){
+  if(!droneAlive)return;
+  const canvas=document.getElementById('droneCanvas');
+  const rect=canvas.getBoundingClientRect();
+  const mx=(e.clientX-rect.left)/canvas.offsetWidth;
+  const my=(e.clientY-rect.top)/canvas.height*canvas.height/canvas.offsetHeight;
+  const H=300;
+  const mxr=(e.clientX-rect.left)/canvas.offsetWidth;
+  const myr=(e.clientY-rect.top)/(canvas.height*(canvas.offsetWidth/canvas.width)||300);
+
+  dronePos={x:mxr,y:myr};
+  droneTrail.push({...dronePos});
+
+  // Check danger zones
+  dangerZones.forEach(z=>{
+    const d=Math.hypot(mxr-z.x,myr-z.y*1);
+    if(d<z.r*1.5){
+      droneAlive=false;
+      document.getElementById('drone-status').textContent='Drone détruit !';
+      document.getElementById('drone-status').style.color='var(--red)';
+    }
+  });
+
+  // Check defenders
+  let found=0;
+  defPositions.forEach(d=>{
+    const dist=Math.hypot(mxr-d.x,myr-d.y*0.9);
+    if(dist<0.08) d.found=true;
+    if(d.found) found++;
+  });
+  document.getElementById('drone-found').textContent=found+'/3';
+  drawDrone();
+}
+
+window.addEventListener('load',()=>{
+  const canvas=document.getElementById('droneCanvas');
+  if(canvas){canvas.addEventListener('click',handleDroneClick);drawDrone();}
+});
+window.addEventListener('resize',drawDrone);
+</script>
+</body>
+</html>
