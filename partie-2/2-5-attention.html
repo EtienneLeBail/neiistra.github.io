@@ -34,6 +34,8 @@
   p strong { color: var(--white); font-weight: 500; }
   .highlight-box { background: var(--gray); border-left: 3px solid var(--red); padding: 20px 24px; margin: 24px 0; border-radius: 0 6px 6px 0; }
   .highlight-box p { margin: 0; color: var(--white); font-size: 14px; line-height: 1.7; }
+  .info-box { background: var(--gray); border-left: 3px solid #378ADD; padding: 20px 24px; margin: 24px 0; border-radius: 0 6px 6px 0; }
+  .info-box p { margin: 0; color: var(--white); font-size: 14px; line-height: 1.7; }
   .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
   .diagram-wrap { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin: 32px 0; overflow-x: auto; }
   .diagram-caption { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 16px; text-align: center; }
@@ -72,10 +74,10 @@
   <div class="chapter-eyebrow">Partie II — Neurosciences &amp; cognition</div>
   <div class="chapter-number">2.5</div>
   <h1 class="chapter-title">Attention Sélective</h1>
-  <p class="chapter-subtitle">Focus, scanning &amp; gestion de l'attention dans R6</p>
+  <p class="chapter-subtitle">Focus, sources d'information &amp; gestion de l'attention dans R6</p>
   <div class="chapter-meta">
     <div class="meta-pill">Discipline <span>Psychologie de l'attention</span></div>
-    <div class="meta-pill">Mécanique <span>Mini-map · Scanning · Priorités</span></div>
+    <div class="meta-pill">Mécanique <span>Drone · Son · Caméras · Callouts</span></div>
     <div class="meta-pill">Niveau <span>Tous niveaux</span></div>
   </div>
 </section>
@@ -83,69 +85,148 @@
 <div class="content">
 
   <div class="section-label">Introduction</div>
-  <h2>L'attention est une ressource limitée</h2>
-  <p>Le cerveau humain ne peut pas traiter consciemment toutes les informations disponibles simultanément — c'est un fait neurologique fondamental. L'attention sélective est le mécanisme par lequel le cerveau <strong>filtre activement</strong> ce qui mérite d'être traité consciemment et ce qui peut être ignoré ou traité en périphérie. Dans R6, la gestion de cette ressource attentionnelle est aussi importante que le aim.</p>
-  <p>Les joueurs qui "ne voient pas" les ennemis sur la mini-map, qui "n'entendent pas" les sons pourtant audibles, ou qui "oublient" de vérifier certains angles ne manquent pas d'intelligence — ils ont juste une allocation d'attention sous-optimale.</p>
+  <h2>L'attention est une ressource limitée dans un jeu sans mini-map</h2>
+  <p>R6 Siege est l'un des rares FPS compétitifs à ne pas avoir de mini-map. Cette décision de design fondamentale change radicalement la gestion de l'attention — <strong>toute information de position doit être activement récoltée</strong> via les drones, les caméras de surveillance, les sons, et les callouts vocaux. Il n'y a pas de raccourci : si tu ne droneises pas, si tu n'écoutes pas, si ton équipe ne callout pas, tu joues aveugle.</p>
+  <p>Ce chapitre déconstruit la psychologie de l'attention sélective dans ce contexte spécifique — comment le cerveau filtre, priorise et alloue sa capacité attentionnelle entre ces multiples sources d'information concurrentes.</p>
+
+  <div class="info-box">
+    <p>Rappel fondamental : contrairement à CS2, Valorant ou la majorité des FPS, R6 n'a pas de mini-map affichant les positions ennemies en temps réel. L'information de position est toujours partielle, toujours temporaire, et toujours à construire activement. C'est ce qui rend le game sense dans R6 si différent des autres jeux.</p>
+  </div>
 
   <div class="stat-grid">
-    <div class="stat-box"><span class="stat-num">1<span>foyer</span></span><span class="stat-label">Attention consciente à la fois</span></div>
-    <div class="stat-box"><span class="stat-num">~200<span>ms</span></span><span class="stat-label">Pour changer de foyer</span></div>
-    <div class="stat-box"><span class="stat-num">3<span>niv.</span></span><span class="stat-label">Profondeur d'attention</span></div>
-    <div class="stat-box"><span class="stat-num">Mini-<span>map</span></span><span class="stat-label">Zone la plus négligée</span></div>
+    <div class="stat-box"><span class="stat-num">0<span></span></span><span class="stat-label">Mini-map dans R6</span></div>
+    <div class="stat-box"><span class="stat-num">2<span>drones</span></span><span class="stat-label">Par attaquant au départ</span></div>
+    <div class="stat-box"><span class="stat-num">~200<span>ms</span></span><span class="stat-label">Pour switcher d'attention</span></div>
+    <div class="stat-box"><span class="stat-num">Son<span></span></span><span class="stat-label">Source d'info principale</span></div>
   </div>
 
   <hr class="divider">
 
   <div class="section-label">Section 1</div>
-  <h2>La hiérarchie de l'attention dans R6</h2>
-  <p>Toutes les informations dans R6 n'ont pas la même valeur attentionnelle. Un système d'allocation efficace traite les informations <strong>par ordre de priorité dynamique</strong> — la priorité d'une information change selon la phase du round, la position, et le contexte.</p>
+  <h2>Les 4 sources d'information dans R6 — et leur coût attentionnel</h2>
+  <p>Sans mini-map, l'information de position dans R6 provient exclusivement de quatre canaux. Chaque canal a un coût attentionnel différent et une fiabilité différente.</p>
 
   <div class="diagram-wrap">
-    <svg width="100%" viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg">
-      <!-- Pyramid layers -->
-      <!-- Layer 1 (top - highest priority) -->
-      <polygon points="340,20 220,100 460,100" fill="rgba(200,48,42,0.25)" stroke="#c8302a" stroke-width="1.5"/>
-      <text font-family="'Bebas Neue',sans-serif" font-size="14" fill="#F09595" x="340" y="62" text-anchor="middle">MENACE IMMÉDIATE</text>
-      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#c8302a" x="340" y="78" text-anchor="middle">Ennemi visible · Tirs entrants · Son proche</text>
+    <svg width="100%" viewBox="0 0 680 320" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
 
-      <!-- Layer 2 -->
-      <polygon points="220,104 100,184 460,104 580,184" fill="rgba(239,159,39,0.18)" stroke="#EF9F27" stroke-width="1"/>
-      <text font-family="'Bebas Neue',sans-serif" font-size="14" fill="#FAC775" x="340" y="145" text-anchor="middle">INTEL TACTIQUE</text>
-      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#EF9F27" x="340" y="162" text-anchor="middle">Mini-map · Callouts équipe · Droning · Sons distants</text>
+      <!-- Source 1: Son -->
+      <rect x="40" y="30" width="280" height="100" rx="8" fill="rgba(200,48,42,0.1)" stroke="#c8302a" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="18" fill="#F09595" x="180" y="58" text-anchor="middle">SON</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#c8302a" x="180" y="76" text-anchor="middle">Passif · Permanent · Coût : moyen</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="180" y="94" text-anchor="middle">Pas, destructions, gadgets, rechargements</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#c8302a" x="180" y="116" text-anchor="middle">Fiabilité : haute · Portée : ~12-18m</text>
 
-      <!-- Layer 3 -->
-      <polygon points="100,188 40,248 640,248 580,188" fill="rgba(55,138,221,0.15)" stroke="#378ADD" stroke-width="1"/>
-      <text font-family="'Bebas Neue',sans-serif" font-size="14" fill="#85B7EB" x="340" y="220" text-anchor="middle">GESTION DES RESSOURCES</text>
-      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#378ADD" x="340" y="237" text-anchor="middle">Munitions · Gadgets · HP · Timer du round</text>
+      <!-- Source 2: Drone -->
+      <rect x="360" y="30" width="280" height="100" rx="8" fill="rgba(55,138,221,0.1)" stroke="#378ADD" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="18" fill="#85B7EB" x="500" y="58" text-anchor="middle">DRONE</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#378ADD" x="500" y="76" text-anchor="middle">Actif · Limité · Coût : très élevé</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="500" y="94" text-anchor="middle">Vision directe, position précise, timing</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#378ADD" x="500" y="116" text-anchor="middle">Fiabilité : maximale · Durée : limitée</text>
 
-      <!-- Layer 4 (base) -->
-      <polygon points="40,252 20,300 660,300 640,252" fill="rgba(29,158,117,0.12)" stroke="#1D9E75" stroke-width="1"/>
-      <text font-family="'Bebas Neue',sans-serif" font-size="14" fill="#5DCAA5" x="340" y="278" text-anchor="middle">AUTOMATISÉ EN FOND</text>
-      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#1D9E75" x="340" y="294" text-anchor="middle">Recul · Mouvement · Crosshair placement · Positionnement de base</text>
+      <!-- Source 3: Caméras -->
+      <rect x="40" y="160" width="280" height="100" rx="8" fill="rgba(239,159,39,0.1)" stroke="#EF9F27" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="18" fill="#FAC775" x="180" y="188" text-anchor="middle">CAMÉRAS</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#EF9F27" x="180" y="206" text-anchor="middle">Actif · Défense seulement · Coût : moyen</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="180" y="224" text-anchor="middle">Caméras fixes + Valkyrie + Mozzie</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#EF9F27" x="180" y="246" text-anchor="middle">Fiabilité : haute · Angle : fixe/limité</text>
 
-      <!-- Labels right -->
-      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#555" x="640" y="65" text-anchor="start">Priorité 1</text>
-      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#555" x="600" y="150" text-anchor="start">Priorité 2</text>
-      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#555" x="648" y="225" text-anchor="start">Priorité 3</text>
-      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#555" x="640" y="280" text-anchor="start">Fond</text>
+      <!-- Source 4: Callouts -->
+      <rect x="360" y="160" width="280" height="100" rx="8" fill="rgba(29,158,117,0.1)" stroke="#1D9E75" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="18" fill="#5DCAA5" x="500" y="188" text-anchor="middle">CALLOUTS</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#1D9E75" x="500" y="206" text-anchor="middle">Passif · Équipe · Coût : faible</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#888" x="500" y="224" text-anchor="middle">Info d'équipiers, positions relayées</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#1D9E75" x="500" y="246" text-anchor="middle">Fiabilité : dépend de l'équipe</text>
 
-      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#444" x="340" y="328" text-anchor="middle">La hiérarchie est dynamique — un callout équipe monte en priorité 1 si la menace immédiate est résolue</text>
+      <!-- Central brain -->
+      <circle cx="340" cy="145" r="28" fill="rgba(127,119,221,0.15)" stroke="#7F77DD" stroke-width="1.5"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="14" fill="#AFA9EC" x="340" y="141" text-anchor="middle">CERVEAU</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="9" fill="#7F77DD" x="340" y="156" text-anchor="middle">Synthèse</text>
+
+      <!-- Arrows to brain -->
+      <line x1="320" y1="130" x2="316" y2="130" stroke="#c8302a" stroke-width="1" marker-end="url(#arr)" fill="none"/>
+      <line x1="360" y1="130" x2="364" y2="130" stroke="#378ADD" stroke-width="1" marker-end="url(#arr)" fill="none"/>
+      <line x1="320" y1="160" x2="316" y2="160" stroke="#EF9F27" stroke-width="1" marker-end="url(#arr)" fill="none"/>
+      <line x1="360" y1="160" x2="364" y2="160" stroke="#1D9E75" stroke-width="1" marker-end="url(#arr)" fill="none"/>
+
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#444" x="340" y="305" text-anchor="middle">R6 n'a pas de mini-map — toute information de position doit être activement construite depuis ces 4 canaux</text>
     </svg>
-    <p class="diagram-caption">Pyramide d'attention dans R6 — hiérarchie dynamique selon le contexte</p>
+    <p class="diagram-caption">Les 4 sources d'information dans R6 — coût attentionnel et fiabilité</p>
+  </div>
+
+  <div class="highlight-box">
+    <p>Le vrai avantage compétitif dans R6 ne vient pas d'une meilleure réaction — il vient d'une <strong>meilleure gestion de ces 4 canaux simultanément</strong>. Un joueur qui drone bien, écoute bien, lit les caméras et callout précisément joue avec une carte de la situation que son adversaire n'a pas. C'est de l'information asymétrique — l'arme tactique la plus puissante du jeu.</p>
   </div>
 
   <hr class="divider">
 
-  <div class="section-label">Section 2 — Simulateur interactif</div>
-  <h2>Entraîne ton scanning de mini-map</h2>
-  <p>La mini-map est la zone la plus négligée par les joueurs intermédiaires. Ce test mesure ta capacité à scanner périodiquement des informations secondaires tout en maintenant un foyer d'attention principal.</p>
+  <div class="section-label">Section 2</div>
+  <h2>La hiérarchie d'attention dans R6 — sans mini-map</h2>
+  <p>Sans mini-map pour absorber une partie de l'attention périphérique, la gestion des priorités attentionnelles est encore plus critique. Dans R6, la hiérarchie varie selon la phase du round.</p>
 
   <div class="diagram-wrap">
-    <div style="margin-bottom:12px;font-size:13px;color:var(--gray-text);">Garde ton regard sur la <strong style="color:var(--white);">cible rouge</strong> au centre. Dès que tu vois un point blanc apparaître en périphérie, clique dessus sans perdre la cible centrale de vue.</div>
+    <svg width="100%" viewBox="0 0 680 300" xmlns="http://www.w3.org/2000/svg">
+      <!-- Phase droning -->
+      <rect x="40" y="20" width="180" height="260" rx="8" fill="rgba(255,255,255,0.02)" stroke="var(--border)" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="14" fill="#888" x="130" y="44" text-anchor="middle" letter-spacing="2">DRONING</text>
+      <rect x="56" y="56" width="148" height="36" rx="4" fill="rgba(55,138,221,0.3)" stroke="#378ADD" stroke-width="1"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#85B7EB" x="130" y="78" text-anchor="middle">Drone — vision</text>
+      <rect x="56" y="100" width="148" height="36" rx="4" fill="rgba(200,48,42,0.2)" stroke="#c8302a" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#F09595" x="130" y="122" text-anchor="middle">Sons environnants</text>
+      <rect x="56" y="144" width="148" height="36" rx="4" fill="rgba(29,158,117,0.15)" stroke="#1D9E75" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#5DCAA5" x="130" y="166" text-anchor="middle">Callouts équipe</text>
+      <rect x="56" y="188" width="148" height="36" rx="4" fill="rgba(255,255,255,0.04)" stroke="var(--border)" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#555" x="130" y="210" text-anchor="middle">Survie du drone</text>
+      <rect x="56" y="232" width="148" height="28" rx="4" fill="rgba(255,255,255,0.02)" stroke="var(--border)" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#444" x="130" y="250" text-anchor="middle">Position propre</text>
+
+      <!-- Phase attack -->
+      <rect x="250" y="20" width="180" height="260" rx="8" fill="rgba(255,255,255,0.02)" stroke="var(--border)" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="14" fill="#888" x="340" y="44" text-anchor="middle" letter-spacing="2">ENTRÉE</text>
+      <rect x="266" y="56" width="148" height="36" rx="4" fill="rgba(200,48,42,0.35)" stroke="#c8302a" stroke-width="1.5"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#F09595" x="340" y="78" text-anchor="middle">Menace immédiate</text>
+      <rect x="266" y="100" width="148" height="36" rx="4" fill="rgba(200,48,42,0.2)" stroke="#c8302a" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#F09595" x="340" y="122" text-anchor="middle">Sons proches</text>
+      <rect x="266" y="144" width="148" height="36" rx="4" fill="rgba(29,158,117,0.2)" stroke="#1D9E75" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#5DCAA5" x="340" y="166" text-anchor="middle">Callouts équipe</text>
+      <rect x="266" y="188" width="148" height="36" rx="4" fill="rgba(55,138,221,0.15)" stroke="#378ADD" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#85B7EB" x="340" y="210" text-anchor="middle">Drone restant</text>
+      <rect x="266" y="232" width="148" height="28" rx="4" fill="rgba(255,255,255,0.04)" stroke="var(--border)" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#555" x="340" y="250" text-anchor="middle">Timer round</text>
+
+      <!-- Phase post-plant -->
+      <rect x="460" y="20" width="180" height="260" rx="8" fill="rgba(255,255,255,0.02)" stroke="var(--border)" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="14" fill="#888" x="550" y="44" text-anchor="middle" letter-spacing="2">POST-PLANT</text>
+      <rect x="476" y="56" width="148" height="36" rx="4" fill="rgba(200,48,42,0.35)" stroke="#c8302a" stroke-width="1.5"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#F09595" x="550" y="78" text-anchor="middle">Sons de défuse</text>
+      <rect x="476" y="100" width="148" height="36" rx="4" fill="rgba(200,48,42,0.2)" stroke="#c8302a" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#F09595" x="550" y="122" text-anchor="middle">Angles d'entrée</text>
+      <rect x="476" y="144" width="148" height="36" rx="4" fill="rgba(239,159,39,0.2)" stroke="#EF9F27" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#FAC775" x="550" y="166" text-anchor="middle">Caméras Valk</text>
+      <rect x="476" y="188" width="148" height="36" rx="4" fill="rgba(29,158,117,0.15)" stroke="#1D9E75" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#5DCAA5" x="550" y="210" text-anchor="middle">Callouts équipe</text>
+      <rect x="476" y="232" width="148" height="28" rx="4" fill="rgba(255,255,255,0.04)" stroke="var(--border)" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#555" x="550" y="250" text-anchor="middle">Timer bombe</text>
+    </svg>
+    <p class="diagram-caption">Hiérarchie d'attention par phase de round — droning, entrée, post-plant</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 3 — Test interactif</div>
+  <h2>Entraîne ta réactivité aux informations sonores</h2>
+  <p>Dans R6, le son est le canal d'information le plus constant — il est toujours actif, contrairement au drone qui est limité. Ce test simule la détection de signaux audio dans un environnement bruité. Réagis dès que tu entends un signal distinct parmi le bruit de fond.</p>
+
+  <div class="diagram-wrap">
+    <div style="margin-bottom:12px;font-size:13px;color:var(--gray-text);">Clique sur <strong style="color:var(--white)">Démarrer</strong>. Des cercles vont apparaître aléatoirement — ils représentent des sons ennemis que tu dois détecter rapidement. Clique dessus dès qu'ils apparaissent.</div>
     <canvas id="scanCanvas" height="320" style="width:100%;display:block;border-radius:6px;background:rgba(0,0,0,0.3);cursor:crosshair;"></canvas>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:2px;">
       <div style="background:rgba(0,0,0,0.3);padding:10px 16px;">
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-light);margin-bottom:2px;">Détections</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-light);margin-bottom:2px;">Détectés</div>
         <div id="scan-hits" style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--white);">0</div>
       </div>
       <div style="background:rgba(0,0,0,0.3);padding:10px 16px;">
@@ -153,7 +234,7 @@
         <div id="scan-miss" style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--white);">0</div>
       </div>
       <div style="background:rgba(0,0,0,0.3);padding:10px 16px;">
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-light);margin-bottom:2px;">Score</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-light);margin-bottom:2px;">Taux détection</div>
         <div id="scan-score" style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--white);">—</div>
       </div>
     </div>
@@ -165,36 +246,36 @@
 
   <hr class="divider">
 
-  <div class="section-label">Section 3</div>
-  <h2>Optimiser son allocation d'attention dans R6</h2>
+  <div class="section-label">Section 4</div>
+  <h2>Optimiser sa gestion attentionnelle dans R6</h2>
 
   <div class="impl-grid">
     <div class="impl-card">
-      <div><div class="impl-tag">Mini-</div><div class="impl-tag-sub">map scan</div></div>
+      <div><div class="impl-tag">Drone</div><div class="impl-tag-sub">attention</div></div>
       <div>
-        <div class="impl-title">La technique du scan périodique — vérifier la mini-map sans perdre le focus</div>
-        <p class="impl-text">Les pros ne regardent pas la mini-map en continu — ils la scannent périodiquement selon un rythme appris. La technique : toutes les 3 à 5 secondes en phase de déplacement, 1 coup d'œil rapide (~150ms) à la mini-map, puis retour immédiat au jeu principal. Ce rythme de scan s'automatise avec la pratique jusqu'à devenir un réflexe inconscient. La clé est de ne jamais rester plus de 200ms sur la mini-map — un regard trop long crée un angle mort sur l'environnement immédiat.</p>
+        <div class="impl-title">Le coût attentionnel du drone — pourquoi il faut droner vite et partir</div>
+        <p class="impl-text">Contrôler un drone mobilise une attention très élevée — tu es en vision drone (vue limitée), tu gères les Jäger/Bandit qui peuvent le détruire, et tu construis ta carte mentale simultanément. Pendant ce temps, ta position physique dans la map est statique et vulnérable. Les joueurs avancés ont une règle : drone 20 à 30 secondes maximum, récupère l'information essentielle (positions des défenseurs, site choisi), puis reviens en jeu actif. Un drone trop long = position statique trop longue = cible facile pour un roamer agressif.</p>
       </div>
     </div>
     <div class="impl-card">
-      <div><div class="impl-tag">Inattent.</div><div class="impl-tag-sub">blindness</div></div>
+      <div><div class="impl-tag">Son</div><div class="impl-tag-sub">priorité</div></div>
       <div>
-        <div class="impl-title">L'inattentional blindness — ne pas voir ce qu'on ne cherche pas</div>
-        <p class="impl-text">L'inattentional blindness (cécité par inattention) est le phénomène par lequel le cerveau ne perçoit pas consciemment des stimuli pourtant visibles, parce que l'attention est focalisée ailleurs. Dans R6, ça se traduit par "je ne l'ai pas vu" alors que l'ennemi était pleinement visible — son modèle était dans le champ visuel mais pas dans le foyer d'attention. Solution : entraîner le scanning large périphérique plutôt que le focus tunnel sur un seul angle. Les joueurs avancés maintiennent une "attention diffuse" qui couvre davantage de l'écran.</p>
+        <div class="impl-title">Pourquoi le son est le canal d'information le plus rentable dans R6</div>
+        <p class="impl-text">Contrairement au drone (limité, coûteux, destructible) ou aux caméras (réservées aux défenseurs), le son est permanent, gratuit et passif. Il donne des informations en continu sans mobiliser d'attention dédiée — à condition d'avoir automatisé l'interprétation des signatures sonores. Un joueur qui a intégré les patterns audio (chapitre 1.5) traite le son en arrière-plan, libérant l'attention pour d'autres canaux. C'est pour ça que jouer avec un bon casque et sans musique de fond change radicalement la quantité d'information disponible.</p>
       </div>
     </div>
     <div class="impl-card">
       <div><div class="impl-tag">Callouts</div><div class="impl-tag-sub">attention</div></div>
       <div>
-        <div class="impl-title">Pourquoi les callouts d'équipe libèrent de l'attention</div>
-        <p class="impl-text">Un callout précis ("Jäger angle fenêtre côté escalier") permet à tes coéquipiers de déléguer une partie de leur surveillance à ta perception. Si un équipier couvre un angle et le callout, tu n'as pas besoin d'allouer ta propre attention à cet angle — ton cerveau peut l'exclure du scan actif et dédier cette capacité ailleurs. Les équipes qui calloutent bien jouent effectivement avec plus de capacité attentionnelle collective. C'est la multiplication de la ressource attentionnelle par 5 — le fondement de toute stratégie d'équipe efficace.</p>
+        <div class="impl-title">Les callouts comme extension de l'attention collective</div>
+        <p class="impl-text">Quand un équipier callout une position ennemie, il délègue une partie de son attention à tes représentations mentales. Tu peux "exclure" cet angle de ton scan actif et dédier ta capacité attentionnelle à d'autres zones. Les équipes qui calloutent bien jouent effectivement avec plus de capacité attentionnelle collective — chaque joueur couvre une zone, et l'ensemble forme une surveillance quasi-totale. Un callout précis ("Echo caméra plafond couloir rouge") vaut infiniment plus qu'"il est quelque part à gauche". La précision du callout détermine combien d'attention peut être libérée chez les équipiers.</p>
       </div>
     </div>
     <div class="impl-card">
       <div><div class="impl-tag">Tunnel</div><div class="impl-tag-sub">vision</div></div>
       <div>
         <div class="impl-title">Le tunnel vision — quand l'attention se focalise de façon contre-productive</div>
-        <p class="impl-text">Le tunnel vision est la restriction involontaire du foyer attentionnel à un seul élément — généralement un ennemi ou une zone — au détriment de toute autre information. Il survient typiquement sous stress élevé (clutch, timer critique) quand le système limbique prend le dessus et réduit le champ attentionnel comme mécanisme de survie. Dans R6, le tunnel vision sur un ennemi expose souvent à un second ennemi non détecté. La contre-mesure : entraîner la "scan after kill" — un mouvement délibéré de la caméra vers les zones adjacentes immédiatement après chaque élimination.</p>
+        <p class="impl-text">Le tunnel vision est la restriction involontaire du foyer attentionnel à un seul élément — typiquement un ennemi visible ou un angle — au détriment de tous les autres canaux. Il survient sous stress élevé quand le système limbique réduit le champ attentionnel comme mécanisme de survie. Dans R6, le tunnel vision sur un ennemi expose souvent à un second ennemi non détecté, ou à des sons qui signalaient une rotation depuis 5 secondes. La contre-mesure : "scan after kill" — un tour de caméra délibéré vers les zones adjacentes immédiatement après chaque élimination, avant de se repositionner.</p>
       </div>
     </div>
   </div>
@@ -251,20 +332,20 @@ function spawnDot() {
   const W = canvas.offsetWidth || 820;
   const H = 320;
   const margin = 40;
-  const cx = W/2, cy = H/2;
   let x, y;
-  do {
-    x = margin + Math.random() * (W - margin*2);
-    y = margin + Math.random() * (H - margin*2);
-  } while (Math.hypot(x - cx, y - cy) < 80);
-
-  activeDot = {x, y, born: Date.now()};
+  x = margin + Math.random() * (W - margin * 2);
+  y = margin + Math.random() * (H - margin * 2);
+  activeDot = { x, y, born: Date.now() };
   drawScanBase();
-
   dotTimeout = setTimeout(() => {
-    if (activeDot) { misses++; document.getElementById('scan-miss').textContent = misses; activeDot = null; drawScanBase(); }
+    if (activeDot) {
+      misses++;
+      document.getElementById('scan-miss').textContent = misses;
+      activeDot = null;
+      drawScanBase();
+    }
     scheduleDot();
-  }, 1200);
+  }, 1400);
 }
 
 function drawScanBase() {
@@ -276,40 +357,53 @@ function drawScanBase() {
   const H = 320;
   ctx.clearRect(0, 0, W, H);
 
-  // Center target
-  const cx = W/2, cy = H/2;
-  ctx.beginPath(); ctx.arc(cx, cy, 20, 0, Math.PI*2);
-  ctx.strokeStyle = '#c8302a'; ctx.lineWidth = 2; ctx.stroke();
-  ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI*2);
-  ctx.fillStyle = '#c8302a'; ctx.fill();
-  ctx.beginPath();
-  ctx.moveTo(cx-30,cy); ctx.lineTo(cx-22,cy);
-  ctx.moveTo(cx+22,cy); ctx.lineTo(cx+30,cy);
-  ctx.moveTo(cx,cy-30); ctx.lineTo(cx,cy-22);
-  ctx.moveTo(cx,cy+22); ctx.lineTo(cx,cy+30);
-  ctx.strokeStyle = 'rgba(200,48,42,0.5)'; ctx.lineWidth = 1; ctx.stroke();
+  // Draw room layout (R6-style top view)
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.lineWidth = 1;
+  // Walls
+  ctx.strokeRect(20, 20, W-40, H-40);
+  // Interior walls
+  ctx.beginPath(); ctx.moveTo(W/2, 20); ctx.lineTo(W/2, H*0.6); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(20, H/2); ctx.lineTo(W*0.4, H/2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(W*0.6, H/2); ctx.lineTo(W-20, H/2); ctx.stroke();
+
+  ctx.fillStyle = 'rgba(255,255,255,0.06)';
+  ctx.font = "10px 'Barlow Condensed', sans-serif";
+  ctx.textAlign = 'center';
+  ctx.fillText('Vue de dessus schématique — représentation R6', W/2, 14);
 
   if (!scanRunning) {
     ctx.fillStyle = 'rgba(255,255,255,0.2)';
     ctx.font = "14px 'Barlow Condensed', sans-serif";
-    ctx.textAlign = 'center';
-    ctx.fillText('Clique sur Démarrer pour commencer', cx, cy + 60);
+    ctx.fillText('Clique sur Démarrer pour commencer', W/2, H/2 + 4);
     return;
   }
 
-  // Timer
   ctx.fillStyle = '#555';
-  ctx.font = "11px 'Barlow Condensed', sans-serif";
-  ctx.textAlign = 'left';
-  ctx.fillText('Durée : 30s — Détecte les points blancs sans quitter la cible rouge des yeux', 12, 20);
+  ctx.font = "10px 'Barlow Condensed', sans-serif";
+  ctx.fillText('Détecte les signaux ennemis — 30 secondes', W/2, H - 6);
 
-  // Active dot
   if (activeDot) {
-    const age = (Date.now() - activeDot.born) / 1200;
-    const alpha = 1 - age * 0.3;
-    ctx.beginPath(); ctx.arc(activeDot.x, activeDot.y, 12, 0, Math.PI*2);
-    ctx.fillStyle = `rgba(245,242,237,${alpha})`; ctx.fill();
-    ctx.strokeStyle = `rgba(200,48,42,${alpha})`; ctx.lineWidth = 2; ctx.stroke();
+    const age = (Date.now() - activeDot.born) / 1400;
+    const alpha = 1 - age * 0.4;
+    // Ripple effect
+    ctx.beginPath();
+    ctx.arc(activeDot.x, activeDot.y, 20 + age * 10, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(200,48,42,${alpha * 0.3})`;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    // Main dot
+    ctx.beginPath();
+    ctx.arc(activeDot.x, activeDot.y, 10, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(200,48,42,${alpha})`;
+    ctx.fill();
+    ctx.strokeStyle = `rgba(245,242,237,${alpha})`;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    // Sound wave symbol
+    ctx.fillStyle = `rgba(245,242,237,${alpha * 0.8})`;
+    ctx.font = "10px 'Barlow Condensed', sans-serif";
+    ctx.fillText('PAS', activeDot.x, activeDot.y - 16);
   }
 }
 
@@ -320,7 +414,7 @@ function handleScanClick(e) {
   const x = (e.clientX - rect.left) * (canvas.width / rect.width);
   const y = (e.clientY - rect.top) * (canvas.height / rect.height);
   const dist = Math.hypot(x - activeDot.x, y - activeDot.y);
-  if (dist < 30) {
+  if (dist < 35) {
     hits++;
     document.getElementById('scan-hits').textContent = hits;
     clearTimeout(dotTimeout);
