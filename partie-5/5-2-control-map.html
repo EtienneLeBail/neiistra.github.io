@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5.2 Control de Map & Roaming — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+  .chapter-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .chapter-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%); }
+  .chapter-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .chapter-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .chapter-number { font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px,15vw,180px); line-height: 0.85; color: rgba(255,255,255,0.04); position: absolute; right: 48px; top: 80px; pointer-events: none; }
+  .chapter-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px,7vw,80px); letter-spacing: 2px; line-height: 1; margin-bottom: 12px; position: relative; }
+  .chapter-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 40px; position: relative; }
+  .chapter-meta { display: flex; gap: 32px; flex-wrap: wrap; position: relative; }
+  .meta-pill { background: var(--gray); border: 1px solid var(--border); border-radius: 4px; padding: 8px 16px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .meta-pill span { color: var(--white); margin-left: 6px; }
+  .content { max-width: 900px; margin: 0 auto; padding: 64px 48px; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; line-height: 1; }
+  p { font-size: 15px; color: var(--gray-text); line-height: 1.8; margin-bottom: 16px; }
+  p strong { color: var(--white); font-weight: 500; }
+  .highlight-box { background: var(--gray); border-left: 3px solid var(--red); padding: 20px 24px; margin: 24px 0; border-radius: 0 6px 6px 0; }
+  .highlight-box p { margin: 0; color: var(--white); font-size: 14px; line-height: 1.7; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .diagram-wrap { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin: 32px 0; overflow-x: auto; }
+  .diagram-caption { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 16px; text-align: center; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; margin: 32px 0; }
+  .stat-box { background: var(--gray); padding: 24px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 2px; line-height: 1; color: var(--white); }
+  .stat-num span { color: var(--red); }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .impl-grid { display: flex; flex-direction: column; gap: 2px; margin: 32px 0; }
+  .impl-card { background: var(--gray); padding: 24px 28px; display: grid; grid-template-columns: 120px 1fr; gap: 24px; align-items: start; transition: background 0.2s; }
+  .impl-card:hover { background: var(--gray-mid); }
+  .impl-tag { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: var(--red); line-height: 1; }
+  .impl-tag-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 4px; }
+  .impl-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 6px; }
+  .impl-text { font-size: 13px; color: var(--gray-text); line-height: 1.7; margin: 0; }
+  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; display: inline-block; }
+  .nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .nav-prev { flex: 1; } .nav-next { flex: 1; text-align: right; }
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .chapter-eyebrow{animation:fadeUp .6s ease both;} .chapter-title{animation:fadeUp .6s .1s ease both;} .chapter-subtitle{animation:fadeUp .6s .2s ease both;} .chapter-meta{animation:fadeUp .6s .3s ease both;}
+  @media(max-width:768px){ nav{padding:0 24px;} .chapter-hero{padding:100px 24px 48px;} .content{padding:48px 24px;} .stat-grid{grid-template-columns:repeat(2,1fr);} .impl-card{grid-template-columns:1fr;gap:8px;} .next-chapter{flex-direction:column;gap:24px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="../index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+<section class="chapter-hero">
+  <div class="chapter-eyebrow">Partie V — Stratégie &amp; Théorie</div>
+  <div class="chapter-number">5.2</div>
+  <h1 class="chapter-title">Control de Map &amp; Roaming</h1>
+  <p class="chapter-subtitle">Zones de contrôle, routes de roaming &amp; timing de repli</p>
+  <div class="chapter-meta">
+    <div class="meta-pill">Partie <span>V</span></div>
+    <div class="meta-pill">Chapitre <span>5.2</span></div>
+    <div class="meta-pill">Niveau <span>Intermédiaire — Avancé</span></div>
+  </div>
+</section>
+<div class="content">
+  <div class="section-label">Introduction</div>
+  <h2>Le contrôle de map est de la géographie tactique</h2>
+  <p>Dans R6, l'espace se divise en trois zones tactiques qui définissent la logique de chaque round. La zone <strong>externe</strong> (dehors du bâtiment) appartient aux attaquants au départ. Les <strong>couloirs et zones de transition</strong> à l'intérieur sont contestées. La zone <strong>site</strong> est l'objectif défensif. Le contrôle de map, c'est la conquête et la conservation de chaque zone selon les besoins tactiques du moment.</p>
+    <p>Les roamers défensifs ne jouent pas "en dehors du site parce qu'ils en ont envie" — ils exercent une <strong>pression temporelle calculée</strong> sur les attaquants, les forçant à consommer du temps et des drones pour nettoyer le bâtiment avant d'attaquer le site.</p>
+  <div class="stat-grid">
+    <div class="stat-box"><span class="stat-num">3<span>zones</span></span><span class="stat-label">Externe · Couloir · Site</span></div>
+    <div class="stat-box"><span class="stat-num">Roam<span></span></span><span class="stat-label">Contrôle de pression</span></div>
+    <div class="stat-box"><span class="stat-num">Repli<span></span></span><span class="stat-label">≥30s avant assault</span></div>
+    <div class="stat-box"><span class="stat-num">Son<span></span></span><span class="stat-label">Outil de roaming</span></div></div>
+  <hr class="divider">
+  <div class="section-label">Section 1</div>
+  <h2>Schéma — Vue d'ensemble</h2>
+  <div class="diagram-wrap">
+    <svg width="100%" viewBox="0 0 680 280" xmlns="http://www.w3.org/2000/svg">
+      <!-- Zone externe -->
+      <rect x="20" y="20" width="150" height="240" rx="6" fill="rgba(55,138,221,0.08)" stroke="#378ADD" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="14" fill="#85B7EB" x="95" y="48" text-anchor="middle" letter-spacing="2">EXTERNE</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#378ADD" x="95" y="66" text-anchor="middle">Spawn attaquants</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="95" y="84" text-anchor="middle">Droning initial ici</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="95" y="102" text-anchor="middle">Rappels depuis ici</text>
+      <!-- Zone transition -->
+      <rect x="190" y="20" width="250" height="240" rx="6" fill="rgba(239,159,39,0.06)" stroke="#EF9F27" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="14" fill="#FAC775" x="315" y="48" text-anchor="middle" letter-spacing="2">TRANSITION</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#EF9F27" x="315" y="66" text-anchor="middle">Zone contestée</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="315" y="84" text-anchor="middle">Couloirs, escaliers</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="315" y="102" text-anchor="middle">Pièces intermédiaires</text>
+      <!-- Roamer indicators -->
+      <circle cx="260" cy="160" r="12" fill="rgba(200,48,42,0.6)" stroke="#c8302a" stroke-width="1"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="8" fill="#F09595" x="260" y="164" text-anchor="middle">ROAM</text>
+      <circle cx="350" cy="120" r="12" fill="rgba(200,48,42,0.4)" stroke="#c8302a" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="8" fill="#F09595" x="350" y="124" text-anchor="middle">ROAM</text>
+      <!-- Roaming arrows -->
+      <path d="M 272 160 Q 290 130 320 120" stroke="#c8302a" stroke-width="1" fill="none" stroke-dasharray="4 3" opacity="0.5"/>
+      <!-- Zone site -->
+      <rect x="460" y="20" width="200" height="240" rx="6" fill="rgba(200,48,42,0.08)" stroke="#c8302a" stroke-width="1.5"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="14" fill="#F09595" x="560" y="48" text-anchor="middle" letter-spacing="2">SITE</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#c8302a" x="560" y="66" text-anchor="middle">Objectif défensif</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="560" y="84" text-anchor="middle">2-3 anchors ici</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="560" y="102" text-anchor="middle">Renforts + gadgets</text>
+      <!-- Anchor -->
+      <circle cx="530" cy="160" r="12" fill="rgba(200,48,42,0.7)" stroke="#c8302a" stroke-width="1"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="8" fill="#F09595" x="530" y="164" text-anchor="middle">HOLD</text>
+      <circle cx="590" cy="140" r="12" fill="rgba(200,48,42,0.7)" stroke="#c8302a" stroke-width="1"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="8" fill="#F09595" x="590" y="144" text-anchor="middle">HOLD</text>
+      <!-- Time cost arrow -->
+      <path d="M 170 140 L 188 140" stroke="#EF9F27" stroke-width="1.5" fill="none" opacity="0.6"/>
+      <path d="M 440 140 L 458 140" stroke="#EF9F27" stroke-width="1.5" fill="none" opacity="0.6"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="340" y="268" text-anchor="middle">Les roamers en zone transition coûtent du temps aux attaquants — forçant droning + kill avant l'assault site</text>
+    </svg>
+    <p class="diagram-caption">Les 3 zones tactiques dans R6 — externe, transition, site</p>
+  </div>
+  <hr class="divider">
+  <div class="section-label">Section 2</div>
+  <h2>Implications pratiques dans R6</h2>
+  <div class="impl-grid">
+    <div class="impl-card">
+      <div><div class="impl-tag">Roam</div><div class="impl-tag-sub">timing</div></div>
+      <div>
+        <div class="impl-title">Quand un roamer doit se replier sur le site</div>
+        <p class="impl-text">Un roamer doit se replier sur le site avant que les attaquants ne mettent la pression dessus — généralement 30 à 40 secondes avant l'assault final prévisible. Rester roamer trop longtemps signifie mourir en 1v4 ou 1v5 dans les couloirs, ou être inutile pour la défense du site. Le signal de repli : entendre des brèches dans les murs du site, des entrées multiples simultanées, ou le son de la bombe plantée. Un roamer qui replie au bon moment peut changer le résultat d'un round. Un roamer qui reste trop longtemps est mort pour rien.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Roam</div><div class="impl-tag-sub">pression</div></div>
+      <div>
+        <div class="impl-title">La valeur tactique réelle du roaming</div>
+        <p class="impl-text">Un roamer qui fait 0 kill mais qui oblige les attaquants à consommer 30 secondes supplémentaires en droning et clearing a parfaitement rempli son rôle. La valeur du roaming n'est pas dans les kills — c'est dans la disruption du timing attaquant. Les meilleurs roamers gèrent leur exposition : un kill rapide puis repli, pas un 1v5 héroïque. La règle : un roamer qui survit jusqu'au plant de bombe a plus de valeur qu'un roamer mort en 30 secondes avec 2 kills.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Anchor</div><div class="impl-tag-sub">site</div></div>
+      <div>
+        <div class="impl-title">Les anchors du site — tenir les angles en attendant</div>
+        <p class="impl-text">Les anchors (joueurs restés sur le site) ont pour mission de tenir les angles d'entrée du site jusqu'à ce que les roamers reviennent. Leur priorité est la survie et la conservation des renforts, pas les kills imprudents. Un anchor qui peeek agressivement et meurt en 30 secondes laisse le site défendu par 1 ou 2 joueurs — ce qui est quasi-impossible à tenir. La discipline de l'anchor : tenir ses angles, utiliser ses gadgets (Jäger, Bandit), et communiquer les positions ennemies aux roamers.</p>
+      </div>
+    </div></div>
+</div>
+<div class="next-chapter">
+  <div class="nav-prev"><a href="5-1-economie.html" class="nav-cta">← Chapitre 5.1</a></div>
+  <div class="nav-next"><a href="5-3-defense-site.html" class="nav-cta">Chapitre 5.3 →</a></div>
+</div>
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie V · Chapitre 5.2</span>
+</footer>
+</body>
+</html>
