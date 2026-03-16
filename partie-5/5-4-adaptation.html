@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5.4 Adaptation Tactique en Temps Réel — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+  .chapter-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .chapter-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%); }
+  .chapter-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .chapter-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .chapter-number { font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px,15vw,180px); line-height: 0.85; color: rgba(255,255,255,0.04); position: absolute; right: 48px; top: 80px; pointer-events: none; }
+  .chapter-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px,7vw,80px); letter-spacing: 2px; line-height: 1; margin-bottom: 12px; position: relative; }
+  .chapter-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 40px; position: relative; }
+  .chapter-meta { display: flex; gap: 32px; flex-wrap: wrap; position: relative; }
+  .meta-pill { background: var(--gray); border: 1px solid var(--border); border-radius: 4px; padding: 8px 16px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .meta-pill span { color: var(--white); margin-left: 6px; }
+  .content { max-width: 900px; margin: 0 auto; padding: 64px 48px; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; line-height: 1; }
+  p { font-size: 15px; color: var(--gray-text); line-height: 1.8; margin-bottom: 16px; }
+  p strong { color: var(--white); font-weight: 500; }
+  .highlight-box { background: var(--gray); border-left: 3px solid var(--red); padding: 20px 24px; margin: 24px 0; border-radius: 0 6px 6px 0; }
+  .highlight-box p { margin: 0; color: var(--white); font-size: 14px; line-height: 1.7; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .diagram-wrap { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin: 32px 0; overflow-x: auto; }
+  .diagram-caption { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 16px; text-align: center; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; margin: 32px 0; }
+  .stat-box { background: var(--gray); padding: 24px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 2px; line-height: 1; color: var(--white); }
+  .stat-num span { color: var(--red); }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .impl-grid { display: flex; flex-direction: column; gap: 2px; margin: 32px 0; }
+  .impl-card { background: var(--gray); padding: 24px 28px; display: grid; grid-template-columns: 120px 1fr; gap: 24px; align-items: start; transition: background 0.2s; }
+  .impl-card:hover { background: var(--gray-mid); }
+  .impl-tag { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: var(--red); line-height: 1; }
+  .impl-tag-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 4px; }
+  .impl-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 6px; }
+  .impl-text { font-size: 13px; color: var(--gray-text); line-height: 1.7; margin: 0; }
+  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; display: inline-block; }
+  .nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .nav-prev { flex: 1; } .nav-next { flex: 1; text-align: right; }
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .chapter-eyebrow{animation:fadeUp .6s ease both;} .chapter-title{animation:fadeUp .6s .1s ease both;} .chapter-subtitle{animation:fadeUp .6s .2s ease both;} .chapter-meta{animation:fadeUp .6s .3s ease both;}
+  @media(max-width:768px){ nav{padding:0 24px;} .chapter-hero{padding:100px 24px 48px;} .content{padding:48px 24px;} .stat-grid{grid-template-columns:repeat(2,1fr);} .impl-card{grid-template-columns:1fr;gap:8px;} .next-chapter{flex-direction:column;gap:24px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="../index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+<section class="chapter-hero">
+  <div class="chapter-eyebrow">Partie V — Stratégie &amp; Théorie</div>
+  <div class="chapter-number">5.4</div>
+  <h1 class="chapter-title">Adaptation Tactique en Temps Réel</h1>
+  <p class="chapter-subtitle">Lire le jeu adverse &amp; ajuster la stratégie mid-round</p>
+  <div class="chapter-meta">
+    <div class="meta-pill">Partie <span>V</span></div>
+    <div class="meta-pill">Chapitre <span>5.4</span></div>
+    <div class="meta-pill">Niveau <span>Intermédiaire — Avancé</span></div>
+  </div>
+</section>
+<div class="content">
+  <div class="section-label">Introduction</div>
+  <h2>R6 est un jeu d'adaptation permanente</h2>
+  <p>La stratégie prépare le round — mais le round ne se déroule jamais exactement comme prévu. La capacité à lire ce qui se passe en temps réel et à ajuster son comportement en conséquence est l'une des compétences les plus avancées dans R6. Elle opère à trois niveaux simultanément : la méta (adaptation inter-saisons), la partie (adaptation inter-rounds), et le round lui-même (adaptation mid-round).</p>
+    <p>Ce chapitre se concentre sur les deux derniers niveaux — comment lire une partie en cours et adapter sa tactique en temps réel.</p>
+  <div class="stat-grid">
+    <div class="stat-box"><span class="stat-num">3<span>niveaux</span></span><span class="stat-label">Méta · Partie · Round</span></div>
+    <div class="stat-box"><span class="stat-num">~5<span>rounds</span></span><span class="stat-label">Pour lire les patterns</span></div>
+    <div class="stat-box"><span class="stat-num">Son<span></span></span><span class="stat-label">Premier signal d'adaptation</span></div>
+    <div class="stat-box"><span class="stat-num">Drone<span></span></span><span class="stat-label">Outil d'adaptation</span></div></div>
+  <hr class="divider">
+  <div class="section-label">Section 1</div>
+  <h2>Schéma — Vue d'ensemble</h2>
+  <div class="diagram-wrap">
+    <svg width="100%" viewBox="0 0 680 220" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <!-- Observe -->
+      <circle cx="100" cy="110" r="56" fill="rgba(55,138,221,0.1)" stroke="#378ADD" stroke-width="1.5"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="16" fill="#85B7EB" x="100" y="104" text-anchor="middle">OBSERVE</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#378ADD" x="100" y="120" text-anchor="middle">Sons, positions</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#378ADD" x="100" y="135" text-anchor="middle">Drones, callouts</text>
+      <!-- Analyse -->
+      <circle cx="290" cy="110" r="56" fill="rgba(239,159,39,0.1)" stroke="#EF9F27" stroke-width="1.5"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="16" fill="#FAC775" x="290" y="104" text-anchor="middle">ANALYSE</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#EF9F27" x="290" y="120" text-anchor="middle">Patterns, intentions</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#EF9F27" x="290" y="135" text-anchor="middle">Timing, composition</text>
+      <!-- Adapte -->
+      <circle cx="480" cy="110" r="56" fill="rgba(200,48,42,0.1)" stroke="#c8302a" stroke-width="1.5"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="16" fill="#F09595" x="480" y="104" text-anchor="middle">ADAPTE</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#c8302a" x="480" y="120" text-anchor="middle">Change le plan</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#c8302a" x="480" y="135" text-anchor="middle">Exploit les failles</text>
+      <!-- Execute -->
+      <circle cx="620" cy="110" r="45" fill="rgba(29,158,117,0.1)" stroke="#1D9E75" stroke-width="1.5"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="16" fill="#5DCAA5" x="620" y="105" text-anchor="middle">EXÉCUTE</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#1D9E75" x="620" y="122" text-anchor="middle">Action adaptée</text>
+      <!-- Arrows -->
+      <line x1="158" y1="110" x2="232" y2="110" stroke="#EF9F27" stroke-width="1.5" marker-end="url(#arr)" fill="none"/>
+      <line x1="348" y1="110" x2="422" y2="110" stroke="#c8302a" stroke-width="1.5" marker-end="url(#arr)" fill="none"/>
+      <line x1="538" y1="110" x2="573" y2="110" stroke="#1D9E75" stroke-width="1.5" marker-end="url(#arr)" fill="none"/>
+      <!-- Feedback loop -->
+      <path d="M 620 155 Q 620 195 360 200 Q 100 205 100 168" stroke="rgba(255,255,255,0.1)" stroke-width="1" fill="none" stroke-dasharray="4 4"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="360" y="212" text-anchor="middle">Chaque round enrichit la base d'observations pour les rounds suivants</text>
+    </svg>
+    <p class="diagram-caption">Cycle d'adaptation tactique — Observe → Analyse → Adapte → Exécute</p>
+  </div>
+  <hr class="divider">
+  <div class="section-label">Section 2</div>
+  <h2>Implications pratiques dans R6</h2>
+  <div class="impl-grid">
+    <div class="impl-card">
+      <div><div class="impl-tag">Lire</div><div class="impl-tag-sub">le score</div></div>
+      <div>
+        <div class="impl-title">Comment le score influence la stratégie adverse</div>
+        <p class="impl-text">L'équipe qui mène adapte sa stratégie pour conserver l'avantage — souvent en jouant plus prudemment et en évitant les prises de risque. L'équipe qui est menée est forcée à jouer plus agressivement pour rattraper son retard. En lisant le score et en anticipant la logique de l'adversaire, tu peux exploiter ces comportements : attaque un site inattendu quand ils jouent prudemment, prépare des contre-rushes quand ils joueront agressifs.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Pattern</div><div class="impl-tag-sub">site</div></div>
+      <div>
+        <div class="impl-title">Détecter les patterns de site adverse</div>
+        <p class="impl-text">Après 2 à 3 rounds, une équipe révèle souvent ses préférences de site. Si l'adversaire a défendu le même site 3 fois consécutives, il est probable qu'il continue — et tu peux préparer spécifiquement l'exécution sur ce site. Si l'attaque adverse revient toujours par le même côté, prépare une contre-rotation. Les patterns ne sont pas universels mais ils existent chez la grande majorité des équipes en ranked — exploite-les avant qu'ils ne s'ajustent.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Mid-</div><div class="impl-tag-sub">round</div></div>
+      <div>
+        <div class="impl-title">L'adaptation mid-round — changer de plan en cours d'action</div>
+        <p class="impl-text">La flexibilité mid-round consiste à détecter que le plan initial ne fonctionne pas et à l'abandonner avant qu'il soit trop tard. Signal clé : si l'adversaire répond exactement comme si il savait ton plan (angles pré-visés, positions défensives déjà adaptées), change immédiatement de site ou d'axe d'entrée. Continuer un plan qui a été lu par l'adversaire est l'une des causes les plus fréquentes de rounds perdus en ranked compétitif.</p>
+      </div>
+    </div></div>
+</div>
+<div class="next-chapter">
+  <div class="nav-prev"><a href="5-3-defense-site.html" class="nav-cta">← Chapitre 5.3</a></div>
+  <div class="nav-next"><a href="5-5-exploitation.html" class="nav-cta">Chapitre 5.5 →</a></div>
+</div>
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie V · Chapitre 5.4</span>
+</footer>
+</body>
+</html>
