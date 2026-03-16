@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.6 Échauffement &amp; Pic de Performance — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --red-dim: #8a1f1a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+  .chapter-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .chapter-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%); }
+  .chapter-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .chapter-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .chapter-number { font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px,15vw,180px); line-height: 0.85; color: rgba(255,255,255,0.04); position: absolute; right: 48px; top: 80px; pointer-events: none; }
+  .chapter-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px,7vw,80px); letter-spacing: 2px; line-height: 1; margin-bottom: 12px; position: relative; }
+  .chapter-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 40px; position: relative; }
+  .chapter-meta { display: flex; gap: 32px; flex-wrap: wrap; position: relative; }
+  .meta-pill { background: var(--gray); border: 1px solid var(--border); border-radius: 4px; padding: 8px 16px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .meta-pill span { color: var(--white); margin-left: 6px; }
+  .content { max-width: 900px; margin: 0 auto; padding: 64px 48px; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; line-height: 1; }
+  p { font-size: 15px; color: var(--gray-text); line-height: 1.8; margin-bottom: 16px; }
+  p strong { color: var(--white); font-weight: 500; }
+  .highlight-box { background: var(--gray); border-left: 3px solid var(--red); padding: 20px 24px; margin: 24px 0; border-radius: 0 6px 6px 0; }
+  .highlight-box p { margin: 0; color: var(--white); font-size: 14px; line-height: 1.7; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .diagram-wrap { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin: 32px 0; overflow-x: auto; }
+  .diagram-caption { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 16px; text-align: center; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; margin: 32px 0; }
+  .stat-box { background: var(--gray); padding: 24px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 2px; line-height: 1; color: var(--white); }
+  .stat-num span { color: var(--red); }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .impl-grid { display: flex; flex-direction: column; gap: 2px; margin: 32px 0; }
+  .impl-card { background: var(--gray); padding: 24px 28px; display: grid; grid-template-columns: 120px 1fr; gap: 24px; align-items: start; transition: background 0.2s; }
+  .impl-card:hover { background: var(--gray-mid); }
+  .impl-tag { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: var(--red); line-height: 1; }
+  .impl-tag-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 4px; }
+  .impl-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 6px; }
+  .impl-text { font-size: 13px; color: var(--gray-text); line-height: 1.7; margin: 0; }
+  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; display: inline-block; }
+  .nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .nav-prev { flex: 1; } .nav-next { flex: 1; text-align: right; }
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .chapter-eyebrow{animation:fadeUp .6s ease both;} .chapter-title{animation:fadeUp .6s .1s ease both;} .chapter-subtitle{animation:fadeUp .6s .2s ease both;} .chapter-meta{animation:fadeUp .6s .3s ease both;}
+  @media(max-width:768px){ nav{padding:0 24px;} .chapter-hero{padding:100px 24px 48px;} .content{padding:48px 24px;} .stat-grid{grid-template-columns:repeat(2,1fr);} .impl-card{grid-template-columns:1fr;gap:8px;} .next-chapter{flex-direction:column;gap:24px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="../index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+<section class="chapter-hero">
+  <div class="chapter-eyebrow">Partie III — Biomécanique &amp; Hardware</div>
+  <div class="chapter-number">3.6</div>
+  <h1 class="chapter-title">Échauffement &amp; Pic de Performance</h1>
+  <p class="chapter-subtitle">Fenêtre optimale, routines et déclin en session</p>
+  <div class="chapter-meta">
+    <div class="meta-pill">Partie <span>III</span></div>
+    <div class="meta-pill">Chapitre <span>3.6</span></div>
+    <div class="meta-pill">Niveau <span>Tous niveaux</span></div>
+  </div>
+</section>
+<div class="content">
+
+  <div class="section-label">Introduction</div>
+  <h2>La performance ne commence pas à la première partie</h2>
+  <p>Les systèmes moteurs et cognitifs ne sont pas à leur niveau optimal immédiatement après l'allumage du PC. Comme tout athlète, le joueur de FPS bénéficie d'un échauffement structuré qui prépare les circuits neurologiques, la coordination oculo-motrice et les programmes moteurs avant de jouer ranked. Ce n'est pas du "warming up" au sens vague — c'est de la physiologie précise.</p>
+
+  <div class="stat-grid">
+    <div class="stat-box"><span class="stat-num">15<span>min</span></span><span class="stat-label">Échauffement optimal</span></div>
+    <div class="stat-box"><span class="stat-num">~45<span>min</span></span><span class="stat-label">Délai pour le pic</span></div>
+    <div class="stat-box"><span class="stat-num">90<span>min</span></span><span class="stat-label">Avant déclin notable</span></div>
+    <div class="stat-box"><span class="stat-num">3<span>h</span></span><span class="stat-label">Max session efficace</span></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 1</div>
+  <h2>La courbe de performance en session</h2>
+
+  <div class="diagram-wrap">
+    <canvas id="perfCurveCanvas" height="240" style="width:100%;display:block;"></canvas>
+    <p class="diagram-caption">Courbe de performance typique en session — échauffement, pic, déclin</p>
+  </div>
+
+  <div class="highlight-box">
+    <p>La majorité des joueurs sautent l'échauffement et jouent ranked immédiatement. Ils jouent donc leurs premières parties dans la phase de montée — sous leur niveau réel. Les défaites accumulées dans cette phase créent souvent un tilt prématuré qui compromet toute la session. Investir 15 minutes en aim trainer avant la première ranked est l'un des meilleurs retours sur investissement temps de tout le processus d'amélioration.</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 2</div>
+  <h2>Protocole d'échauffement en 3 phases</h2>
+
+  <div class="impl-grid">
+    <div class="impl-card">
+      <div><div class="impl-tag">Phase</div><div class="impl-tag-sub">1 — 5min</div></div>
+      <div>
+        <div class="impl-title">Activation motrice — réveiller le système neuro-moteur</div>
+        <p class="impl-text">5 minutes de tracking lent sur cible large dans Kovaak's ou Aimlabs. L'objectif n'est pas la performance — c'est activer les circuits moteurs impliqués dans le aim. Les neurotransmetteurs dopamine et noradrénaline mettent quelques minutes à atteindre les niveaux optimaux dans le cortex moteur. Cette phase "allume" le système sans le fatiguer. Paramètres suggérés : cible grande (150px), vitesse lente, pas de scoring — juste du mouvement fluide.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Phase</div><div class="impl-tag-sub">2 — 5min</div></div>
+      <div>
+        <div class="impl-title">Activation des réflexes — monter en intensité progressivement</div>
+        <p class="impl-text">5 minutes de scénario de réaction rapide (cibles qui pop et disparaissent rapidement). Cette phase active les circuits de réaction rapide, synchronise la coordination oculo-motrice et rappelle au cerveau les programmes moteurs de flick. L'intensité monte progressivement — commence avec des cibles moyennes et accélère. Score non prioritaire, régularité oui.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Phase</div><div class="impl-tag-sub">3 — 5min</div></div>
+      <div>
+        <div class="impl-title">Activation cognitive — warm-up du game sense et des patterns</div>
+        <p class="impl-text">5 minutes de custom game en TDM ou de deathmatch dans R6. L'objectif est d'activer les patterns de jeu spécifiques à R6 : les angles, les distances, les hitbox. Ce n'est pas de l'aim training générique — c'est de la contextualisation. Le cerveau réactive la bibliothèque de patterns R6 stockée en mémoire à long terme. Après cette phase, tu entres en ranked avec tous tes systèmes actifs.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Déclin</div><div class="impl-tag-sub">session</div></div>
+      <div>
+        <div class="impl-title">Reconnaître et gérer le déclin de performance en fin de session</div>
+        <p class="impl-text">Après 90 à 120 minutes de jeu intensif, la fatigue motrice, la dégradation de la mémoire de travail, et l'accumulation de cortisol commencent à dégrader les performances. Les signaux : aim qui "tremble" davantage, décisions moins nettes, réactions qui ratent. Jouer au-delà de ce point ne fait pas progresser — ça encode des performances dégradées. La stratégie optimale : sessions de 90 minutes maximum, suivies d'une pause réelle de 20 à 30 minutes, plutôt qu'une session de 4 heures continues.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="next-chapter">
+  <div class="nav-prev"><a href="3-5-ergonomie.html" class="nav-cta">← Précédent</a></div>
+  <div class="nav-next"><a href="../partie-4/4-1-peek.html" class="nav-cta">Suivant →</a></div>
+</div>
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie III · Chapitre 3.6</span>
+</footer>
+<script>
+function drawPerfCurve() {
+  const canvas = document.getElementById("perfCurveCanvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const W = canvas.offsetWidth || 820;
+  canvas.width = W;
+  const H = 240;
+  ctx.clearRect(0, 0, W, H);
+  const padL=60,padR=20,padT=20,padB=40;
+  const cW=W-padL-padR,cH=H-padT-padB;
+  for(let i=0;i<=4;i++){const y=padT+(i/4)*cH;ctx.strokeStyle="rgba(255,255,255,0.04)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(padL+cW,y);ctx.stroke();}
+  const phases=[{x:0,y:0.3,label:"Démarrage",col:"#555"},{x:0.15,y:0.6,label:"",col:""},{x:0.25,y:0.85,label:"Échauffement",col:"#EF9F27"},{x:0.4,y:1.0,label:"Pic (45-90min)",col:"#1D9E75"},{x:0.6,y:0.95,label:"",col:""},{x:0.75,y:0.8,label:"Déclin",col:"#EF9F27"},{x:0.9,y:0.6,label:"Fatigue",col:"#c8302a"},{x:1.0,y:0.4,label:"",col:""}];
+  ctx.beginPath();
+  phases.forEach((p,i)=>{const x=padL+p.x*cW;const y=padT+cH-(p.y*cH*0.9);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.strokeStyle="#378ADD";ctx.lineWidth=2.5;ctx.stroke();
+  phases.forEach(p=>{if(!p.label)return;const x=padL+p.x*cW;const y=padT+cH-(p.y*cH*0.9);ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fillStyle=p.col;ctx.fill();ctx.fillStyle=p.col;ctx.font="11px Barlow Condensed,sans-serif";ctx.textAlign="center";ctx.fillText(p.label,x,y-12);});
+  ctx.fillStyle="#555";ctx.font="10px Barlow Condensed,sans-serif";ctx.textAlign="center";ctx.fillText("Durée de session →",padL+cW/2,H-4);
+  const times=["0","30min","1h","1h30","2h","3h"];
+  times.forEach((t,i)=>{const x=padL+(i/5)*cW;ctx.fillStyle="#444";ctx.font="10px Barlow Condensed,sans-serif";ctx.textAlign="center";ctx.fillText(t,x,padT+cH+16);});
+}
+window.addEventListener("load",drawPerfCurve);
+window.addEventListener("resize",drawPerfCurve);
+</script>
+</body>
+</html>
