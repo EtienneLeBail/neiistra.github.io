@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4.1 Peek Advantage & Angles — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+  .chapter-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .chapter-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%); }
+  .chapter-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .chapter-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .chapter-number { font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px,15vw,180px); line-height: 0.85; color: rgba(255,255,255,0.04); position: absolute; right: 48px; top: 80px; pointer-events: none; }
+  .chapter-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px,7vw,80px); letter-spacing: 2px; line-height: 1; margin-bottom: 12px; position: relative; }
+  .chapter-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 40px; position: relative; }
+  .chapter-meta { display: flex; gap: 32px; flex-wrap: wrap; position: relative; }
+  .meta-pill { background: var(--gray); border: 1px solid var(--border); border-radius: 4px; padding: 8px 16px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .meta-pill span { color: var(--white); margin-left: 6px; }
+  .content { max-width: 900px; margin: 0 auto; padding: 64px 48px; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; line-height: 1; }
+  p { font-size: 15px; color: var(--gray-text); line-height: 1.8; margin-bottom: 16px; }
+  p strong { color: var(--white); font-weight: 500; }
+  .highlight-box { background: var(--gray); border-left: 3px solid var(--red); padding: 20px 24px; margin: 24px 0; border-radius: 0 6px 6px 0; }
+  .highlight-box p { margin: 0; color: var(--white); font-size: 14px; line-height: 1.7; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .diagram-wrap { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin: 32px 0; overflow-x: auto; }
+  .diagram-caption { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 16px; text-align: center; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; margin: 32px 0; }
+  .stat-box { background: var(--gray); padding: 24px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 2px; line-height: 1; color: var(--white); }
+  .stat-num span { color: var(--red); }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .impl-grid { display: flex; flex-direction: column; gap: 2px; margin: 32px 0; }
+  .impl-card { background: var(--gray); padding: 24px 28px; display: grid; grid-template-columns: 120px 1fr; gap: 24px; align-items: start; transition: background 0.2s; }
+  .impl-card:hover { background: var(--gray-mid); }
+  .impl-tag { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: var(--red); line-height: 1; }
+  .impl-tag-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 4px; }
+  .impl-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 6px; }
+  .impl-text { font-size: 13px; color: var(--gray-text); line-height: 1.7; margin: 0; }
+  .sim-btn { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; padding: 7px 14px; border: 1px solid var(--border); background: transparent; color: var(--gray-text); cursor: pointer; border-radius: 4px; transition: all 0.2s; }
+  .sim-btn.active, .sim-btn:hover { border-color: var(--red); color: var(--white); background: rgba(200,48,42,0.1); }
+  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; display: inline-block; }
+  .nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .nav-prev { flex: 1; } .nav-next { flex: 1; text-align: right; }
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .chapter-eyebrow{animation:fadeUp .6s ease both;} .chapter-title{animation:fadeUp .6s .1s ease both;} .chapter-subtitle{animation:fadeUp .6s .2s ease both;} .chapter-meta{animation:fadeUp .6s .3s ease both;}
+  @media(max-width:768px){ nav{padding:0 24px;} .chapter-hero{padding:100px 24px 48px;} .content{padding:48px 24px;} .stat-grid{grid-template-columns:repeat(2,1fr);} .impl-card{grid-template-columns:1fr;gap:8px;} .next-chapter{flex-direction:column;gap:24px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="../index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+<section class="chapter-hero">
+  <div class="chapter-eyebrow">Partie IV — Mécanique de jeu</div>
+  <div class="chapter-number">4.1</div>
+  <h1 class="chapter-title">Peek Advantage &amp; Angles</h1>
+  <p class="chapter-subtitle">Géométrie du peek, shoulder peek &amp; wide peek</p>
+  <div class="chapter-meta">
+    <div class="meta-pill">Discipline <span>Géométrie & mécanique R6</span></div>
+    <div class="meta-pill">Mécanique <span>Peek · Angles · Cover</span></div>
+    <div class="meta-pill">Niveau <span>Intermédiaire</span></div>
+  </div>
+</section>
+
+<div class="content">
+  <div class="section-label">Introduction</div>
+  <h2>Chaque peek est un problème de géométrie</h2>
+  <p>Le peek dans R6 n'est pas qu'une question de réflexes — c'est avant tout de la géométrie. La position du cover, l'angle de l'ennemi, la distance, et le type de peek choisi créent des avantages ou des désavantages mesurables indépendamment des capacités individuelles des joueurs. Comprendre la géométrie du peek, c'est comprendre comment créer de l'avantage tactique structurel plutôt que de tout miser sur le duel pur.</p>
+
+  <div class="stat-grid">
+    <div class="stat-box"><span class="stat-num">3<span>types</span></span><span class="stat-label">Wide, jiggle, shoulder</span></div>
+    <div class="stat-box"><span class="stat-num">~50<span>ms</span></span><span class="stat-label">Avantage peeker R6</span></div>
+    <div class="stat-box"><span class="stat-num">∞<span></span></span><span class="stat-label">Angles possibles</span></div>
+    <div class="stat-box"><span class="stat-num">60<span>Hz</span></span><span class="stat-label">Tick rate serveur</span></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 1 — Simulateur interactif</div>
+  <h2>Visualise la géométrie de chaque type de peek</h2>
+  <p>Sélectionne un type de peek pour voir la géométrie exacte — ce que voit l'attaquant, ce que voit le défenseur, et l'avantage créé.</p>
+
+  <div class="diagram-wrap">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+      <button class="sim-btn active" onclick="setPeek('wide',this)">Wide Peek</button>
+      <button class="sim-btn" onclick="setPeek('shoulder',this)">Shoulder Peek</button>
+      <button class="sim-btn" onclick="setPeek('jiggle',this)">Jiggle Peek</button>
+    </div>
+    <canvas id="peekCanvas" height="320" style="width:100%;display:block;border-radius:6px;background:rgba(0,0,0,0.2);"></canvas>
+    <div id="peek-info" style="margin-top:12px;background:rgba(0,0,0,0.3);padding:14px 18px;border-radius:4px;font-size:13px;color:var(--gray-text);line-height:1.6;"></div>
+    <p class="diagram-caption">Géométrie du peek — vue de dessus</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 2</div>
+  <h2>Le peeker's advantage dans R6 — rappel technique</h2>
+  <p>Le peeker's advantage dans R6 découle directement de l'architecture réseau (chapitre 1.1). Le joueur qui peeke voit l'ennemi avant que le défenseur ne reçoive l'information que quelqu'un est en train de peeker. Avec un tick rate de 60Hz, une fenêtre aveugle de 16.6ms, et la lag compensation, l'attaquant qui peeke bénéficie d'une avance structurelle d'environ 40 à 80ms selon les latences.</p>
+  <p>Concrètement : un défenseur bien positionné sur un angle doit avoir un temps de réaction <strong>inférieur</strong> à celui de l'attaquant pour gagner le duel — ce qui est neurologiquement impossible à égalité de skill. Le défenseur compense cet désavantage par le pré-aim, le cover, et le choix de position.</p>
+
+  <div class="diagram-wrap">
+    <svg width="100%" viewBox="0 0 680 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <!-- Attaquant timeline -->
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#378ADD" x="40" y="40">ATTAQUANT (peeker)</text>
+      <rect x="40" y="50" width="100" height="28" rx="3" fill="rgba(55,138,221,0.2)" stroke="#378ADD" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#85B7EB" x="90" y="68" text-anchor="middle">Décide de peeker</text>
+      <line x1="140" y1="64" x2="175" y2="64" stroke="#378ADD" stroke-width="1" marker-end="url(#arr)" fill="none"/>
+      <rect x="175" y="50" width="80" height="28" rx="3" fill="rgba(55,138,221,0.2)" stroke="#378ADD" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#85B7EB" x="215" y="68" text-anchor="middle">Sort du cover</text>
+      <line x1="255" y1="64" x2="290" y2="64" stroke="#378ADD" stroke-width="1" marker-end="url(#arr)" fill="none"/>
+      <rect x="290" y="50" width="100" height="28" rx="3" fill="rgba(55,138,221,0.4)" stroke="#378ADD" stroke-width="1.5"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#f5f2ed" x="340" y="68" text-anchor="middle">VOIT l'ennemi</text>
+      <line x1="390" y1="64" x2="430" y2="64" stroke="#378ADD" stroke-width="1" marker-end="url(#arr)" fill="none"/>
+      <rect x="430" y="50" width="100" height="28" rx="3" fill="rgba(29,158,117,0.3)" stroke="#1D9E75" stroke-width="1"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#5DCAA5" x="480" y="68" text-anchor="middle">Tire</text>
+
+      <!-- Défenseur timeline -->
+      <text font-family="'Barlow Condensed',sans-serif" font-size="12" fill="#c8302a" x="40" y="120">DÉFENSEUR (holder)</text>
+      <rect x="290" y="130" width="100" height="28" rx="3" fill="rgba(200,48,42,0.2)" stroke="#c8302a" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#F09595" x="340" y="148" text-anchor="middle">Reçoit l'info</text>
+      <line x1="390" y1="144" x2="430" y2="144" stroke="#c8302a" stroke-width="1" marker-end="url(#arr)" fill="none"/>
+      <rect x="430" y="130" width="100" height="28" rx="3" fill="rgba(200,48,42,0.2)" stroke="#c8302a" stroke-width="0.8"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#F09595" x="480" y="148" text-anchor="middle">Réagit</text>
+      <line x1="530" y1="144" x2="575" y2="144" stroke="#c8302a" stroke-width="1" marker-end="url(#arr)" fill="none"/>
+      <rect x="575" y="130" width="80" height="28" rx="3" fill="rgba(200,48,42,0.3)" stroke="#c8302a" stroke-width="1"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#F09595" x="615" y="148" text-anchor="middle">Tire (tard)</text>
+
+      <!-- Delta arrow -->
+      <line x1="340" y1="80" x2="340" y2="128" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-dasharray="3 3"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="11" fill="#EF9F27" x="345" y="107">~50ms avance</text>
+
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#444" x="340" y="185" text-anchor="middle">Tick rate 60Hz + lag compensation = avantage structurel au peeker</text>
+    </svg>
+    <p class="diagram-caption">Timeline du peeker's advantage — décalage temporel entre attaquant et défenseur</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 3</div>
+  <h2>Les 3 types de peek — quand utiliser lequel</h2>
+
+  <div class="impl-grid">
+    <div class="impl-card">
+      <div><div class="impl-tag">Wide</div><div class="impl-tag-sub">peek</div></div>
+      <div>
+        <div class="impl-title">Wide peek — prendre l'angle et forcer le duel</div>
+        <p class="impl-text">Le wide peek consiste à sortir largement du cover pour prendre un angle favorable sur l'ennemi. Il maximise le peeker's advantage car il force un duel direct. Optimal quand : tu as droned la position ennemie et tu sais exactement où il est, tu arrives avec un angle sur lui avant qu'il t'ait sur toi, et la distance est courte à moyenne. Risqué quand : plusieurs ennemis peuvent être sur l'angle, ou quand la position ennemie n'est pas confirmée. Le wide peek non droned est le moyen le plus rapide de mourir bêtement dans R6.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Shoulder</div><div class="impl-tag-sub">peek</div></div>
+      <div>
+        <div class="impl-title">Shoulder peek — forcer la réaction sans s'exposer</div>
+        <p class="impl-text">Le shoulder peek exploite le décalage entre le modèle visuel et la hitbox (chapitre 1.3). On expose suffisamment le modèle pour déclencher une réaction ennemie (tir, rechargement), mais pas assez pour que la hitbox soit pleinement accessible. Objectifs : faire recharger l'ennemi, identifier sa position précise, ou déstabiliser son pré-aim. Technique : sortir lentement du cover de 10 à 15cm maximum côté épaule, observer la réaction, rentrer immédiatement. Si l'ennemi tire : il a révélé sa position et il est peut-être en rechargement. Si pas de réaction : soit il n'est pas là, soit il a le discipline de ne pas réagir.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Jiggle</div><div class="impl-tag-sub">peek</div></div>
+      <div>
+        <div class="impl-title">Jiggle peek — recueillir de l'intel sans s'exposer</div>
+        <p class="impl-text">Le jiggle peek est une exposition ultra-rapide (flash) qui capture une image visuelle de la zone sans rester exposé. L'objectif n'est pas le duel — c'est l'information. Un jiggle peek réussi permet de confirmer ou infirmer une présence ennemie dans une zone, de voir un gadget placé, ou de localiser un son. La vitesse d'exécution doit être suffisamment rapide pour que l'ennemi ait le temps de voir le mouvement mais pas de réagir avec précision. À différencier du shoulder peek : le jiggle est plus rapide et ne vise pas à déclencher un rechargement.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Angle</div><div class="impl-tag-sub">advantage</div></div>
+      <div>
+        <div class="impl-title">L'avantage d'angle — pourquoi la géométrie prime sur les réflexes</div>
+        <p class="impl-text">Un bon angle, c'est une position où tu vois l'ennemi avant qu'il te voie, ou où tu peux tirer depuis un point que l'ennemi ne couvre pas naturellement. Dans R6, les angles d'avantage sont créés par trois moyens : la destruction (ouvrir un nouveau couloir de tir depuis une position inattendue), le repositionnement (se décaler de l'angle évident pour couvrir depuis un angle secondaire), et la verticalité (percer le plancher pour avoir un angle du dessus). Un joueur qui n'a pas besoin de peeker parce que son angle le couvre déjà a un avantage structurel permanent.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="next-chapter">
+  <div class="nav-prev"><a href="../partie-3/3-6-echauffement.html" class="nav-cta">← Partie III</a></div>
+  <div class="nav-next"><a href="4-2-destruction-offensive.html" class="nav-cta">Chapitre 4.2 →</a></div>
+</div>
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie IV · Chapitre 4.1</span>
+</footer>
+
+<script>
+const peekTypes = {
+  wide: {
+    draw(ctx, W, H) {
+      const wallX = W/2;
+      // Wall
+      ctx.fillStyle = '#2e2e2e'; ctx.fillRect(wallX-6, 40, 12, H-80);
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(wallX-6,40,12,H-80);
+      // Cover block
+      ctx.fillStyle = '#2e2e2e'; ctx.fillRect(wallX-100, H/2-20, 40, 40);
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.strokeRect(wallX-100,H/2-20,40,40);
+      // Attacker position (wide - far from wall)
+      ctx.beginPath(); ctx.arc(wallX-140, H/2, 14, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(55,138,221,0.7)'; ctx.fill();
+      ctx.strokeStyle = '#378ADD'; ctx.lineWidth=1.5; ctx.stroke();
+      ctx.fillStyle = '#85B7EB'; ctx.font="10px 'Barlow Condensed',sans-serif"; ctx.textAlign='center';
+      ctx.fillText('ATK', wallX-140, H/2+4);
+      // Defender position
+      ctx.beginPath(); ctx.arc(wallX+120, H/2, 14, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(200,48,42,0.7)'; ctx.fill();
+      ctx.strokeStyle = '#c8302a'; ctx.lineWidth=1.5; ctx.stroke();
+      ctx.fillStyle = '#F09595'; ctx.fillText('DEF', wallX+120, H/2+4);
+      // FOV lines - wide
+      ctx.save(); ctx.globalAlpha=0.2;
+      ctx.fillStyle = '#378ADD';
+      ctx.beginPath(); ctx.moveTo(wallX-140,H/2); ctx.lineTo(wallX+200,H/2-90); ctx.lineTo(wallX+200,H/2+90); ctx.closePath(); ctx.fill();
+      ctx.restore();
+      // Movement arrow
+      ctx.strokeStyle = '#EF9F27'; ctx.lineWidth=2; ctx.setLineDash([6,4]);
+      ctx.beginPath(); ctx.moveTo(wallX-140,H/2); ctx.lineTo(wallX+20,H/2); ctx.stroke();
+      ctx.setLineDash([]);
+    },
+    info: 'Wide peek — sortie large du cover. Le peeker force un duel direct en maximisant son angle de vision. Avantage : peeker\'s advantage complet, angle large. Risque : exposition totale de la hitbox, nécessite une position ennemie connue.'
+  },
+  shoulder: {
+    draw(ctx, W, H) {
+      const wallX = W/2;
+      ctx.fillStyle = '#2e2e2e'; ctx.fillRect(wallX-6, 40, 12, H-80);
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(wallX-6,40,12,H-80);
+      ctx.fillStyle = '#2e2e2e'; ctx.fillRect(wallX-100, H/2-20, 40, 40);
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.strokeRect(wallX-100,H/2-20,40,40);
+      // Attacker close to wall
+      ctx.beginPath(); ctx.arc(wallX-70, H/2, 14, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(55,138,221,0.7)'; ctx.fill();
+      ctx.strokeStyle = '#378ADD'; ctx.lineWidth=1.5; ctx.stroke();
+      ctx.fillStyle = '#85B7EB'; ctx.font="10px 'Barlow Condensed',sans-serif"; ctx.textAlign='center';
+      ctx.fillText('ATK', wallX-70, H/2+4);
+      // Shoulder exposure (small)
+      ctx.beginPath(); ctx.arc(wallX-58, H/2-16, 6, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(239,159,39,0.8)'; ctx.fill();
+      ctx.fillStyle = '#EF9F27'; ctx.fillText('épaule', wallX-45, H/2-26);
+      // Defender
+      ctx.beginPath(); ctx.arc(wallX+120, H/2, 14, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(200,48,42,0.7)'; ctx.fill();
+      ctx.strokeStyle = '#c8302a'; ctx.lineWidth=1.5; ctx.stroke();
+      ctx.fillStyle = '#F09595'; ctx.fillText('DEF', wallX+120, H/2+4);
+      // Hitbox vs model difference
+      ctx.strokeStyle = '#1D9E75'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+      ctx.beginPath(); ctx.arc(wallX-58, H/2-16, 10, 0, Math.PI*2); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#1D9E75'; ctx.font="9px 'Barlow Condensed',sans-serif";
+      ctx.fillText('hitbox pas atteinte', wallX-20, H/2-36);
+    },
+    info: 'Shoulder peek — exposition minimale du modèle visuel sans exposer la hitbox. Objectif : déclencher une réaction ennemie (tir, rechargement) pour obtenir de l\'intel. Le décalage hitbox/modèle (ch. 1.3) est ici exploité délibérément.'
+  },
+  jiggle: {
+    draw(ctx, W, H) {
+      const wallX = W/2;
+      ctx.fillStyle = '#2e2e2e'; ctx.fillRect(wallX-6, 40, 12, H-80);
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(wallX-6,40,12,H-80);
+      ctx.fillStyle = '#2e2e2e'; ctx.fillRect(wallX-100, H/2-20, 40, 40);
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.strokeRect(wallX-100,H/2-20,40,40);
+      // Ghost positions showing movement
+      for(let i=0;i<3;i++) {
+        const alpha = 0.15 + i*0.15;
+        const x = wallX-80 + i*15;
+        ctx.beginPath(); ctx.arc(x, H/2, 14, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(55,138,221,${alpha})`; ctx.fill();
+      }
+      // Current position back in cover
+      ctx.beginPath(); ctx.arc(wallX-80, H/2, 14, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(55,138,221,0.8)'; ctx.fill();
+      ctx.strokeStyle = '#378ADD'; ctx.lineWidth=1.5; ctx.stroke();
+      ctx.fillStyle = '#85B7EB'; ctx.font="10px 'Barlow Condensed',sans-serif"; ctx.textAlign='center';
+      ctx.fillText('ATK', wallX-80, H/2+4);
+      // Arrow showing quick peek and return
+      ctx.strokeStyle = '#EF9F27'; ctx.lineWidth=1.5; ctx.setLineDash([4,3]);
+      ctx.beginPath(); ctx.moveTo(wallX-68, H/2-10); ctx.lineTo(wallX-30, H/2-30); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(wallX-30, H/2-30); ctx.lineTo(wallX-68, H/2-10); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#EF9F27'; ctx.fillText('flash rapide', wallX-20, H/2-38);
+      // Defender
+      ctx.beginPath(); ctx.arc(wallX+120, H/2, 14, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(200,48,42,0.7)'; ctx.fill();
+      ctx.strokeStyle = '#c8302a'; ctx.lineWidth=1.5; ctx.stroke();
+      ctx.fillStyle = '#F09595'; ctx.fillText('DEF', wallX+120, H/2+4);
+      ctx.fillStyle = '#555'; ctx.fillText('?', wallX+120, H/2-24);
+    },
+    info: 'Jiggle peek — exposition ultra-courte pour capturer une image visuelle sans s\'engager dans le duel. Objectif : confirmer une présence, localiser un gadget, ou lire un angle. Différent du shoulder peek : la vitesse prime sur l\'intention de déclencher une réaction.'
+  }
+};
+
+let currentPeek = 'wide';
+
+function setPeek(type, btn) {
+  currentPeek = type;
+  document.querySelectorAll('.sim-btn').forEach(b => {
+    if(['Wide Peek','Shoulder Peek','Jiggle Peek'].includes(b.textContent)) b.classList.remove('active');
+  });
+  btn.classList.add('active');
+  drawPeek();
+}
+
+function drawPeek() {
+  const canvas = document.getElementById('peekCanvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 820;
+  canvas.width = W;
+  const H = 320;
+  ctx.clearRect(0,0,W,H);
+  // Grid
+  ctx.strokeStyle='rgba(255,255,255,0.03)'; ctx.lineWidth=1;
+  for(let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  // Labels
+  ctx.fillStyle='rgba(55,138,221,0.3)'; ctx.font="11px 'Barlow Condensed',sans-serif"; ctx.textAlign='center';
+  ctx.fillText('CÔTÉ ATTAQUE',W/4,20);
+  ctx.fillStyle='rgba(200,48,42,0.3)'; ctx.fillText('CÔTÉ DÉFENSE',W*3/4,20);
+  peekTypes[currentPeek].draw(ctx, W, H);
+  document.getElementById('peek-info').textContent = peekTypes[currentPeek].info;
+}
+
+window.addEventListener('load', drawPeek);
+window.addEventListener('resize', drawPeek);
+</script>
+</body>
+</html>
