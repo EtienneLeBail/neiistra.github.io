@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.1 Contrôle Moteur & Loi de Fitts — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --red-dim: #8a1f1a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+  .chapter-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .chapter-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%); }
+  .chapter-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .chapter-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .chapter-number { font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px,15vw,180px); line-height: 0.85; color: rgba(255,255,255,0.04); position: absolute; right: 48px; top: 80px; pointer-events: none; }
+  .chapter-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px,7vw,80px); letter-spacing: 2px; line-height: 1; margin-bottom: 12px; position: relative; }
+  .chapter-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 40px; position: relative; }
+  .chapter-meta { display: flex; gap: 32px; flex-wrap: wrap; position: relative; }
+  .meta-pill { background: var(--gray); border: 1px solid var(--border); border-radius: 4px; padding: 8px 16px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .meta-pill span { color: var(--white); margin-left: 6px; }
+  .content { max-width: 900px; margin: 0 auto; padding: 64px 48px; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; line-height: 1; }
+  p { font-size: 15px; color: var(--gray-text); line-height: 1.8; margin-bottom: 16px; }
+  p strong { color: var(--white); font-weight: 500; }
+  .highlight-box { background: var(--gray); border-left: 3px solid var(--red); padding: 20px 24px; margin: 24px 0; border-radius: 0 6px 6px 0; }
+  .highlight-box p { margin: 0; color: var(--white); font-size: 14px; line-height: 1.7; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .diagram-wrap { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin: 32px 0; overflow-x: auto; }
+  .diagram-caption { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 16px; text-align: center; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; margin: 32px 0; }
+  .stat-box { background: var(--gray); padding: 24px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 2px; line-height: 1; color: var(--white); }
+  .stat-num span { color: var(--red); }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .impl-grid { display: flex; flex-direction: column; gap: 2px; margin: 32px 0; }
+  .impl-card { background: var(--gray); padding: 24px 28px; display: grid; grid-template-columns: 120px 1fr; gap: 24px; align-items: start; transition: background 0.2s; }
+  .impl-card:hover { background: var(--gray-mid); }
+  .impl-tag { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: var(--red); line-height: 1; }
+  .impl-tag-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-top: 4px; }
+  .impl-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: 1px; color: var(--white); margin-bottom: 6px; }
+  .impl-text { font-size: 13px; color: var(--gray-text); line-height: 1.7; margin: 0; }
+  .next-chapter { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; white-space: nowrap; display: inline-block; }
+  .nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .nav-prev { flex: 1; } .nav-next { flex: 1; text-align: right; }
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .chapter-eyebrow{animation:fadeUp .6s ease both;} .chapter-title{animation:fadeUp .6s .1s ease both;} .chapter-subtitle{animation:fadeUp .6s .2s ease both;} .chapter-meta{animation:fadeUp .6s .3s ease both;}
+  @media(max-width:768px){ nav{padding:0 24px;} .chapter-hero{padding:100px 24px 48px;} .content{padding:48px 24px;} .stat-grid{grid-template-columns:repeat(2,1fr);} .impl-card{grid-template-columns:1fr;gap:8px;} .next-chapter{flex-direction:column;gap:24px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="../index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+<section class="chapter-hero">
+  <div class="chapter-eyebrow">Partie III — Biomécanique &amp; Hardware</div>
+  <div class="chapter-number">3.1</div>
+  <h1 class="chapter-title">Contrôle Moteur Fin</h1>
+  <p class="chapter-subtitle">Mouvements balistiques, correctifs &amp; loi de Fitts</p>
+  <div class="chapter-meta">
+    <div class="meta-pill">Discipline <span>Biomécanique & neurosciences motrices</span></div>
+    <div class="meta-pill">Mécanique <span>Aim · Flick · Précision</span></div>
+    <div class="meta-pill">Niveau <span>Tous niveaux</span></div>
+  </div>
+</section>
+
+<div class="content">
+  <div class="section-label">Introduction</div>
+  <h2>Viser vite et viser précis sont deux compétences opposées</h2>
+  <p>C'est la contradiction fondamentale de l'aim dans R6 : la vitesse et la précision sont en tension permanente. Ce n'est pas une question de talent — c'est une loi physique mesurable appelée <strong>loi de Fitts</strong>, qui gouverne tous les mouvements de pointage humains depuis 1954. Comprendre cette loi, c'est comprendre pourquoi certaines sensibilités fonctionnent, pourquoi les flick shots ratent, et comment les pros ont résolu cette tension.</p>
+
+  <div class="stat-grid">
+    <div class="stat-box"><span class="stat-num">1954<span></span></span><span class="stat-label">Loi de Fitts publiée</span></div>
+    <div class="stat-box"><span class="stat-num">2<span>phases</span></span><span class="stat-label">Balistique + correctif</span></div>
+    <div class="stat-box"><span class="stat-num">~70<span>ms</span></span><span class="stat-label">Phase balistique</span></div>
+    <div class="stat-box"><span class="stat-num">~150<span>ms</span></span><span class="stat-label">Phase correctif</span></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 1</div>
+  <h2>La loi de Fitts — la physique du pointage</h2>
+  <p>La loi de Fitts dit que le temps pour atteindre une cible est proportionnel au logarithme du rapport <strong>distance/taille de cible</strong>. Formellement : <strong>T = a + b × log₂(2D/W)</strong> où D est la distance à parcourir et W est la largeur de la cible. En clair : une cible deux fois plus petite prend autant de temps supplémentaire à atteindre qu'une cible deux fois plus loin. La taille de la cible est aussi critique que la distance.</p>
+  <p>Dans R6, cette loi s'applique directement au aim. La "cible" est la hitbox tête de l'ennemi (~36px à distance standard). La "distance" est l'écart entre ton crosshair actuel et la hitbox. Le crosshair placement réduit D — c'est pour ça qu'il est si puissant. Une bonne sensibilité augmente W effectif — c'est pour ça que la sensibilité optimale existe.</p>
+
+  <div class="diagram-wrap">
+    <canvas id="fittsCanvas" height="300" style="width:100%;display:block;"></canvas>
+    <div style="margin-top:16px;display:flex;gap:16px;flex-wrap:wrap;">
+      <label style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);display:flex;align-items:center;gap:10px;flex:1;">
+        Distance D
+        <input type="range" min="1" max="100" value="50" id="fitts-d" style="flex:1;" oninput="updateFitts()">
+        <span id="fitts-d-val" style="min-width:36px;color:var(--white);font-family:'Bebas Neue',sans-serif;font-size:18px;">50</span>
+      </label>
+      <label style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);display:flex;align-items:center;gap:10px;flex:1;">
+        Taille cible W
+        <input type="range" min="1" max="50" value="20" id="fitts-w" style="flex:1;" oninput="updateFitts()">
+        <span id="fitts-w-val" style="min-width:36px;color:var(--white);font-family:'Bebas Neue',sans-serif;font-size:18px;">20</span>
+      </label>
+    </div>
+    <div id="fitts-result" style="margin-top:12px;background:rgba(0,0,0,0.3);padding:12px 16px;border-radius:4px;font-size:13px;color:var(--gray-text);"></div>
+    <p class="diagram-caption">Loi de Fitts — temps de pointage selon distance et taille de cible</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 2</div>
+  <h2>Les deux phases du mouvement de aim</h2>
+  <p>Tout mouvement de aim dans R6 se décompose en deux phases distinctes gérées par des circuits neurologiques différents.</p>
+  <p>La <strong>phase balistique</strong> (~70ms) : mouvement rapide préplanifié vers la zone cible, géré par le cervelet. Inconscient, non corrigeable en vol. C'est le "flick" — tu vises la zone générale de la tête. La <strong>phase correctif</strong> (~150ms) : micro-ajustements itératifs guidés par le feedback visuel, gérés par le cortex moteur. C'est la correction fine qui centre le crosshair exactement sur la hitbox.</p>
+
+  <div class="diagram-wrap">
+    <svg width="100%" viewBox="0 0 680 220" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <!-- Timeline -->
+      <line x1="40" y1="110" x2="640" y2="110" stroke="rgba(255,255,255,0.1)" stroke-width="1" marker-end="url(#arr)" fill="none"/>
+      <!-- Phase balistique -->
+      <rect x="40" y="70" width="180" height="40" rx="4" fill="rgba(200,48,42,0.2)" stroke="#c8302a" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="14" fill="#F09595" x="130" y="87" text-anchor="middle">PHASE BALISTIQUE</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#c8302a" x="130" y="101" text-anchor="middle">~70ms · Cervelet · Inconscient</text>
+      <!-- Phase correctif -->
+      <rect x="230" y="70" width="260" height="40" rx="4" fill="rgba(55,138,221,0.2)" stroke="#378ADD" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="14" fill="#85B7EB" x="360" y="87" text-anchor="middle">PHASE CORRECTIF</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#378ADD" x="360" y="101" text-anchor="middle">~150ms · Cortex moteur · Feedback visuel</text>
+      <!-- Tir -->
+      <rect x="500" y="70" width="120" height="40" rx="4" fill="rgba(29,158,117,0.2)" stroke="#1D9E75" stroke-width="1"/>
+      <text font-family="'Bebas Neue',sans-serif" font-size="14" fill="#5DCAA5" x="560" y="87" text-anchor="middle">TIR</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#1D9E75" x="560" y="101" text-anchor="middle">Click · Enregistrement</text>
+      <!-- Crosshair trajectory -->
+      <path d="M 40 150 Q 130 140 220 148 Q 300 155 360 150 Q 430 145 500 149" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" fill="none" stroke-dasharray="5 3"/>
+      <!-- Target zone -->
+      <circle cx="480" cy="149" r="12" fill="none" stroke="rgba(200,48,42,0.5)" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <circle cx="480" cy="149" r="4" fill="rgba(200,48,42,0.6)"/>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="480" y="175" text-anchor="middle">Hitbox cible</text>
+      <!-- Time labels -->
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="40" y="130" text-anchor="middle">0ms</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="220" y="130" text-anchor="middle">70ms</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="490" y="130" text-anchor="middle">220ms</text>
+      <text font-family="'Barlow Condensed',sans-serif" font-size="10" fill="#555" x="620" y="130" text-anchor="middle">temps →</text>
+    </svg>
+    <p class="diagram-caption">Les deux phases du mouvement de aim — balistique puis correctif</p>
+  </div>
+
+  <div class="highlight-box">
+    <p>Les joueurs qui ratent leurs flick shots font l'erreur de tirer pendant la phase balistique — avant que la phase correctif ait centré le crosshair. La solution n'est pas de flicker plus vite : c'est de laisser la phase correctif s'exécuter avant de tirer. Les pros tirent systématiquement en fin de phase correctif, pas en milieu de phase balistique.</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Section 3</div>
+  <h2>Implications pour l'aim dans R6</h2>
+
+  <div class="impl-grid">
+    <div class="impl-card">
+      <div><div class="impl-tag">Micro-</div><div class="impl-tag-sub">tremblements</div></div>
+      <div>
+        <div class="impl-title">Les micro-tremblements — pourquoi ils existent et comment les réduire</div>
+        <p class="impl-text">Les mains tremblent involontairement à haute fréquence (~8-12Hz) même chez les personnes saines — c'est le tremblement physiologique normal dû aux contractions musculaires asynchrones des muscles antagonistes. Une sensibilité élevée amplifie ces tremblements dans le jeu. La réduction passe par trois axes : stabilisation physique (caler l'avant-bras sur le bureau, grip ferme mais pas contracté), sensibilité adaptée (trop haute = tremblements amplifiés), et tapis de grande taille (les mouvements d'épaule sont plus stables que les mouvements de poignet).</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Flick</div><div class="impl-tag-sub">vs track</div></div>
+      <div>
+        <div class="impl-title">Flick shot vs tracking — deux compétences à entraîner séparément</div>
+        <p class="impl-text">Le flick shot (mouvement balistique vers cible statique ou semi-statique) et le tracking (suivi d'une cible en mouvement) font appel à des circuits neurologiques partiellement différents. Le flick est dominé par le cervelet, le tracking par le cortex moteur en boucle feedback. Dans R6, la majorité des duels nécessitent du tracking court (ennemi qui peeke) plus que du flick pur. S'entraîner exclusivement aux flick shots sur aimlabs n'optimise pas les capacités de tracking. Un programme équilibré : 60% tracking, 40% flick.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Grip</div><div class="impl-tag-sub">souris</div></div>
+      <div>
+        <div class="impl-title">Le grip souris — impact sur la précision et la fatigue</div>
+        <p class="impl-text">Il existe trois grips principaux : palm (paume complète sur la souris), claw (doigts arqués), fingertip (uniquement les doigts). Le palm grip favorise la stabilité et réduit les tremblements — adapté aux basses sensibilités et aux mouvements d'épaule. Le claw grip offre plus de contrôle fin des doigts — adapté aux sensibilités moyennes. Le fingertip maximise la mobilité mais amplifie les tremblements. Dans R6, le palm ou claw grip est généralement supérieur car la stabilité prime sur la mobilité extrême. Le choix définitif dépend de la morphologie de la main.</p>
+      </div>
+    </div>
+    <div class="impl-card">
+      <div><div class="impl-tag">Fatigue</div><div class="impl-tag-sub">motrice</div></div>
+      <div>
+        <div class="impl-title">La fatigue motrice — quand la précision se dégrade en session</div>
+        <p class="impl-text">Les muscles de l'avant-bras et des doigts se fatiguent progressivement en session longue. La fatigue motrice augmente les tremblements, réduit la vitesse de réaction motrice, et dégrade la précision des micro-corrections. Les signaux : crosshair qui "tremble" davantage en fin de session, réactions qui "ratent" alors qu'elles auraient réussi en début. La courbe de dégradation commence généralement après 90 à 120 minutes de jeu intensif. Solution : pauses actives de 5 minutes (étirements des poignets) toutes les 90 minutes, plutôt qu'une longue session continue.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="next-chapter">
+  <div class="nav-prev"><a href="../partie-2/2-6-stress.html" class="nav-cta">← Partie II</a></div>
+  <div class="nav-next"><a href="3-2-sensibilite.html" class="nav-cta">Chapitre 3.2 →</a></div>
+</div>
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie III · Chapitre 3.1</span>
+</footer>
+
+<script>
+function updateFitts() {
+  const D = parseInt(document.getElementById('fitts-d').value);
+  const W = parseInt(document.getElementById('fitts-w').value);
+  document.getElementById('fitts-d-val').textContent = D;
+  document.getElementById('fitts-w-val').textContent = W;
+  const ID = Math.log2(2*D/W);
+  const T = Math.max(0, 100 + 150 * ID);
+  drawFitts(D, W, T, ID);
+  let context = '';
+  if (D < 20 && W > 25) context = 'Crosshair déjà proche, grande hitbox — aim quasi instantané. C\'est ce que produit un bon crosshair placement.';
+  else if (D > 70 && W < 10) context = 'Grande distance, petite cible — flick difficile. Correspondrait à un flick sur la tête d\'un ennemi éloigné depuis un angle raté.';
+  else if (D < 30 && W > 15) context = 'Distance courte, cible correcte — situation typique après un bon crosshair placement en R6.';
+  else context = 'Situation standard. Réduis D (crosshair placement) ou augmente W effectif (sensibilité adaptée) pour améliorer le temps.';
+  document.getElementById('fitts-result').innerHTML = `<strong style="color:var(--white)">Index de difficulté : ${ID.toFixed(2)} bits · Temps estimé : ${Math.round(T)}ms</strong><br>${context}`;
+}
+
+function drawFitts(D, W, T, ID) {
+  const canvas = document.getElementById('fittsCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const CW = canvas.offsetWidth || 820;
+  canvas.width = CW;
+  const H = 300;
+  ctx.clearRect(0, 0, CW, H);
+
+  const padL = 60, padR = 40, padT = 30, padB = 40;
+  const cW = CW - padL - padR, cH = H - padT - padB;
+
+  // Grid
+  for (let i = 0; i <= 5; i++) {
+    const y = padT + (i/5) * cH;
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(padL+cW, y); ctx.stroke();
+    ctx.fillStyle = '#444'; ctx.font = "10px 'Barlow Condensed', sans-serif"; ctx.textAlign = 'right';
+    ctx.fillText(Math.round((1-i/5)*800)+'ms', padL-6, y+4);
+  }
+
+  // Fitts curves for different W values
+  const wValues = [5, 15, 30];
+  const colors = ['#c8302a', '#EF9F27', '#1D9E75'];
+  wValues.forEach((w, wi) => {
+    ctx.beginPath();
+    for (let d = 1; d <= 100; d++) {
+      const id = Math.log2(2*d/w);
+      const t = Math.max(0, 100 + 150*id);
+      const x = padL + (d/100)*cW;
+      const y = padT + cH - Math.min(cH, (t/800)*cH);
+      d === 1 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    }
+    ctx.strokeStyle = colors[wi]; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.fillStyle = colors[wi]; ctx.font = "10px 'Barlow Condensed', sans-serif"; ctx.textAlign = 'left';
+    ctx.fillText('W='+w, padL + cW + 4, padT + cH - Math.min(cH, (Math.max(0,100+150*Math.log2(200/w))/800)*cH) + 4);
+  });
+
+  // Current point
+  const px = padL + (D/100)*cW;
+  const py = padT + cH - Math.min(cH, (T/800)*cH);
+  ctx.beginPath(); ctx.arc(px, py, 8, 0, Math.PI*2);
+  ctx.fillStyle = '#f5f2ed'; ctx.fill();
+  ctx.strokeStyle = '#c8302a'; ctx.lineWidth = 2; ctx.stroke();
+
+  // Axes labels
+  ctx.fillStyle = '#555'; ctx.font = "10px 'Barlow Condensed', sans-serif"; ctx.textAlign = 'center';
+  ctx.fillText('Distance D →', padL+cW/2, H-4);
+  ctx.save(); ctx.translate(14, padT+cH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('Temps (ms) →', 0, 0); ctx.restore();
+}
+
+window.addEventListener('load', updateFitts);
+window.addEventListener('resize', updateFitts);
+</script>
+</body>
+</html>
