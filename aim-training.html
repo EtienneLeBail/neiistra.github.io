@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aim Training — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#0a0a0a;--white:#f5f2ed;--red:#c8302a;--red-dim:#8a1f1a;--gray:#1c1c1c;--gray-mid:#2e2e2e;--gray-light:#555;--gray-text:#999;--border:rgba(255,255,255,0.08);--cyan:#4ecdc4;--green:#2ecc71}
+html{scroll-behavior:smooth}body{background:var(--black);color:var(--white);font-family:'Barlow',sans-serif;font-weight:300;line-height:1.6;overflow-x:hidden}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:64px;border-bottom:1px solid var(--border);background:rgba(10,10,10,0.88);backdrop-filter:blur(12px)}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--white);text-decoration:none}.nav-logo span{color:var(--red)}
+.nav-back{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);text-decoration:none;transition:color .2s}.nav-back:hover{color:var(--white)}
+
+.hero{padding:120px 48px 64px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 70% 40%,rgba(200,48,42,0.1) 0%,transparent 70%)}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:60px 60px;mask-image:linear-gradient(180deg,transparent 0%,black 30%,black 70%,transparent 100%)}
+.hero-tag{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:16px;display:flex;align-items:center;gap:12px;position:relative}
+.hero-tag::before{content:'';display:block;width:28px;height:1px;background:var(--red)}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,8vw,96px);letter-spacing:2px;line-height:.95;margin-bottom:12px;position:relative}
+.hero-sub{font-family:'Barlow Condensed',sans-serif;font-size:16px;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text);position:relative;margin-bottom:20px}
+.hero-desc{font-size:15px;color:var(--gray-text);line-height:1.8;max-width:640px;position:relative}
+
+.content{max-width:1100px;margin:0 auto;padding:48px}
+
+/* Game selector tabs */
+.game-tabs{display:flex;gap:2px;margin-bottom:0;flex-wrap:wrap}
+.game-tab{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;padding:14px 24px;background:var(--gray);color:var(--gray-text);border:none;cursor:pointer;transition:all .2s;flex:1;min-width:120px;text-align:center}
+.game-tab:hover{color:var(--white);background:var(--gray-mid)}
+.game-tab.active{color:var(--white);background:var(--red)}
+
+/* Game container */
+.game-container{background:var(--gray);border:1px solid var(--border);border-top:none;margin-bottom:32px}
+.game-panel{display:none}
+.game-panel.active{display:block}
+.game-header{padding:24px 28px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.game-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px}
+.game-desc{font-size:13px;color:var(--gray-text);max-width:500px;line-height:1.5}
+.game-controls{display:flex;gap:8px;align-items:center}
+.gbtn{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:500;letter-spacing:2px;text-transform:uppercase;padding:8px 18px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:var(--white);cursor:pointer;transition:all .2s}
+.gbtn:hover,.gbtn.active{background:var(--red);border-color:var(--red)}
+
+.game-area{position:relative;width:100%;height:450px;background:#0e0e0e;cursor:crosshair;user-select:none;overflow:hidden}
+.game-canvas{width:100%;height:450px;display:block;background:#0e0e0e}
+.game-stats{padding:16px 28px;border-top:1px solid var(--border);display:flex;gap:24px;flex-wrap:wrap;justify-content:center}
+.gstat{text-align:center;min-width:80px}
+.gstat-num{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;line-height:1}
+.gstat-num.good{color:var(--cyan)}.gstat-num.bad{color:var(--red)}
+.gstat-label{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);margin-top:2px}
+
+/* Results overlay */
+.game-overlay{position:absolute;inset:0;background:rgba(10,10,10,0.85);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:5;pointer-events:none}
+.game-overlay h3{font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:4px;margin-bottom:8px}
+.game-overlay p{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--gray-text);letter-spacing:2px}
+.grade-s{color:var(--cyan)}.grade-a{color:var(--green)}.grade-b{color:var(--white)}.grade-c{color:var(--gray-text)}.grade-d{color:var(--red)}
+
+/* Targets */
+.target{position:absolute;border-radius:50%;transition:none}
+.target-inner{width:100%;height:100%;border-radius:50%;background:var(--red);box-shadow:0 0 20px rgba(200,48,42,0.4);display:flex;align-items:center;justify-content:center}
+.target-dot{width:3px;height:3px;background:var(--white);border-radius:50%}
+@keyframes hitFade{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(2.5)}}
+@keyframes hitPop{0%{transform:scale(1)}50%{transform:scale(1.3)}100%{transform:scale(0);opacity:0}}
+
+/* React circle for Go/No-Go */
+.react-wrap{display:flex;align-items:center;justify-content:center;height:100%}
+.react-circle{width:220px;height:220px;border-radius:50%;background:var(--gray-mid);border:2px solid var(--gray-light);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,border-color .15s;user-select:none}
+.react-label{font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:2px;color:var(--gray-text);text-transform:uppercase;pointer-events:none;text-align:center;line-height:1.4}
+
+/* Switch target */
+.sw-target{position:absolute;width:42px;height:42px;border-radius:50%;cursor:crosshair;display:flex;align-items:center;justify-content:center;border:2px solid var(--gray-light);background:var(--gray-mid);transition:none}
+.sw-target .num{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--white);pointer-events:none}
+.sw-target.next{border-color:var(--white);background:var(--red);box-shadow:0 0 15px rgba(245,242,237,0.2)}
+
+footer{border-top:1px solid var(--border);padding:24px 48px;display:flex;justify-content:space-between;align-items:center}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;color:var(--gray-text)}.footer-logo span{color:var(--red)}
+.footer-text{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;color:var(--gray-light);text-transform:uppercase}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero-tag{animation:fadeUp .6s ease both}.hero-title{animation:fadeUp .6s .1s ease both}
+
+@media(max-width:768px){
+  nav{padding:0 24px}.hero{padding:100px 24px 48px}.content{padding:24px}
+  .game-tab{font-size:11px;padding:10px 12px;min-width:80px;letter-spacing:1px}
+  .game-area,.game-canvas{height:320px}
+  .game-header{flex-direction:column;align-items:flex-start}
+  .game-stats{gap:16px}
+  footer{padding:20px 24px;flex-direction:column;gap:8px;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="index.html" class="nav-back">← Retour à l'accueil</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-tag">Outil — R6 Process</div>
+  <h1 class="hero-title">Aim Training</h1>
+  <p class="hero-sub">6 exercices · Mesure · Progression</p>
+  <p class="hero-desc">Entraîne chaque composante de ta motricité directement dans le navigateur. Chaque exercice isole une compétence spécifique — flick, tracking, switching, précision, réaction sélective, speed-accuracy. Pas besoin de logiciel externe.</p>
+</section>
+
+<div class="content">
+
+  <!-- TABS -->
+  <div class="game-tabs">
+    <button class="game-tab active" onclick="showGame('flick')">Flick</button>
+    <button class="game-tab" onclick="showGame('track')">Tracking</button>
+    <button class="game-tab" onclick="showGame('switch')">Switch</button>
+    <button class="game-tab" onclick="showGame('precision')">Précision</button>
+    <button class="game-tab" onclick="showGame('gonogo')">Go / No-Go</button>
+    <button class="game-tab" onclick="showGame('sat')">SAT Challenge</button>
+  </div>
+
+  <div class="game-container">
+
+    <!-- ═══════ FLICK ═══════ -->
+    <div class="game-panel active" id="panel-flick">
+      <div class="game-header">
+        <div>
+          <div class="game-title">Flick Trainer</div>
+          <div class="game-desc">Clique sur 20 cibles le plus vite possible. Le flick est un mouvement balistique pré-programmé — ta précision dépend à 100% de la qualité du programme moteur initial.</div>
+        </div>
+        <div class="game-controls">
+          <button class="gbtn" onclick="startFlick('easy')">Facile</button>
+          <button class="gbtn active" onclick="startFlick('medium')" id="fb-med">Normal</button>
+          <button class="gbtn" onclick="startFlick('hard')">Difficile</button>
+        </div>
+      </div>
+      <div class="game-area" id="flickArea">
+        <div class="game-overlay" id="flickOverlay"><h3>Flick Trainer</h3><p>Sélectionne la difficulté pour commencer</p></div>
+      </div>
+      <div class="game-stats">
+        <div class="gstat"><div class="gstat-num" id="f-hits">—</div><div class="gstat-label">Hits</div></div>
+        <div class="gstat"><div class="gstat-num" id="f-miss">—</div><div class="gstat-label">Miss</div></div>
+        <div class="gstat"><div class="gstat-num" id="f-acc">—</div><div class="gstat-label">Précision</div></div>
+        <div class="gstat"><div class="gstat-num" id="f-avg">—</div><div class="gstat-label">Moy.</div></div>
+        <div class="gstat"><div class="gstat-num" id="f-best">—</div><div class="gstat-label">Best</div></div>
+      </div>
+    </div>
+
+    <!-- ═══════ TRACKING ═══════ -->
+    <div class="game-panel" id="panel-track">
+      <div class="game-header">
+        <div>
+          <div class="game-title">Tracking Trainer</div>
+          <div class="game-desc">Maintiens ton curseur sur la cible mobile pendant 15 secondes. Le tracking repose sur ta boucle proprioceptive — œil, cervelet, main, en correction continue.</div>
+        </div>
+        <div class="game-controls">
+          <button class="gbtn" onclick="startTrack('easy')">Facile</button>
+          <button class="gbtn active" onclick="startTrack('medium')">Normal</button>
+          <button class="gbtn" onclick="startTrack('hard')">Difficile</button>
+        </div>
+      </div>
+      <canvas class="game-canvas" id="trackCanvas" width="1100" height="450"></canvas>
+      <div class="game-stats">
+        <div class="gstat"><div class="gstat-num" id="t-acc">—</div><div class="gstat-label">Précision</div></div>
+        <div class="gstat"><div class="gstat-num" id="t-time">15s</div><div class="gstat-label">Restant</div></div>
+        <div class="gstat"><div class="gstat-num" id="t-streak">—</div><div class="gstat-label">Best streak</div></div>
+        <div class="gstat"><div class="gstat-num" id="t-grade">—</div><div class="gstat-label">Grade</div></div>
+      </div>
+    </div>
+
+    <!-- ═══════ SWITCH ═══════ -->
+    <div class="game-panel" id="panel-switch">
+      <div class="game-header">
+        <div>
+          <div class="game-title">Switch Trainer</div>
+          <div class="game-desc">6 cibles numérotées apparaissent. Clique-les dans l'ordre. Le switch exige de terminer un programme moteur et d'en initier un nouveau — coût neuronal ~200ms.</div>
+        </div>
+        <div class="game-controls">
+          <button class="gbtn" onclick="startSwitch()">Démarrer</button>
+        </div>
+      </div>
+      <div class="game-area" id="switchArea">
+        <div class="game-overlay" id="switchOverlay"><h3>Switch Trainer</h3><p>Clique Démarrer</p></div>
+      </div>
+      <div class="game-stats">
+        <div class="gstat"><div class="gstat-num" id="s-total">—</div><div class="gstat-label">Total</div></div>
+        <div class="gstat"><div class="gstat-num" id="s-avg">—</div><div class="gstat-label">Moy. switch</div></div>
+        <div class="gstat"><div class="gstat-num" id="s-best">—</div><div class="gstat-label">+ rapide</div></div>
+        <div class="gstat"><div class="gstat-num" id="s-worst">—</div><div class="gstat-label">+ lent</div></div>
+      </div>
+    </div>
+
+    <!-- ═══════ PRECISION ═══════ -->
+    <div class="game-panel" id="panel-precision">
+      <div class="game-header">
+        <div>
+          <div class="game-title">Precision Trainer</div>
+          <div class="game-desc">Cibles miniatures (8–16px) — la taille d'une tête R6 à distance. Entraîne les unités motrices à seuil bas de tes doigts et de ton poignet.</div>
+        </div>
+        <div class="game-controls">
+          <button class="gbtn" onclick="startPrecision()">Démarrer (15 cibles)</button>
+        </div>
+      </div>
+      <div class="game-area" id="precArea">
+        <div class="game-overlay" id="precOverlay"><h3>Precision Trainer</h3><p>Clique Démarrer</p></div>
+      </div>
+      <div class="game-stats">
+        <div class="gstat"><div class="gstat-num" id="p-hits">—</div><div class="gstat-label">Hits</div></div>
+        <div class="gstat"><div class="gstat-num" id="p-miss">—</div><div class="gstat-label">Miss</div></div>
+        <div class="gstat"><div class="gstat-num" id="p-acc">—</div><div class="gstat-label">Précision</div></div>
+        <div class="gstat"><div class="gstat-num" id="p-avg">—</div><div class="gstat-label">Moy.</div></div>
+      </div>
+    </div>
+
+    <!-- ═══════ GO/NO-GO ═══════ -->
+    <div class="game-panel" id="panel-gonogo">
+      <div class="game-header">
+        <div>
+          <div class="game-title">Go / No-Go</div>
+          <div class="game-desc">Vert = ennemi, clique. Bleu = allié, ne clique pas. Mesure ta réaction sélective — la capacité à inhiber un tir quand l'identification dit "non". Fondamental avec le friendly fire de R6.</div>
+        </div>
+        <div class="game-controls">
+          <button class="gbtn" onclick="startGNG()">Démarrer (20 rounds)</button>
+        </div>
+      </div>
+      <div class="game-area" id="gngArea">
+        <div class="react-wrap">
+          <div class="react-circle" id="gngCircle" onclick="gngClick()">
+            <span class="react-label" id="gngLabel">Clique Démarrer</span>
+          </div>
+        </div>
+      </div>
+      <div class="game-stats">
+        <div class="gstat"><div class="gstat-num" id="g-correct">—</div><div class="gstat-label">Correct</div></div>
+        <div class="gstat"><div class="gstat-num" id="g-false">—</div><div class="gstat-label">Team kills</div></div>
+        <div class="gstat"><div class="gstat-num" id="g-missed">—</div><div class="gstat-label">Ratés</div></div>
+        <div class="gstat"><div class="gstat-num" id="g-avg">—</div><div class="gstat-label">Moy. Go</div></div>
+      </div>
+    </div>
+
+    <!-- ═══════ SAT CHALLENGE ═══════ -->
+    <div class="game-panel" id="panel-sat">
+      <div class="game-header">
+        <div>
+          <div class="game-title">SAT Challenge</div>
+          <div class="game-desc">Speed-Accuracy Trade-off. Les cibles rétrécissent et disparaissent de plus en plus vite. Score = Hits × (1000 / temps_moyen). Pousse les deux limites simultanément.</div>
+        </div>
+        <div class="game-controls">
+          <button class="gbtn" onclick="startSAT()">Démarrer (20 cibles)</button>
+        </div>
+      </div>
+      <div class="game-area" id="satArea">
+        <div class="game-overlay" id="satOverlay"><h3>SAT Challenge</h3><p>Clique Démarrer</p></div>
+      </div>
+      <div class="game-stats">
+        <div class="gstat"><div class="gstat-num" id="sa-hits">—</div><div class="gstat-label">Hits</div></div>
+        <div class="gstat"><div class="gstat-num" id="sa-miss">—</div><div class="gstat-label">Miss</div></div>
+        <div class="gstat"><div class="gstat-num" id="sa-expired">—</div><div class="gstat-label">Expirées</div></div>
+        <div class="gstat"><div class="gstat-num" id="sa-avg">—</div><div class="gstat-label">Moy.</div></div>
+        <div class="gstat"><div class="gstat-num" id="sa-score">—</div><div class="gstat-label">Score SAT</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Aim Training</span>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════
+// TAB SYSTEM
+// ═══════════════════════════════════════════════
+function showGame(id) {
+  document.querySelectorAll('.game-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.game-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════
+// 1. FLICK TRAINER
+// ═══════════════════════════════════════════════
+const flickArea = document.getElementById('flickArea');
+let fDiff='medium', fHits=0, fMiss=0, fTimes=[], fCount=0, fMax=20, fTarget=null, fLastTime=0, fActive=false;
+const fSizes = {easy:48, medium:32, hard:18};
+
+function startFlick(diff) {
+  fDiff=diff; fHits=0; fMiss=0; fTimes=[]; fCount=0; fActive=true;
+  document.querySelectorAll('#panel-flick .gbtn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('flickOverlay').style.display='none';
+  flickArea.querySelectorAll('.target,.hit-m,.miss-m').forEach(e=>e.remove());
+  spawnFlick();
+  updateFlickStats();
+}
+function spawnFlick() {
+  if(fCount>=fMax){endFlick();return;}
+  if(fTarget)fTarget.remove();
+  const s=fSizes[fDiff],w=flickArea.offsetWidth,h=flickArea.offsetHeight;
+  const x=s+Math.random()*(w-s*2),y=s+Math.random()*(h-s*2);
+  const t=document.createElement('div');t.className='target';
+  t.style.cssText=`width:${s}px;height:${s}px;left:${x-s/2}px;top:${y-s/2}px;`;
+  t.innerHTML='<div class="target-inner"><div class="target-dot"></div></div>';
+  t.addEventListener('mousedown',e=>{e.stopPropagation();onFlickHit(t);});
+  flickArea.appendChild(t);fTarget=t;fLastTime=performance.now();fCount++;
+}
+function onFlickHit(t){
+  if(!fActive)return;
+  fHits++;fTimes.push(performance.now()-fLastTime);
+  t.style.background='var(--cyan)';t.style.animation='hitPop .3s ease forwards';
+  fTarget=null;updateFlickStats();setTimeout(spawnFlick,200);
+}
+flickArea.addEventListener('mousedown',e=>{
+  if(!fActive||e.target.closest('.target'))return;
+  fMiss++;updateFlickStats();
+});
+function endFlick(){
+  fActive=false;if(fTarget){fTarget.remove();fTarget=null;}
+  const avg=fTimes.length?Math.round(fTimes.reduce((a,b)=>a+b,0)/fTimes.length):0;
+  const acc=(fHits+fMiss)?Math.round(fHits/(fHits+fMiss)*100):0;
+  let g='D',gc='grade-d';
+  if(avg<300&&acc>90){g='S';gc='grade-s';}else if(avg<400&&acc>80){g='A';gc='grade-a';}
+  else if(avg<500&&acc>70){g='B';gc='grade-b';}else if(avg<600&&acc>60){g='C';gc='grade-c';}
+  const ov=document.getElementById('flickOverlay');ov.style.display='flex';
+  ov.innerHTML=`<h3 class="${gc}">${g}</h3><p>${avg}ms moy · ${acc}% précision · Relance pour réessayer</p>`;
+  updateFlickStats();
+}
+function updateFlickStats(){
+  const avg=fTimes.length?Math.round(fTimes.reduce((a,b)=>a+b,0)/fTimes.length):'—';
+  const best=fTimes.length?Math.round(Math.min(...fTimes)):'—';
+  const acc=(fHits+fMiss)?Math.round(fHits/(fHits+fMiss)*100)+'%':'—';
+  document.getElementById('f-hits').textContent=fHits||'—';
+  document.getElementById('f-miss').textContent=fMiss||'—';
+  document.getElementById('f-acc').textContent=acc;
+  document.getElementById('f-avg').textContent=avg!=='—'?avg+'ms':'—';
+  document.getElementById('f-best').textContent=best!=='—'?best+'ms':'—';
+}
+
+// ═══════════════════════════════════════════════
+// 2. TRACKING TRAINER
+// ═══════════════════════════════════════════════
+const tCanvas=document.getElementById('trackCanvas'),tCtx=tCanvas.getContext('2d');
+let tAnim,tActive=false,tBall={x:400,y:200,r:24,vx:3,vy:2},tMouse={x:0,y:0};
+let tOnTarget=0,tTotal=0,tBestStreak=0,tCurStreak=0,tDuration=15000,tStart=0,tSpeed=1;
+
+tCanvas.addEventListener('mousemove',e=>{
+  const r=tCanvas.getBoundingClientRect();
+  tMouse.x=(e.clientX-r.left)*(tCanvas.width/r.width);
+  tMouse.y=(e.clientY-r.top)*(tCanvas.height/r.height);
+});
+
+function startTrack(diff){
+  document.querySelectorAll('#panel-track .gbtn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  tSpeed=diff==='easy'?.6:diff==='hard'?1.6:1;
+  const r=diff==='easy'?30:diff==='hard'?16:24;
+  tBall={x:tCanvas.width/2,y:tCanvas.height/2,r,vx:3*tSpeed,vy:2*tSpeed};
+  tOnTarget=0;tTotal=0;tBestStreak=0;tCurStreak=0;tStart=performance.now();tActive=true;
+  if(tAnim)cancelAnimationFrame(tAnim);trackLoop();
+}
+function trackLoop(){
+  const el=performance.now()-tStart;
+  if(el>=tDuration){tActive=false;showTrackResult();return;}
+  tCtx.clearRect(0,0,tCanvas.width,tCanvas.height);
+  // Grid
+  tCtx.strokeStyle='rgba(255,255,255,0.03)';tCtx.lineWidth=1;
+  for(let i=0;i<tCanvas.width;i+=60){tCtx.beginPath();tCtx.moveTo(i,0);tCtx.lineTo(i,tCanvas.height);tCtx.stroke();}
+  for(let i=0;i<tCanvas.height;i+=60){tCtx.beginPath();tCtx.moveTo(0,i);tCtx.lineTo(tCanvas.width,i);tCtx.stroke();}
+  const accel=1+el/tDuration*0.8;
+  if(Math.random()<0.02*tSpeed)tBall.vx=-tBall.vx*(0.8+Math.random()*0.4);
+  if(Math.random()<0.02*tSpeed)tBall.vy=-tBall.vy*(0.8+Math.random()*0.4);
+  tBall.x+=tBall.vx*accel;tBall.y+=tBall.vy*accel;
+  if(tBall.x-tBall.r<0||tBall.x+tBall.r>tCanvas.width)tBall.vx*=-1;
+  if(tBall.y-tBall.r<0||tBall.y+tBall.r>tCanvas.height)tBall.vy*=-1;
+  tBall.x=Math.max(tBall.r,Math.min(tCanvas.width-tBall.r,tBall.x));
+  tBall.y=Math.max(tBall.r,Math.min(tCanvas.height-tBall.r,tBall.y));
+  const dx=tMouse.x-tBall.x,dy=tMouse.y-tBall.y,dist=Math.sqrt(dx*dx+dy*dy);
+  const isOn=dist<tBall.r;tTotal++;
+  if(isOn){tOnTarget++;tCurStreak++;if(tCurStreak>tBestStreak)tBestStreak=tCurStreak;}else{tCurStreak=0;}
+  tCtx.beginPath();tCtx.arc(tBall.x,tBall.y,tBall.r,0,Math.PI*2);
+  tCtx.fillStyle=isOn?'rgba(78,205,196,0.9)':'rgba(200,48,42,0.9)';tCtx.fill();
+  tCtx.beginPath();tCtx.arc(tBall.x,tBall.y,3,0,Math.PI*2);tCtx.fillStyle='#f5f2ed';tCtx.fill();
+  tCtx.strokeStyle='rgba(255,255,255,0.5)';tCtx.lineWidth=1;
+  tCtx.beginPath();tCtx.moveTo(tMouse.x-10,tMouse.y);tCtx.lineTo(tMouse.x+10,tMouse.y);tCtx.stroke();
+  tCtx.beginPath();tCtx.moveTo(tMouse.x,tMouse.y-10);tCtx.lineTo(tMouse.x,tMouse.y+10);tCtx.stroke();
+  const acc=tTotal?Math.round(tOnTarget/tTotal*100):0;
+  const rem=Math.max(0,Math.ceil((tDuration-el)/1000));
+  document.getElementById('t-acc').textContent=acc+'%';
+  document.getElementById('t-time').textContent=rem+'s';
+  document.getElementById('t-streak').textContent=tBestStreak;
+  tCtx.fillStyle='rgba(200,48,42,0.3)';tCtx.fillRect(0,tCanvas.height-3,tCanvas.width*(el/tDuration),3);
+  tAnim=requestAnimationFrame(trackLoop);
+}
+function showTrackResult(){
+  const acc=tTotal?Math.round(tOnTarget/tTotal*100):0;
+  let g='D';if(acc>85)g='S';else if(acc>70)g='A';else if(acc>55)g='B';else if(acc>40)g='C';
+  document.getElementById('t-grade').textContent=g;
+  tCtx.fillStyle='rgba(10,10,10,0.85)';tCtx.fillRect(0,0,tCanvas.width,tCanvas.height);
+  tCtx.fillStyle='#f5f2ed';tCtx.font='600 48px "Bebas Neue",sans-serif';tCtx.textAlign='center';
+  tCtx.fillText('GRADE: '+g,tCanvas.width/2,tCanvas.height/2-10);
+  tCtx.font='300 14px "Barlow Condensed",sans-serif';tCtx.fillStyle='#999';
+  tCtx.fillText(acc+'% · '+tBestStreak+' streak · Relance pour réessayer',tCanvas.width/2,tCanvas.height/2+30);
+}
+
+// ═══════════════════════════════════════════════
+// 3. SWITCH TRAINER
+// ═══════════════════════════════════════════════
+const switchArea=document.getElementById('switchArea');
+let swTargets=[],swIdx=0,swTimes=[],swLast=0,swStart=0;
+function startSwitch(){
+  switchArea.querySelectorAll('.sw-target').forEach(e=>e.remove());
+  document.getElementById('switchOverlay').style.display='none';
+  swTargets=[];swIdx=0;swTimes=[];
+  const count=6,w=switchArea.offsetWidth,h=switchArea.offsetHeight,positions=[];
+  for(let i=0;i<count;i++){
+    let x,y,valid;
+    do{x=40+Math.random()*(w-80);y=40+Math.random()*(h-80);
+    valid=positions.every(p=>Math.hypot(p.x-x,p.y-y)>90);}while(!valid);
+    positions.push({x,y});
+    const el=document.createElement('div');el.className='sw-target'+(i===0?' next':'');
+    el.style.cssText=`left:${x-21}px;top:${y-21}px;${i===0?'background:var(--red);border-color:var(--red);':''}`;
+    el.innerHTML=`<span class="num">${i+1}</span>`;el.dataset.idx=i;
+    el.addEventListener('mousedown',onSwClick);
+    switchArea.appendChild(el);swTargets.push(el);
+  }
+  swStart=performance.now();swLast=swStart;
+  ['s-total','s-avg','s-best','s-worst'].forEach(id=>document.getElementById(id).textContent='—');
+}
+function onSwClick(e){
+  const idx=parseInt(e.currentTarget.dataset.idx);if(idx!==swIdx)return;
+  const now=performance.now();if(swIdx>0)swTimes.push(now-swLast);swLast=now;
+  e.currentTarget.style.background='var(--cyan)';e.currentTarget.style.borderColor='var(--cyan)';
+  e.currentTarget.style.animation='hitPop .3s ease forwards';e.currentTarget.style.pointerEvents='none';
+  swIdx++;
+  if(swIdx<swTargets.length){swTargets[swIdx].classList.add('next');swTargets[swIdx].style.background='var(--red)';swTargets[swIdx].style.borderColor='var(--red)';}
+  else{document.getElementById('s-total').textContent=Math.round(now-swStart)+'ms';}
+  if(swTimes.length){
+    const avg=Math.round(swTimes.reduce((a,b)=>a+b,0)/swTimes.length);
+    document.getElementById('s-avg').textContent=avg+'ms';
+    document.getElementById('s-best').textContent=Math.round(Math.min(...swTimes))+'ms';
+    document.getElementById('s-worst').textContent=Math.round(Math.max(...swTimes))+'ms';
+  }
+}
+
+// ═══════════════════════════════════════════════
+// 4. PRECISION TRAINER
+// ═══════════════════════════════════════════════
+const precArea=document.getElementById('precArea');
+let pHits=0,pMiss=0,pTimes=[],pCount=0,pMax=15,pTarget=null,pLast=0,pActive=false;
+const pSizes=[8,10,12,14,16,10,8,12,8,10,14,8,10,8,12];
+function startPrecision(){
+  pHits=0;pMiss=0;pTimes=[];pCount=0;pActive=true;
+  document.getElementById('precOverlay').style.display='none';
+  precArea.querySelectorAll('.prec-t').forEach(e=>e.remove());
+  spawnPrec();updatePrec();
+}
+function spawnPrec(){
+  if(pCount>=pMax){endPrec();return;}if(pTarget)pTarget.remove();
+  const s=pSizes[pCount],w=precArea.offsetWidth,h=precArea.offsetHeight;
+  const x=30+Math.random()*(w-60),y=30+Math.random()*(h-60);
+  const el=document.createElement('div');el.className='prec-t';
+  el.style.cssText=`position:absolute;width:${s}px;height:${s}px;left:${x-s/2}px;top:${y-s/2}px;border-radius:50%;border:1px solid var(--red);background:rgba(200,48,42,0.8);cursor:crosshair;display:flex;align-items:center;justify-content:center;`;
+  el.innerHTML='<div style="width:2px;height:2px;background:var(--white);border-radius:50%"></div>';
+  el.addEventListener('mousedown',e=>{e.stopPropagation();pHits++;pTimes.push(performance.now()-pLast);el.style.background='var(--cyan)';el.style.animation='hitPop .3s ease forwards';pTarget=null;updatePrec();setTimeout(spawnPrec,250);});
+  precArea.appendChild(el);pTarget=el;pLast=performance.now();pCount++;
+}
+precArea.addEventListener('mousedown',e=>{if(!pActive||e.target.closest('.prec-t'))return;pMiss++;updatePrec();});
+function endPrec(){
+  pActive=false;const ov=document.getElementById('precOverlay');ov.style.display='flex';
+  const avg=pTimes.length?Math.round(pTimes.reduce((a,b)=>a+b,0)/pTimes.length):0;
+  const acc=(pHits+pMiss)?Math.round(pHits/(pHits+pMiss)*100):0;
+  ov.innerHTML=`<h3>${acc}% · ${avg}ms</h3><p>Relance pour réessayer</p>`;updatePrec();
+}
+function updatePrec(){
+  const total=pHits+pMiss;
+  document.getElementById('p-hits').textContent=pHits||'—';
+  document.getElementById('p-miss').textContent=pMiss||'—';
+  document.getElementById('p-acc').textContent=total?(Math.round(pHits/total*100)+'%'):'—';
+  document.getElementById('p-avg').textContent=pTimes.length?(Math.round(pTimes.reduce((a,b)=>a+b,0)/pTimes.length)+'ms'):'—';
+}
+
+// ═══════════════════════════════════════════════
+// 5. GO / NO-GO
+// ═══════════════════════════════════════════════
+const gCircle=document.getElementById('gngCircle'),gLabel=document.getElementById('gngLabel');
+let gActive=false,gRound=0,gMax=20,gTimer=null,gState='idle';
+let gCorrect=0,gFalse=0,gMissed=0,goTimes=[],gShowTime=0;
+const gColors=Array.from({length:20},(_,i)=>i%4===3||i%7===2?'nogo':'go');
+
+function startGNG(){
+  gActive=true;gRound=0;gCorrect=0;gFalse=0;gMissed=0;goTimes=[];
+  for(let i=gColors.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[gColors[i],gColors[j]]=[gColors[j],gColors[i]];}
+  nextGNG();
+}
+function nextGNG(){
+  if(gRound>=gMax){endGNG();return;}
+  gState='waiting';gCircle.style.background='var(--gray-mid)';gCircle.style.borderColor='var(--gray-light)';
+  gLabel.textContent='Attends...';gLabel.style.color='var(--gray-text)';
+  gTimer=setTimeout(()=>{
+    const type=gColors[gRound];
+    if(type==='go'){gCircle.style.background='rgba(46,204,113,0.3)';gCircle.style.borderColor='#2ecc71';gLabel.textContent='ENNEMI — TIRE !';gLabel.style.color='#2ecc71';}
+    else{gCircle.style.background='rgba(52,152,219,0.3)';gCircle.style.borderColor='#3498db';gLabel.textContent='ALLIÉ — NE TIRE PAS';gLabel.style.color='#3498db';}
+    gState=type;gShowTime=performance.now();
+    setTimeout(()=>{if(gState===type){if(type==='go')gMissed++;else gCorrect++;gRound++;updateGNG();nextGNG();}},1500);
+  },800+Math.random()*1500);
+}
+function gngClick(){
+  if(!gActive)return;if(gState==='waiting')return;
+  if(gState==='go'){gCorrect++;goTimes.push(performance.now()-gShowTime);gCircle.style.background='rgba(46,204,113,0.6)';}
+  else if(gState==='nogo'){gFalse++;gCircle.style.background='rgba(200,48,42,0.6)';gCircle.style.borderColor='var(--red)';gLabel.textContent='TEAM KILL !';gLabel.style.color='var(--red)';}
+  gState='done';gRound++;updateGNG();setTimeout(nextGNG,500);
+}
+function endGNG(){
+  gActive=false;gState='idle';gCircle.style.background='var(--gray-mid)';gCircle.style.borderColor='var(--gray-light)';
+  const avg=goTimes.length?Math.round(goTimes.reduce((a,b)=>a+b,0)/goTimes.length):0;
+  gLabel.innerHTML=`Terminé<br><span style="font-size:12px;color:var(--gray-text)">${gCorrect} OK · ${gFalse} TK · ${gMissed} ratés · ${avg}ms</span>`;
+  gLabel.style.color='var(--white)';
+}
+function updateGNG(){
+  document.getElementById('g-correct').textContent=gCorrect||'—';
+  document.getElementById('g-false').textContent=gFalse||'—';
+  document.getElementById('g-missed').textContent=gMissed||'—';
+  document.getElementById('g-avg').textContent=goTimes.length?(Math.round(goTimes.reduce((a,b)=>a+b,0)/goTimes.length)+'ms'):'—';
+}
+
+// ═══════════════════════════════════════════════
+// 6. SAT CHALLENGE
+// ═══════════════════════════════════════════════
+const satArea=document.getElementById('satArea');
+let saHits=0,saMiss=0,saExpired=0,saTimes=[],saCount=0,saMax=20,saTarget=null,saLast=0,saActive=false,saTimer=null;
+const saSizes=[28,24,20,16,14,24,20,16,14,12,20,16,14,12,10,16,14,12,10,8];
+
+function startSAT(){
+  saHits=0;saMiss=0;saExpired=0;saTimes=[];saCount=0;saActive=true;
+  document.getElementById('satOverlay').style.display='none';
+  satArea.querySelectorAll('.sat-t').forEach(e=>e.remove());
+  spawnSAT();updateSAT();
+}
+function spawnSAT(){
+  if(saCount>=saMax){endSAT();return;}if(saTarget)saTarget.remove();
+  const s=saSizes[saCount],w=satArea.offsetWidth,h=satArea.offsetHeight;
+  const x=30+Math.random()*(w-60),y=30+Math.random()*(h-60);
+  const el=document.createElement('div');el.className='sat-t';
+  el.style.cssText=`position:absolute;width:${s}px;height:${s}px;left:${x-s/2}px;top:${y-s/2}px;border-radius:50%;background:var(--red);box-shadow:0 0 15px rgba(200,48,42,0.4);cursor:crosshair;display:flex;align-items:center;justify-content:center;`;
+  el.innerHTML='<div style="width:3px;height:3px;background:var(--white);border-radius:50%"></div>';
+  el.addEventListener('mousedown',e=>{e.stopPropagation();onSATHit(el);});
+  satArea.appendChild(el);saTarget=el;saLast=performance.now();saCount++;
+  const limit=Math.max(600,1500-saCount*45);
+  saTimer=setTimeout(()=>{if(saTarget===el){saExpired++;el.remove();saTarget=null;updateSAT();setTimeout(spawnSAT,200);}},limit);
+}
+function onSATHit(el){
+  if(!saActive)return;clearTimeout(saTimer);
+  saHits++;saTimes.push(performance.now()-saLast);
+  el.style.background='var(--cyan)';el.style.animation='hitFade .3s ease forwards';
+  saTarget=null;updateSAT();setTimeout(spawnSAT,200);
+}
+satArea.addEventListener('mousedown',e=>{if(!saActive||e.target!==satArea)return;saMiss++;updateSAT();});
+function endSAT(){
+  saActive=false;const ov=document.getElementById('satOverlay');ov.style.display='flex';
+  const avg=saTimes.length?Math.round(saTimes.reduce((a,b)=>a+b,0)/saTimes.length):0;
+  const score=saTimes.length?Math.round(saHits*(1000/Math.max(avg,1))*10):0;
+  ov.innerHTML=`<h3>Score: ${score}</h3><p>${saHits} hits · ${avg}ms moy · Relance pour réessayer</p>`;updateSAT();
+}
+function updateSAT(){
+  const avg=saTimes.length?Math.round(saTimes.reduce((a,b)=>a+b,0)/saTimes.length):0;
+  const score=saTimes.length?Math.round(saHits*(1000/Math.max(avg,1))*10):0;
+  document.getElementById('sa-hits').textContent=saHits||'—';
+  document.getElementById('sa-miss').textContent=saMiss||'—';
+  document.getElementById('sa-expired').textContent=saExpired||'—';
+  document.getElementById('sa-avg').textContent=avg?avg+'ms':'—';
+  document.getElementById('sa-score').textContent=score||'—';
+}
+</script>
+</body>
+</html>
