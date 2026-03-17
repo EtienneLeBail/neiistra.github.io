@@ -13,7 +13,7 @@
 /* Toolbar de dessin */
 .toolbar{display:flex;gap:8px;padding:12px 24px;border-bottom:1px solid var(--border);align-items:center;flex-wrap:wrap;background:rgba(10,10,10,0.4)}.toolbar-group{display:flex;gap:4px;align-items:center;padding:0 8px;border-right:1px solid var(--border)}.toolbar-group:last-child{border-right:none}.toolbar-btn{width:36px;height:36px;background:var(--gray-mid);border:1px solid var(--border);color:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:16px;transition:all .2s;border-radius:3px}.toolbar-btn:hover{background:var(--gray);border-color:var(--red)}.toolbar-btn.active{background:var(--red);border-color:var(--red)}.toolbar-btn:disabled{opacity:0.5;cursor:not-allowed}.color-picker{width:36px;height:36px;padding:2px;border:1px solid var(--border);cursor:pointer;border-radius:3px}.size-input{width:50px;height:36px;padding:4px 8px;background:var(--gray-mid);border:1px solid var(--border);color:var(--white);font-family:'Barlow Condensed',sans-serif;font-size:12px;border-radius:3px}.size-input::placeholder{color:var(--gray-text)}.toolbar-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--gray-text);white-space:nowrap}
 
-.blueprint-wrap{position:relative;width:100%;overflow:auto;background:#0a0a0a;display:flex;align-items:center;justify-content:center;min-height:500px;cursor:grab}.blueprint-wrap.panning{cursor:grabbing}.blueprint-container{position:relative;display:inline-block}.blueprint-img-wrapper{position:relative;display:inline-block}.blueprint-wrap img{max-width:100%;height:auto;display:block;user-select:none;-webkit-user-drag:none;transition:transform .2s}.blueprint-wrap.zoomed img{max-width:none}#drawingCanvas{position:absolute;top:0;left:0;cursor:crosshair;background:transparent;display:none}#drawingCanvas.active{display:block}#textCanvas{position:absolute;top:0;left:0;cursor:text;background:transparent;display:none}#textCanvas.active{display:block}
+.blueprint-wrap{position:relative;width:100%;overflow:auto;background:#0a0a0a;display:flex;align-items:center;justify-content:center;min-height:500px;cursor:grab}.blueprint-wrap.panning{cursor:grabbing}.blueprint-container{position:relative;display:inline-block}.blueprint-img-wrapper{position:relative;display:inline-block}.blueprint-wrap img{max-width:100%;height:auto;display:block;user-select:none;-webkit-user-drag:none;transition:transform .2s}.blueprint-wrap.zoomed img{max-width:none}#drawingCanvas{position:absolute;top:0;left:0;cursor:crosshair;background:transparent;display:block;pointer-events:none}#drawingCanvas.active{pointer-events:auto}#textCanvas{position:absolute;top:0;left:0;cursor:text;background:transparent;display:block;pointer-events:none}#textCanvas.active{pointer-events:auto}
 
 .zoom-controls{position:absolute;bottom:16px;right:16px;display:flex;gap:4px;z-index:10}.zoom-btn{font-family:'Bebas Neue',sans-serif;font-size:18px;width:36px;height:36px;background:rgba(10,10,10,0.8);border:1px solid var(--border);color:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;backdrop-filter:blur(4px)}.zoom-btn:hover{background:var(--red);border-color:var(--red)}.map-info{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:24px;flex-wrap:wrap;align-items:center}.info-item{display:flex;flex-direction:column;gap:2px}.info-label{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text)}.info-value{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:500;letter-spacing:1px;color:var(--white)}.shortcut-hint{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:1px;color:var(--gray-light);padding:8px 24px;border-top:1px solid var(--border);text-align:center}
 
@@ -66,7 +66,7 @@ footer{border-top:1px solid var(--border);padding:24px 48px;display:flex;justify
   <div class="zoom-controls"><button class="zoom-btn" onclick="zoomIn()">+</button><button class="zoom-btn" onclick="zoomOut()">−</button><button class="zoom-btn" onclick="zoomReset()">↺</button></div>
 </div>
 <div class="map-info" id="mapInfo"></div>
-<div class="shortcut-hint">Raccourcis : ← → changer d'étage · + − zoomer · Molette pour zoomer · Espace pour pan</div>
+<div class="shortcut-hint">Raccourcis : ← → changer d'étage · + − zoomer (boutons) · Espace pour pan</div>
 </div>
 </div>
 
@@ -353,7 +353,7 @@ showBlueprint();
 else if(e.key==='-')zoomOut();
 });
 
-// Zoom
+// Zoom - boutons uniquement
 function zoomIn(){zoomLevel=Math.min(3,zoomLevel+0.3);applyZoom();}
 function zoomOut(){zoomLevel=Math.max(0.5,zoomLevel-0.3);applyZoom();}
 function zoomReset(){zoomLevel=1;applyZoom();document.getElementById('blueprintWrap').scrollTo(0,0);}
@@ -367,11 +367,6 @@ container.style.transformOrigin='top left';
 if(zoomLevel>1.1)wrap.classList.add('zoomed');
 else wrap.classList.remove('zoomed');
 }
-
-blueprintWrap.addEventListener('wheel',e=>{
-e.preventDefault();
-if(e.deltaY<0)zoomIn();else zoomOut();
-},{passive:false});
 
 // Download
 document.getElementById('downloadBtn').addEventListener('click',()=>{
