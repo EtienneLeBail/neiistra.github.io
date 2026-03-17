@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>7.2 Tracking — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --red-dim: #8a1f1a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); --cyan: #4ecdc4; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+  .chap-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .chap-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 60% at 70% 30%, rgba(200,48,42,0.1) 0%, transparent 70%); }
+  .chap-hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 60px 60px; mask-image: linear-gradient(180deg, transparent 0%, black 30%, black 70%, transparent 100%); }
+  .chap-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; position: relative; }
+  .chap-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .chap-num { font-family: 'Bebas Neue', sans-serif; font-size: clamp(64px, 10vw, 120px); line-height: 0.85; letter-spacing: 2px; color: rgba(255,255,255,0.04); position: absolute; right: 48px; top: 80px; pointer-events: none; }
+  .chap-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(42px, 6vw, 72px); letter-spacing: 2px; line-height: 0.95; margin-bottom: 12px; position: relative; }
+  .chap-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 300; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 32px; position: relative; }
+  .chap-meta { display: flex; gap: 32px; position: relative; flex-wrap: wrap; }
+  .chap-meta-item { display: flex; flex-direction: column; gap: 2px; }
+  .chap-meta-label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); }
+  .chap-meta-val { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 500; letter-spacing: 1px; color: var(--white); }
+  .content { max-width: 860px; margin: 0 auto; padding: 64px 48px; }
+  .section-tag { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
+  .section-tag::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  .content h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; margin-bottom: 20px; line-height: 1.1; }
+  .content p { font-size: 15px; color: var(--gray-text); line-height: 1.9; margin-bottom: 20px; }
+  .content strong { color: var(--white); font-weight: 500; }
+  .separator { border: none; border-top: 1px solid var(--border); margin: 56px 0; }
+  .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin: 32px 0; }
+  .stat-box { background: var(--gray); padding: 20px; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; line-height: 1; }
+  .stat-num span { color: var(--red); }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); margin-top: 4px; }
+  .diagram-container { background: var(--gray); border: 1px solid var(--border); padding: 32px; margin: 32px 0; position: relative; overflow: hidden; }
+  .diagram-container::after { content: ''; position: absolute; right: -60px; top: -60px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(200,48,42,0.06) 0%, transparent 70%); pointer-events: none; }
+  .diagram-title { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 20px; }
+  .diagram-svg { width: 100%; height: auto; display: block; }
+  .insight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin: 32px 0; }
+  .insight-card { background: var(--gray); padding: 24px; border-left: 3px solid var(--red-dim); }
+  .insight-card h4 { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; margin-bottom: 8px; }
+  .insight-card p { font-size: 13px; color: var(--gray-text); line-height: 1.6; margin: 0; }
+
+  /* TRACKING GAME */
+  .game-section { background: var(--gray); border: 1px solid var(--border); margin: 32px 0; overflow: hidden; }
+  .game-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+  .game-title { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 2px; }
+  .game-btn { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; padding: 8px 20px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: var(--white); cursor: pointer; transition: all 0.2s; }
+  .game-btn:hover { background: var(--red); border-color: var(--red); }
+  .game-btn.active { background: var(--red); border-color: var(--red); }
+  .game-canvas { width: 100%; height: 400px; background: #111; display: block; }
+  .game-stats { padding: 16px 24px; border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .game-stat { text-align: center; }
+  .game-stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 1px; line-height: 1; }
+  .game-stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); margin-top: 2px; }
+
+  .chap-nav { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; }
+  .chap-nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; display: inline-block; }
+  .chap-nav-cta:hover { background: var(--red); border-color: var(--red); }
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .chap-eyebrow{animation:fadeUp .6s ease both;} .chap-title{animation:fadeUp .6s .1s ease both;}
+  @media(max-width:768px){ nav{padding:0 24px;} .chap-hero{padding:100px 24px 48px;} .content{padding:48px 24px;} .stat-row,.insight-grid{grid-template-columns:1fr;} .game-stats{grid-template-columns:repeat(2,1fr);} .game-canvas{height:300px;} .chap-nav{flex-direction:column;gap:16px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;text-align:center;} }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+
+<section class="chap-hero">
+  <div class="chap-hero-grid"></div>
+  <div class="chap-num">7.2</div>
+  <div class="chap-eyebrow">Partie VII — Motricité & jeux interactifs</div>
+  <h1 class="chap-title">Tracking</h1>
+  <p class="chap-subtitle">Suivi de cible fluide</p>
+  <div class="chap-meta">
+    <div class="chap-meta-item"><span class="chap-meta-label">Discipline</span><span class="chap-meta-val">Neurosciences motrices · Contrôle en boucle fermée</span></div>
+    <div class="chap-meta-item"><span class="chap-meta-label">Mécanique</span><span class="chap-meta-val">Strafe duel · Spray control · ADAD tracking</span></div>
+    <div class="chap-meta-item"><span class="chap-meta-label">Niveau</span><span class="chap-meta-val">Tous niveaux</span></div>
+  </div>
+</section>
+
+<div class="content">
+  <div class="section-tag">Introduction</div>
+  <h2>Suivre une cible, c'est prédire le futur</h2>
+  <p>Le tracking est l'exact opposé du flick. Là où le flick est un missile balistique — programmé et lancé sans correction — le tracking est un <strong>système de guidage en boucle fermée</strong> : l'œil surveille la cible, le cerveau calcule l'erreur, la main corrige, et la boucle recommence 6 à 8 fois par seconde.</p>
+  <p>Dans R6 Siege, le tracking est omniprésent : chaque duel contre un ennemi qui <strong>strafe</strong> (ADAD) est un exercice de tracking. Chaque spray sur un ennemi en mouvement est un exercice de tracking. Et contrairement au flick, le tracking est <strong>directement corrélé au refresh rate</strong> de ton écran — plus ton écran te donne d'images par seconde, plus ta boucle de correction est alimentée en données fraîches.</p>
+
+  <div class="stat-row">
+    <div class="stat-box"><div class="stat-num">150<span>ms</span></div><div class="stat-label">Latence d'une boucle de correction</div></div>
+    <div class="stat-box"><div class="stat-num">6<span>–8</span></div><div class="stat-label">Corrections/seconde max</div></div>
+    <div class="stat-box"><div class="stat-num">40<span>ms</span></div><div class="stat-label">Perception visuelle du mouvement</div></div>
+    <div class="stat-box"><div class="stat-num">100<span>ms</span></div><div class="stat-label">Commande motrice appropriée</div></div>
+  </div>
+
+  <hr class="separator">
+
+  <div class="section-tag">Section 1</div>
+  <h2>La boucle proprioceptive</h2>
+  <p>La boucle de tracking repose sur trois systèmes neurologiques en interaction permanente :</p>
+
+  <div class="diagram-container">
+    <div class="diagram-title">Boucle de contrôle en tracking — closed-loop motor control</div>
+    <svg class="diagram-svg" viewBox="0 0 760 280" xmlns="http://www.w3.org/2000/svg">
+      <!-- Central loop -->
+      <rect x="280" y="20" width="200" height="50" rx="3" fill="none" stroke="rgba(200,48,42,0.5)" stroke-width="1"/>
+      <text x="380" y="50" text-anchor="middle" fill="#c8302a" font-size="13" font-weight="600">Cible en mouvement</text>
+
+      <line x1="380" y1="70" x2="380" y2="100" stroke="#555" stroke-width="1" marker-end="url(#arrow)"/>
+
+      <rect x="280" y="100" width="200" height="50" rx="3" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+      <text x="380" y="122" text-anchor="middle" fill="#f5f2ed" font-size="12" font-weight="500">Rétine — Détection erreur</text>
+      <text x="380" y="140" text-anchor="middle" fill="#999" font-size="10">Position cible vs crosshair (40ms)</text>
+
+      <line x1="380" y1="150" x2="380" y2="170" stroke="#555" stroke-width="1"/>
+
+      <rect x="250" y="170" width="260" height="50" rx="3" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+      <text x="380" y="192" text-anchor="middle" fill="#f5f2ed" font-size="12" font-weight="500">Cervelet — Modèle prédictif interne</text>
+      <text x="380" y="210" text-anchor="middle" fill="#999" font-size="10">Anticipe la position future (+100ms)</text>
+
+      <line x1="380" y1="220" x2="380" y2="240" stroke="#555" stroke-width="1"/>
+
+      <rect x="280" y="240" width="200" height="40" rx="3" fill="none" stroke="rgba(78,205,196,0.4)" stroke-width="1"/>
+      <text x="380" y="265" text-anchor="middle" fill="#4ecdc4" font-size="12" font-weight="500">Main — Correction motrice</text>
+
+      <!-- Feedback arrow back up -->
+      <path d="M 480 260 Q 600 260 600 45 Q 600 20 480 30" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="4,4"/>
+      <text x="620" y="150" fill="#999" font-size="10" transform="rotate(90, 620, 150)">FEEDBACK LOOP ~150ms</text>
+
+      <!-- Smooth pursuit vs saccade -->
+      <rect x="20" y="100" width="220" height="70" rx="3" fill="#1c1c1c" stroke="rgba(200,48,42,0.2)" stroke-width="1"/>
+      <text x="130" y="122" text-anchor="middle" fill="#c8302a" font-size="11" font-weight="600">Smooth Pursuit</text>
+      <text x="130" y="140" text-anchor="middle" fill="#999" font-size="10">Mouvement oculaire continu</text>
+      <text x="130" y="156" text-anchor="middle" fill="#999" font-size="10">Max ~40°/s de vélocité cible</text>
+
+      <rect x="20" y="180" width="220" height="70" rx="3" fill="#1c1c1c" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <text x="130" y="202" text-anchor="middle" fill="#f5f2ed" font-size="11" font-weight="600">Saccade corrective</text>
+      <text x="130" y="220" text-anchor="middle" fill="#999" font-size="10">Rattrapage balistique rapide</text>
+      <text x="130" y="236" text-anchor="middle" fill="#999" font-size="10">Quand la cible échappe au smooth</text>
+
+      <defs><marker id="arrow" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 6 3 L 0 6 z" fill="#555"/></marker></defs>
+    </svg>
+  </div>
+
+  <p>L'œil humain possède deux modes de suivi. Le <strong>smooth pursuit</strong> est un mouvement oculaire fluide qui ne fonctionne que si la cible se déplace à moins de ~40°/seconde environ. Au-delà, l'œil passe en <strong>saccades correctives</strong> — des sauts rapides pour rattraper la cible. Dans R6, un ennemi qui ADAD à courte distance dépasse souvent cette limite, ce qui explique pourquoi le tracking à courte distance est si difficile : tes yeux alternent entre smooth pursuit et saccades, et chaque transition génère une erreur.</p>
+  <p>Le <strong>cervelet</strong> joue un rôle crucial : il maintient un modèle prédictif interne de la trajectoire de la cible. C'est lui qui te permet d'anticiper la direction du strafe — et c'est pourquoi les joueurs qui strafent de manière <strong>irrégulière</strong> (timing aléatoire entre les changements de direction) sont plus difficiles à tracker que ceux qui strafent mécaniquement à rythme constant.</p>
+
+  <hr class="separator">
+
+  <div class="section-tag">Section 2</div>
+  <h2>Pourquoi le refresh rate compte plus pour le tracking</h2>
+  <p>La recherche NVIDIA (2019) a démontré une asymétrie fondamentale entre flick et tracking face aux paramètres techniques :</p>
+
+  <div class="insight-grid">
+    <div class="insight-card">
+      <h4>Flick → Latence prime</h4>
+      <p>Le flick est en boucle ouverte : chaque milliseconde de latence système retarde le moment où l'image parvient à la rétine, donc le moment où le programme moteur se lance. Le refresh rate a un impact mineur car il n'y a pas de correction en cours de route.</p>
+    </div>
+    <div class="insight-card">
+      <h4>Tracking → Refresh rate prime</h4>
+      <p>Le tracking est en boucle fermée : la boucle de correction a besoin de données visuelles fraîches. À 60Hz, chaque image dure 16.6ms — une éternité pour un système qui corrige 6–8 fois/seconde. À 240Hz (4.2ms/frame), la boucle reçoit 4× plus de mises à jour et converge plus vite vers la cible.</p>
+    </div>
+  </div>
+
+  <p>Concrètement dans Siege : passer de 60Hz à 144Hz améliore sensiblement la précision de tracking en duel de strafe, plus que cela n'améliore les flicks. C'est aussi pourquoi les pros à 240Hz ou 360Hz rapportent que le jeu "se sent plus connecté" — c'est la boucle proprioceptive qui reçoit un feedback plus fréquent.</p>
+
+  <hr class="separator">
+
+  <div class="section-tag">Section 3</div>
+  <h2>Le strafe duel dans R6 Siege</h2>
+  <p>Le strafe duel est le contexte de tracking le plus fréquent dans Siege. Deux joueurs se voient, les deux strafent, les deux tentent de maintenir leur crosshair sur la tête de l'autre. C'est un duel de <strong>prédiction vs réaction</strong>.</p>
+
+  <div class="diagram-container">
+    <div class="diagram-title">Dynamique du strafe duel — prédiction vs réaction</div>
+    <svg class="diagram-svg" viewBox="0 0 760 180" xmlns="http://www.w3.org/2000/svg">
+      <!-- Joueur qui strafe régulier -->
+      <rect x="20" y="20" width="350" height="60" rx="3" fill="#1c1c1c" stroke="rgba(200,48,42,0.3)" stroke-width="1"/>
+      <text x="195" y="42" text-anchor="middle" fill="#c8302a" font-size="12" font-weight="600">Strafe régulier (ADADAD même timing)</text>
+      <text x="195" y="62" text-anchor="middle" fill="#999" font-size="11">Prédictible → le cervelet de l'adversaire s'adapte en ~3 cycles</text>
+
+      <rect x="390" y="20" width="350" height="60" rx="3" fill="#1c1c1c" stroke="rgba(78,205,196,0.3)" stroke-width="1"/>
+      <text x="565" y="42" text-anchor="middle" fill="#4ecdc4" font-size="12" font-weight="600">Strafe irrégulier (timing aléatoire)</text>
+      <text x="565" y="62" text-anchor="middle" fill="#999" font-size="11">Imprévisible → le cervelet ne peut pas modéliser le pattern</text>
+
+      <!-- Résultat -->
+      <rect x="20" y="100" width="350" height="60" rx="3" fill="rgba(200,48,42,0.05)" stroke="rgba(200,48,42,0.15)" stroke-width="1"/>
+      <text x="195" y="122" text-anchor="middle" fill="#999" font-size="11">L'adversaire compense après 400–600ms</text>
+      <text x="195" y="142" text-anchor="middle" fill="#999" font-size="11">→ Tu perds le duel si tu ne headshot pas vite</text>
+
+      <rect x="390" y="100" width="350" height="60" rx="3" fill="rgba(78,205,196,0.05)" stroke="rgba(78,205,196,0.15)" stroke-width="1"/>
+      <text x="565" y="122" text-anchor="middle" fill="#999" font-size="11">L'adversaire ne peut jamais converger</text>
+      <text x="565" y="142" text-anchor="middle" fill="#999" font-size="11">→ Tu survies plus longtemps, plus de balles sur toi miss</text>
+    </svg>
+  </div>
+
+  <p>Le meilleur strafe dans Siege est <strong>court et imprévisible</strong>. Les longs strafes (A maintenu longtemps) sont trackables après ~400ms. Les changements de direction rapides et aléatoires exploitent le <strong>délai de 150ms</strong> de la boucle proprioceptive adverse — chaque inversion de direction force l'adversaire à corriger avec un retard incompressible.</p>
+
+  <hr class="separator">
+
+  <div class="section-tag">Section 4 — Entraînement interactif</div>
+  <h2>Tracking Trainer</h2>
+  <p>Maintiens ton curseur sur la cible mobile pendant 15 secondes. Ta précision est calculée en pourcentage du temps passé sur la cible. La cible accélère progressivement et change de direction de manière semi-aléatoire.</p>
+</div>
+
+<div class="content" style="padding-top:0;">
+  <div class="game-section">
+    <div class="game-header">
+      <div class="game-title">Tracking Trainer</div>
+      <div style="display:flex;gap:12px;">
+        <button class="game-btn" onclick="startTracking('easy')">Facile</button>
+        <button class="game-btn active" onclick="startTracking('medium')" id="tbtn-med">Normal</button>
+        <button class="game-btn" onclick="startTracking('hard')">Difficile</button>
+      </div>
+    </div>
+    <canvas class="game-canvas" id="trackCanvas" width="860" height="400"></canvas>
+    <div class="game-stats">
+      <div class="game-stat"><div class="game-stat-num" id="ts-acc">—</div><div class="game-stat-label">Précision</div></div>
+      <div class="game-stat"><div class="game-stat-num" id="ts-time">15s</div><div class="game-stat-label">Temps restant</div></div>
+      <div class="game-stat"><div class="game-stat-num" id="ts-streak">—</div><div class="game-stat-label">Meilleur streak</div></div>
+      <div class="game-stat"><div class="game-stat-num" id="ts-grade">—</div><div class="game-stat-label">Grade</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="content" style="padding-top:0;">
+  <hr class="separator">
+
+  <div class="section-tag">Section 5</div>
+  <h2>Application tactique dans R6 Siege</h2>
+
+  <div class="insight-grid">
+    <div class="insight-card">
+      <h4>Spray transfer</h4>
+      <p>Passer d'un ennemi à un autre pendant un spray est un combo tracking+flick. Le spray transfer demande de maintenir le contrôle du recul (tracking vertical vers le bas) tout en effectuant un flick horizontal vers la nouvelle cible. C'est l'un des gestes les plus difficiles du jeu.</p>
+    </div>
+    <div class="insight-card">
+      <h4>Lean spam et contre-strafe</h4>
+      <p>Le lean spam combine un mouvement latéral de la hitbox avec un changement d'angle visuel. Pour tracker un lean spammer, il faut anticiper la direction du lean — pas la position actuelle de la tête. Les meilleurs défenseurs combinent lean + strafe court pour maximiser l'imprévisibilité.</p>
+    </div>
+    <div class="insight-card">
+      <h4>Tracking au recul</h4>
+      <p>Chaque arme dans R6 a un pattern de recul déterministe. Compenser ce recul est une forme de tracking vertical inversé — tu suis un "ennemi invisible" (le centre de ton spray) qui monte. Les joueurs qui maîtrisent les patterns peuvent spray headshot sur 10+ balles.</p>
+    </div>
+    <div class="insight-card">
+      <h4>Drone tracking</h4>
+      <p>Suivre un drone ennemi est un exercice de tracking pur — cible petite, rapide, trajectoire erratique. Les défenseurs experts track les drones en smooth pursuit plutôt qu'en flick : ils pré-aiment la direction probable et laissent le drone entrer dans leur crosshair.</p>
+    </div>
+  </div>
+
+  <p><strong>Sources :</strong> NVIDIA Research (2019). Latency of 30ms benefits FPS targeting tasks — la distinction tracking/flick face au refresh rate. — Saunders, J.A. & Knill, D.C. (2004). Visual feedback control of hand movements. Journal of Neuroscience. — Krauzlis, R.J. (2004). Recasting the smooth pursuit eye movement system. Journal of Neurophysiology — modèle prédictif du cervelet en smooth pursuit.</p>
+</div>
+
+<div class="chap-nav">
+  <a href="7-1-flicking.html" class="chap-nav-cta">← Chapitre 7.1</a>
+  <a href="7-3-target-switching.html" class="chap-nav-cta">Chapitre 7.3 →</a>
+</div>
+
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie VII · Chapitre 7.2</span>
+</footer>
+
+<script>
+const canvas = document.getElementById('trackCanvas');
+const ctx = canvas.getContext('2d');
+let trackAnim, trackActive = false;
+let ball = { x: 400, y: 200, r: 24, vx: 3, vy: 2 };
+let mouse = { x: 0, y: 0 };
+let onTarget = 0, totalFrames = 0, bestStreak = 0, curStreak = 0;
+let trackDuration = 15000, trackStart = 0;
+let speedMult = 1;
+
+canvas.addEventListener('mousemove', e => {
+  const rect = canvas.getBoundingClientRect();
+  const sx = canvas.width / rect.width;
+  const sy = canvas.height / rect.height;
+  mouse.x = (e.clientX - rect.left) * sx;
+  mouse.y = (e.clientY - rect.top) * sy;
+});
+
+function startTracking(diff) {
+  document.querySelectorAll('.game-header .game-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  speedMult = diff === 'easy' ? 0.6 : diff === 'hard' ? 1.6 : 1;
+  ball = { x: canvas.width/2, y: canvas.height/2, r: diff==='easy'?30:diff==='hard'?16:24, vx: 3*speedMult, vy: 2*speedMult };
+  onTarget = 0; totalFrames = 0; bestStreak = 0; curStreak = 0;
+  trackStart = performance.now();
+  trackActive = true;
+  if (trackAnim) cancelAnimationFrame(trackAnim);
+  trackLoop();
+}
+
+function trackLoop() {
+  const elapsed = performance.now() - trackStart;
+  if (elapsed >= trackDuration) { trackActive = false; showTrackResult(); return; }
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i < canvas.width; i += 60) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,canvas.height); ctx.stroke(); }
+  for (let i = 0; i < canvas.height; i += 60) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(canvas.width,i); ctx.stroke(); }
+
+  // Acceleration
+  const t = elapsed / trackDuration;
+  const accel = 1 + t * 0.8;
+
+  // Random direction changes
+  if (Math.random() < 0.02 * speedMult) ball.vx = -ball.vx * (0.8 + Math.random() * 0.4);
+  if (Math.random() < 0.02 * speedMult) ball.vy = -ball.vy * (0.8 + Math.random() * 0.4);
+
+  ball.x += ball.vx * accel;
+  ball.y += ball.vy * accel;
+
+  if (ball.x - ball.r < 0 || ball.x + ball.r > canvas.width) ball.vx *= -1;
+  if (ball.y - ball.r < 0 || ball.y + ball.r > canvas.height) ball.vy *= -1;
+  ball.x = Math.max(ball.r, Math.min(canvas.width - ball.r, ball.x));
+  ball.y = Math.max(ball.r, Math.min(canvas.height - ball.r, ball.y));
+
+  // Check on target
+  const dx = mouse.x - ball.x, dy = mouse.y - ball.y;
+  const dist = Math.sqrt(dx*dx + dy*dy);
+  const isOn = dist < ball.r;
+  totalFrames++;
+  if (isOn) { onTarget++; curStreak++; if (curStreak > bestStreak) bestStreak = curStreak; }
+  else { curStreak = 0; }
+
+  // Draw ball
+  ctx.beginPath();
+  ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2);
+  ctx.fillStyle = isOn ? 'rgba(78,205,196,0.9)' : 'rgba(200,48,42,0.9)';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(ball.x, ball.y, 3, 0, Math.PI*2);
+  ctx.fillStyle = '#f5f2ed';
+  ctx.fill();
+
+  // Draw cursor
+  ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(mouse.x-10, mouse.y); ctx.lineTo(mouse.x+10, mouse.y); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(mouse.x, mouse.y-10); ctx.lineTo(mouse.x, mouse.y+10); ctx.stroke();
+
+  // HUD
+  const acc = totalFrames ? Math.round(onTarget/totalFrames*100) : 0;
+  const remaining = Math.max(0, Math.ceil((trackDuration - elapsed)/1000));
+  document.getElementById('ts-acc').textContent = acc + '%';
+  document.getElementById('ts-time').textContent = remaining + 's';
+  document.getElementById('ts-streak').textContent = bestStreak;
+
+  // Progress bar
+  ctx.fillStyle = 'rgba(200,48,42,0.3)';
+  ctx.fillRect(0, canvas.height-3, canvas.width * (elapsed/trackDuration), 3);
+
+  trackAnim = requestAnimationFrame(trackLoop);
+}
+
+function showTrackResult() {
+  const acc = totalFrames ? Math.round(onTarget/totalFrames*100) : 0;
+  let grade = 'D';
+  if (acc > 85) grade = 'S';
+  else if (acc > 70) grade = 'A';
+  else if (acc > 55) grade = 'B';
+  else if (acc > 40) grade = 'C';
+  document.getElementById('ts-grade').textContent = grade;
+  document.getElementById('ts-acc').textContent = acc + '%';
+  document.getElementById('ts-time').textContent = '0s';
+
+  // Draw result on canvas
+  ctx.fillStyle = 'rgba(10,10,10,0.8)';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = '#f5f2ed';
+  ctx.font = '600 48px "Bebas Neue", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.letterSpacing = '3px';
+  ctx.fillText('GRADE: ' + grade, canvas.width/2, canvas.height/2 - 20);
+  ctx.font = '300 16px "Barlow Condensed", sans-serif';
+  ctx.fillStyle = '#999';
+  ctx.fillText(acc + '% précision · ' + bestStreak + ' frames streak max', canvas.width/2, canvas.height/2 + 20);
+  ctx.fillText('Sélectionne une difficulté pour recommencer', canvas.width/2, canvas.height/2 + 50);
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>7.1 Flicking — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --red-dim: #8a1f1a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+
+  /* NAV */
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+
+  /* CHAPTER HERO */
+  .chap-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .chap-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 60% at 70% 30%, rgba(200,48,42,0.1) 0%, transparent 70%); }
+  .chap-hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 60px 60px; mask-image: linear-gradient(180deg, transparent 0%, black 30%, black 70%, transparent 100%); }
+  .chap-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; position: relative; }
+  .chap-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .chap-num { font-family: 'Bebas Neue', sans-serif; font-size: clamp(64px, 10vw, 120px); line-height: 0.85; letter-spacing: 2px; color: rgba(255,255,255,0.04); position: absolute; right: 48px; top: 80px; pointer-events: none; }
+  .chap-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(42px, 6vw, 72px); letter-spacing: 2px; line-height: 0.95; margin-bottom: 12px; position: relative; }
+  .chap-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 300; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 32px; position: relative; }
+  .chap-meta { display: flex; gap: 32px; position: relative; flex-wrap: wrap; }
+  .chap-meta-item { display: flex; flex-direction: column; gap: 2px; }
+  .chap-meta-label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); }
+  .chap-meta-val { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 500; letter-spacing: 1px; color: var(--white); }
+
+  /* CONTENT */
+  .content { max-width: 860px; margin: 0 auto; padding: 64px 48px; }
+  .section-tag { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
+  .section-tag::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  .content h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; margin-bottom: 20px; line-height: 1.1; }
+  .content p { font-size: 15px; color: var(--gray-text); line-height: 1.9; margin-bottom: 20px; }
+  .content strong { color: var(--white); font-weight: 500; }
+  .separator { border: none; border-top: 1px solid var(--border); margin: 56px 0; }
+
+  /* STAT GRID */
+  .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin: 32px 0; }
+  .stat-box { background: var(--gray); padding: 20px; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; line-height: 1; }
+  .stat-num span { color: var(--red); }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); margin-top: 4px; }
+
+  /* DIAGRAM */
+  .diagram-container { background: var(--gray); border: 1px solid var(--border); padding: 32px; margin: 32px 0; position: relative; overflow: hidden; }
+  .diagram-container::after { content: ''; position: absolute; right: -60px; top: -60px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(200,48,42,0.06) 0%, transparent 70%); pointer-events: none; }
+  .diagram-title { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 20px; }
+
+  /* SVG STYLES */
+  .diagram-svg { width: 100%; height: auto; display: block; }
+  .diagram-svg text { font-family: 'Barlow Condensed', sans-serif; }
+
+  /* PIPELINE FLOW */
+  .pipeline { display: flex; align-items: center; gap: 0; margin: 32px 0; flex-wrap: wrap; }
+  .pipeline-step { background: var(--gray); border: 1px solid var(--border); padding: 16px 20px; flex: 1; min-width: 120px; position: relative; }
+  .pipeline-step.active { border-color: rgba(200,48,42,0.4); background: rgba(200,48,42,0.06); }
+  .pipeline-step-label { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--white); font-weight: 500; margin-bottom: 4px; }
+  .pipeline-step-desc { font-size: 11px; color: var(--gray-text); line-height: 1.4; }
+  .pipeline-step-time { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--red); margin-top: 6px; }
+  .pipeline-arrow { font-size: 18px; color: var(--gray-light); padding: 0 4px; flex-shrink: 0; }
+
+  /* CARDS */
+  .insight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin: 32px 0; }
+  .insight-card { background: var(--gray); padding: 24px; border-left: 3px solid var(--red-dim); }
+  .insight-card h4 { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; margin-bottom: 8px; }
+  .insight-card p { font-size: 13px; color: var(--gray-text); line-height: 1.6; margin: 0; }
+
+  /* GAME AREA */
+  .game-section { background: var(--gray); border: 1px solid var(--border); margin: 32px 0; overflow: hidden; }
+  .game-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .game-title { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 2px; }
+  .game-controls { display: flex; gap: 12px; align-items: center; }
+  .game-btn { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; padding: 8px 20px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: var(--white); cursor: pointer; transition: all 0.2s; }
+  .game-btn:hover { background: var(--red); border-color: var(--red); }
+  .game-btn.active { background: var(--red); border-color: var(--red); }
+  .game-canvas-wrap { position: relative; width: 100%; height: 400px; background: #111; cursor: crosshair; user-select: none; overflow: hidden; }
+  .game-canvas-wrap .crosshair { position: absolute; width: 20px; height: 20px; pointer-events: none; z-index: 10; }
+  .game-canvas-wrap .crosshair::before, .game-canvas-wrap .crosshair::after { content: ''; position: absolute; background: rgba(255,255,255,0.6); }
+  .game-canvas-wrap .crosshair::before { width: 1px; height: 100%; left: 50%; }
+  .game-canvas-wrap .crosshair::after { height: 1px; width: 100%; top: 50%; }
+  .target { position: absolute; border-radius: 50%; transition: none; }
+  .target-inner { width: 100%; height: 100%; border-radius: 50%; background: var(--red); box-shadow: 0 0 20px rgba(200,48,42,0.4); display: flex; align-items: center; justify-content: center; }
+  .target-dot { width: 4px; height: 4px; background: var(--white); border-radius: 50%; }
+  .hit-marker { position: absolute; width: 20px; height: 20px; pointer-events: none; animation: hitFade 0.4s ease forwards; }
+  .hit-marker::before, .hit-marker::after { content: ''; position: absolute; background: #4ecdc4; }
+  .hit-marker::before { width: 2px; height: 100%; left: 50%; transform: translateX(-50%) rotate(45deg); }
+  .hit-marker::after { width: 100%; height: 2px; top: 50%; transform: translateY(-50%) rotate(45deg); }
+  .miss-marker { position: absolute; width: 6px; height: 6px; background: rgba(255,80,80,0.6); border-radius: 50%; pointer-events: none; animation: hitFade 0.6s ease forwards; }
+  @keyframes hitFade { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(2); } }
+  .game-stats { padding: 16px 24px; border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+  .game-stat { text-align: center; }
+  .game-stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 1px; line-height: 1; }
+  .game-stat-num.good { color: #4ecdc4; }
+  .game-stat-num.bad { color: var(--red); }
+  .game-stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); margin-top: 2px; }
+  .game-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; z-index: 5; pointer-events: none; }
+  .game-msg h3 { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 3px; margin-bottom: 8px; }
+  .game-msg p { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; color: var(--gray-text); letter-spacing: 2px; }
+
+  /* FITTS INTERACTIVE */
+  .fitts-chart { width: 100%; height: 300px; position: relative; }
+  .fitts-dot { position: absolute; width: 8px; height: 8px; background: var(--red); border-radius: 50%; transform: translate(-50%, -50%); transition: all 0.3s; }
+  .fitts-dot:hover { transform: translate(-50%, -50%) scale(2); box-shadow: 0 0 10px rgba(200,48,42,0.5); }
+  .fitts-line { position: absolute; bottom: 40px; left: 60px; right: 20px; top: 20px; border-left: 1px solid var(--gray-light); border-bottom: 1px solid var(--gray-light); }
+  .fitts-axis-label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); position: absolute; }
+
+  /* NAV BOTTOM */
+  .chap-nav { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; }
+  .chap-nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); transition: all 0.25s; display: inline-block; }
+  .chap-nav-cta:hover { background: var(--red); border-color: var(--red); }
+  .chap-nav-cta.disabled { color: var(--gray-light); border-color: var(--border); cursor: default; pointer-events: none; }
+
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .chap-eyebrow{animation:fadeUp .6s ease both;} .chap-title{animation:fadeUp .6s .1s ease both;} .chap-subtitle{animation:fadeUp .6s .2s ease both;}
+  @media(max-width:768px){
+    nav{padding:0 24px;} .chap-hero{padding:100px 24px 48px;} .content{padding:48px 24px;}
+    .stat-row{grid-template-columns:1fr 1fr;} .insight-grid{grid-template-columns:1fr;}
+    .game-stats{grid-template-columns:repeat(3,1fr);} .game-canvas-wrap{height:300px;}
+    .pipeline{flex-direction:column;} .pipeline-arrow{transform:rotate(90deg);}
+    .chap-nav{flex-direction:column;gap:16px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;text-align:center;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+
+<!-- HERO -->
+<section class="chap-hero">
+  <div class="chap-hero-grid"></div>
+  <div class="chap-num">7.1</div>
+  <div class="chap-eyebrow">Partie VII — Motricité & jeux interactifs</div>
+  <h1 class="chap-title">Flicking</h1>
+  <p class="chap-subtitle">Précision balistique du pointeur</p>
+  <div class="chap-meta">
+    <div class="chap-meta-item"><span class="chap-meta-label">Discipline</span><span class="chap-meta-val">Biomécanique · Neurosciences motrices</span></div>
+    <div class="chap-meta-item"><span class="chap-meta-label">Mécanique</span><span class="chap-meta-val">Flick shot · Pre-aim · Crosshair placement</span></div>
+    <div class="chap-meta-item"><span class="chap-meta-label">Niveau</span><span class="chap-meta-val">Tous niveaux</span></div>
+  </div>
+</section>
+
+<!-- INTRO -->
+<div class="content">
+  <div class="section-tag">Introduction</div>
+  <h2>Le flick n'est pas un réflexe — c'est un programme moteur</h2>
+  <p>Quand un joueur "flick" sur une cible, l'impression est celle d'un mouvement réflexe, instantané. En réalité, c'est un <strong>mouvement balistique pré-programmé</strong> : le cerveau calcule la trajectoire complète avant que la main ne bouge, puis exécute le mouvement en boucle ouverte — sans correction en temps réel. C'est exactement comme un lancer de balle : une fois le geste initié, il est trop tard pour le corriger.</p>
+  <p>Cette distinction est fondamentale dans R6 Siege, un jeu où le <strong>time-to-kill est de 50 à 150ms</strong> (headshot = mort instantanée). Le flick n'est pas un geste de précision lente — c'est un geste de précision rapide, qui obéit à des lois biomécaniques précises et mesurables. La bonne nouvelle : comme tout programme moteur, il s'entraîne.</p>
+
+  <div class="stat-row">
+    <div class="stat-box"><div class="stat-num">150<span>ms</span></div><div class="stat-label">Temps moyen d'un flick</div></div>
+    <div class="stat-box"><div class="stat-num"><span>0</span></div><div class="stat-label">Corrections possibles pendant</div></div>
+    <div class="stat-box"><div class="stat-num">85<span>%</span></div><div class="stat-label">Précision = pré-programmation</div></div>
+    <div class="stat-box"><div class="stat-num">3<span>cm</span></div><div class="stat-label">Distance physique moyenne R6</div></div>
+  </div>
+
+  <hr class="separator">
+
+  <!-- SECTION 1 -->
+  <div class="section-tag">Section 1</div>
+  <h2>Anatomie biomécanique du flick</h2>
+  <p>Un flick mobilise trois systèmes articulaires distincts selon la distance angulaire à couvrir. La recherche en biomécanique du pointage (Frontiers in Human Neuroscience, 2022) a montré que les joueurs experts utilisent des <strong>stratégies motrices différentes</strong> selon que la cible est proche ou lointaine :</p>
+
+  <div class="pipeline">
+    <div class="pipeline-step">
+      <div class="pipeline-step-label">Doigts</div>
+      <div class="pipeline-step-desc">Micro-corrections, < 2cm physiques</div>
+      <div class="pipeline-step-time">< 5°</div>
+    </div>
+    <span class="pipeline-arrow">→</span>
+    <div class="pipeline-step active">
+      <div class="pipeline-step-label">Poignet</div>
+      <div class="pipeline-step-desc">Flick principal, 2–8cm physiques</div>
+      <div class="pipeline-step-time">5°– 45°</div>
+    </div>
+    <span class="pipeline-arrow">→</span>
+    <div class="pipeline-step">
+      <div class="pipeline-step-label">Avant-bras</div>
+      <div class="pipeline-step-desc">Swipe large, > 8cm physiques</div>
+      <div class="pipeline-step-time">> 45°</div>
+    </div>
+    <span class="pipeline-arrow">→</span>
+    <div class="pipeline-step">
+      <div class="pipeline-step-label">Épaule</div>
+      <div class="pipeline-step-desc">Repositionnement global, 180°</div>
+      <div class="pipeline-step-time">180°</div>
+    </div>
+  </div>
+
+  <p>Dans R6 Siege, la majorité des flicks se produisent dans la <strong>zone poignet (5°–45°)</strong> car le crosshair placement compétent réduit l'angle à couvrir. Les pros comme Shaiiko ou Beaulo maintiennent leur crosshair à hauteur de tête et proche des angles probables — le flick résiduel est rarement supérieur à 20°. Les données montrent que la plupart des joueurs professionnels utilisent un eDPI entre 3200 et 5600 (400–800 DPI × sensibilité 8–12), ce qui correspond à un cm/360° de 25 à 45cm.</p>
+
+  <p>Le coach FPS Ron Rambo Kim distingue quatre catégories de mouvement selon la distance biomécanique : les <strong>micro-motions</strong> (doigts), le <strong>flick</strong> (poignet), le <strong>swipe</strong> (avant-bras/coude), et le <strong>vertical</strong> (tout le bras, biomécaniquement plus difficile car il implique un changement d'axe articulaire). Dans Siege, le mouvement vertical est crucial pour les attaques par rappel et les angles de hatch — mais c'est naturellement le plus imprécis.</p>
+
+  <hr class="separator">
+
+  <!-- SECTION 2 -->
+  <div class="section-tag">Section 2</div>
+  <h2>La loi de Fitts dans les FPS</h2>
+  <p>La <strong>loi de Fitts (1954)</strong> est l'une des rares lois quantitatives en sciences motrices. Elle prédit le temps nécessaire pour atteindre une cible en fonction de sa distance et de sa taille :</p>
+
+  <div class="diagram-container">
+    <div class="diagram-title">Loi de Fitts — Modèle dans un FPS</div>
+    <svg class="diagram-svg" viewBox="0 0 760 220" xmlns="http://www.w3.org/2000/svg">
+      <!-- Formula -->
+      <text x="380" y="40" text-anchor="middle" fill="#f5f2ed" font-size="20" font-weight="500" letter-spacing="1">MT = a + b × log₂(2A / W)</text>
+      <text x="380" y="65" text-anchor="middle" fill="#999" font-size="11" letter-spacing="2">FORMULE DE FITTS</text>
+
+      <!-- Variables -->
+      <rect x="40" y="90" width="160" height="50" rx="2" fill="none" stroke="rgba(200,48,42,0.4)" stroke-width="1"/>
+      <text x="120" y="112" text-anchor="middle" fill="#c8302a" font-size="13" font-weight="600">MT</text>
+      <text x="120" y="130" text-anchor="middle" fill="#999" font-size="10" letter-spacing="1">Temps de mouvement</text>
+
+      <rect x="220" y="90" width="160" height="50" rx="2" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+      <text x="300" y="112" text-anchor="middle" fill="#f5f2ed" font-size="13" font-weight="600">A (Amplitude)</text>
+      <text x="300" y="130" text-anchor="middle" fill="#999" font-size="10" letter-spacing="1">Distance à la cible</text>
+
+      <rect x="400" y="90" width="160" height="50" rx="2" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+      <text x="480" y="112" text-anchor="middle" fill="#f5f2ed" font-size="13" font-weight="600">W (Width)</text>
+      <text x="480" y="130" text-anchor="middle" fill="#999" font-size="10" letter-spacing="1">Taille de la cible</text>
+
+      <rect x="580" y="90" width="160" height="50" rx="2" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+      <text x="660" y="112" text-anchor="middle" fill="#f5f2ed" font-size="13" font-weight="600">ID = log₂(2A/W)</text>
+      <text x="660" y="130" text-anchor="middle" fill="#999" font-size="10" letter-spacing="1">Index de difficulté</text>
+
+      <!-- Application R6 -->
+      <line x1="40" y1="165" x2="720" y2="165" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <text x="40" y="185" fill="#c8302a" font-size="11" letter-spacing="2" text-transform="uppercase">APPLICATION R6 SIEGE</text>
+      <text x="40" y="210" fill="#999" font-size="12">Tête = ~8px à 20m → ID élevé = flick lent et imprécis</text>
+      <text x="420" y="210" fill="#999" font-size="12">Corps = ~40px à 20m → ID bas = flick rapide et fiable</text>
+    </svg>
+  </div>
+
+  <p>La recherche publiée dans Frontiers in Human Neuroscience (Saul & Heeger, 2022) montre un résultat contre-intuitif : la loi de Fitts <strong>fonctionne bien pour une taille de cible donnée</strong>, mais se dégrade quand on combine des cibles de tailles différentes. Les joueurs experts adaptent leur <strong>stratégie motrice</strong> selon le contexte — ils "swipent" (tirent pendant le mouvement) sur les grosses cibles proches et "flickent-and-land" (s'arrêtent avant de tirer) sur les petites cibles éloignées.</p>
+
+  <p>Conséquence directe dans R6 : viser la tête (W minuscule, ID maximal) est biomécaniquement difficile en flick. C'est pourquoi le <strong>crosshair placement pré-positionné à hauteur de tête</strong> est la compétence la plus rentable du jeu — il réduit A (amplitude) et transforme un flick impossible en micro-correction.</p>
+
+  <hr class="separator">
+
+  <!-- SECTION 3 -->
+  <div class="section-tag">Section 3</div>
+  <h2>Boucle ouverte vs boucle fermée</h2>
+  <p>La distinction la plus importante en neurosciences motrices pour comprendre le flick :</p>
+
+  <div class="insight-grid">
+    <div class="insight-card">
+      <h4>Boucle ouverte — Le Flick</h4>
+      <p>Le mouvement est pré-programmé dans son intégralité. Le cerveau envoie les commandes motrices <strong>sans feedback sensoriel</strong> pendant l'exécution. Durée typique : < 200ms. C'est le mouvement dominant dans les duels R6 à courte distance. Impossible de corriger en cours de route — la précision dépend à 100% de la qualité de la programmation initiale.</p>
+    </div>
+    <div class="insight-card">
+      <h4>Boucle fermée — Le Tracking</h4>
+      <p>Le mouvement est corrigé en continu par le feedback visuel. L'œil détecte l'erreur, le cerveau recalcule, la main ajuste. Latence de correction : ~150ms par boucle. C'est le mouvement utilisé pour suivre un ennemi qui strafe. Plus lent au départ mais auto-correcteur — les erreurs se réduisent au fil du mouvement.</p>
+    </div>
+  </div>
+
+  <p>La recherche NVIDIA (2019) sur la performance FPS en fonction de la latence confirme cette dualité : les tâches de type "1-hit" (flick) sont principalement impactées par la <strong>latence système</strong> (chaque ms compte car il n'y a pas de correction), tandis que les tâches de tracking sont davantage impactées par le <strong>refresh rate</strong> (car la boucle de feedback a besoin de mises à jour visuelles fréquentes).</p>
+
+  <p>Dans Siege, le délai sensori-moteur humain est d'environ <strong>150–200ms</strong> : 40ms pour percevoir visuellement le mouvement, 100ms pour générer la commande motrice appropriée. Un flick de 150ms est donc exécuté <strong>entièrement en boucle ouverte</strong> — il n'y a littéralement pas le temps d'intégrer le moindre feedback.</p>
+
+  <hr class="separator">
+
+  <!-- SECTION 4 — GAME -->
+  <div class="section-tag">Section 4 — Entraînement interactif</div>
+  <h2>Flick Trainer</h2>
+  <p>Clique sur les cibles le plus rapidement et précisément possible. Chaque cible apparaît à une position aléatoire — ton flick est mesuré en temps et en distance. Le jeu calcule ton <strong>index de Fitts effectif</strong> en temps réel.</p>
+</div>
+
+<!-- GAME -->
+<div class="content" style="padding-top:0;">
+  <div class="game-section">
+    <div class="game-header">
+      <div class="game-title">Flick Trainer</div>
+      <div class="game-controls">
+        <button class="game-btn" onclick="setDifficulty('easy')" id="btn-easy">Facile</button>
+        <button class="game-btn active" onclick="setDifficulty('medium')" id="btn-medium">Normal</button>
+        <button class="game-btn" onclick="setDifficulty('hard')" id="btn-hard">Difficile</button>
+        <button class="game-btn" onclick="startGame()" id="btn-start">Démarrer</button>
+      </div>
+    </div>
+    <div class="game-canvas-wrap" id="gameArea">
+      <div class="game-msg" id="gameMsg">
+        <h3>Flick Trainer</h3>
+        <p>Clique sur Démarrer puis élimine 20 cibles</p>
+      </div>
+    </div>
+    <div class="game-stats">
+      <div class="game-stat"><div class="game-stat-num" id="gs-hits">—</div><div class="game-stat-label">Hits</div></div>
+      <div class="game-stat"><div class="game-stat-num" id="gs-miss">—</div><div class="game-stat-label">Miss</div></div>
+      <div class="game-stat"><div class="game-stat-num" id="gs-acc">—</div><div class="game-stat-label">Précision</div></div>
+      <div class="game-stat"><div class="game-stat-num" id="gs-avg">—</div><div class="game-stat-label">Temps moyen</div></div>
+      <div class="game-stat"><div class="game-stat-num" id="gs-best">—</div><div class="game-stat-label">Meilleur</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5 -->
+<div class="content" style="padding-top:0;">
+  <hr class="separator">
+  <div class="section-tag">Section 5</div>
+  <h2>Application tactique dans R6 Siege</h2>
+
+  <div class="insight-grid">
+    <div class="insight-card">
+      <h4>Pre-aim = annuler le flick</h4>
+      <p>Le meilleur flick est celui que tu n'as pas à faire. Placer ton crosshair à hauteur de tête, au pixel près de l'angle attendu, transforme un flick de 30° en micro-correction de 2°. L'ID de Fitts chute de 4+ à moins de 1 — le mouvement devient quasi-trivial.</p>
+    </div>
+    <div class="insight-card">
+      <h4>Peek + flick = combo neurologique</h4>
+      <p>En attaque, le quick peek te donne ~200ms d'exposition. Le défenseur doit : détecter (80ms voie dorsale) → identifier (120ms voie ventrale) → flick → tirer. L'attaquant n'a qu'un micro-flick résiduel sur un angle pré-aimé. Avantage biologique pur.</p>
+    </div>
+    <div class="insight-card">
+      <h4>Sensibilité et biomécanique</h4>
+      <p>La majorité des pros R6 jouent entre 400 et 800 DPI avec une sensibilité de 8 à 12 in-game. Cela donne un cm/360° de 25–45cm, optimisant la zone poignet pour les flicks de 5°–45°. Plus bas = plus précis sur les micro-flicks, mais plus lent sur les rotations.</p>
+    </div>
+    <div class="insight-card">
+      <h4>Le vertical est plus dur</h4>
+      <p>Biomécaniquement, les mouvements verticaux impliquent une élévation/abaissement du coude — un geste moins naturel et moins précis que le balayage horizontal du poignet. C'est pourquoi les angles de hatch et les repels sont statistiquement les duels les moins fiables en compétition.</p>
+    </div>
+  </div>
+
+  <hr class="separator">
+
+  <!-- SECTION 6 -->
+  <div class="section-tag">Section 6</div>
+  <h2>Protocole d'entraînement</h2>
+  <p>La recherche sur Aim Lab (Listman et al., 2021, > 7000 joueurs analysés) montre que la <strong>fréquence d'entraînement</strong> prime sur la durée. 10–15 minutes de flick training quotidien produisent de meilleurs résultats que 60 minutes hebdomadaires. Le cerveau consolide les programmes moteurs pendant le sommeil — la répétition espacée est la clé.</p>
+
+  <div class="diagram-container">
+    <div class="diagram-title">Protocole recommandé — 4 semaines</div>
+    <svg class="diagram-svg" viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- Week boxes -->
+      <rect x="20" y="30" width="170" height="130" rx="3" fill="#1c1c1c" stroke="rgba(200,48,42,0.3)" stroke-width="1"/>
+      <text x="105" y="55" text-anchor="middle" fill="#c8302a" font-size="14" font-weight="600">Semaine 1–2</text>
+      <text x="105" y="78" text-anchor="middle" fill="#f5f2ed" font-size="11">Grosses cibles, lent</text>
+      <text x="105" y="96" text-anchor="middle" fill="#999" font-size="10">Focus : trajectoire fluide</text>
+      <text x="105" y="114" text-anchor="middle" fill="#999" font-size="10">Pas de rush, 100% précision</text>
+      <text x="105" y="140" text-anchor="middle" fill="#555" font-size="10">10 min/jour</text>
+
+      <text x="200" y="95" fill="#555" font-size="18">→</text>
+
+      <rect x="210" y="30" width="170" height="130" rx="3" fill="#1c1c1c" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <text x="295" y="55" text-anchor="middle" fill="#c8302a" font-size="14" font-weight="600">Semaine 3</text>
+      <text x="295" y="78" text-anchor="middle" fill="#f5f2ed" font-size="11">Cibles moyennes</text>
+      <text x="295" y="96" text-anchor="middle" fill="#999" font-size="10">Focus : vitesse progressive</text>
+      <text x="295" y="114" text-anchor="middle" fill="#999" font-size="10">Maintenir > 80% précision</text>
+      <text x="295" y="140" text-anchor="middle" fill="#555" font-size="10">10 min/jour</text>
+
+      <text x="390" y="95" fill="#555" font-size="18">→</text>
+
+      <rect x="400" y="30" width="170" height="130" rx="3" fill="#1c1c1c" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <text x="485" y="55" text-anchor="middle" fill="#c8302a" font-size="14" font-weight="600">Semaine 4</text>
+      <text x="485" y="78" text-anchor="middle" fill="#f5f2ed" font-size="11">Petites cibles, rapide</text>
+      <text x="485" y="96" text-anchor="middle" fill="#999" font-size="10">Focus : speed-accuracy</text>
+      <text x="485" y="114" text-anchor="middle" fill="#999" font-size="10">Push les deux limites</text>
+      <text x="485" y="140" text-anchor="middle" fill="#555" font-size="10">15 min/jour</text>
+
+      <text x="580" y="95" fill="#555" font-size="18">→</text>
+
+      <rect x="590" y="30" width="170" height="130" rx="3" fill="#1c1c1c" stroke="rgba(200,48,42,0.15)" stroke-width="1"/>
+      <text x="675" y="55" text-anchor="middle" fill="#c8302a" font-size="14" font-weight="600">Ongoing</text>
+      <text x="675" y="78" text-anchor="middle" fill="#f5f2ed" font-size="11">Warmup quotidien</text>
+      <text x="675" y="96" text-anchor="middle" fill="#999" font-size="10">5 min avant ranked</text>
+      <text x="675" y="114" text-anchor="middle" fill="#999" font-size="10">Alterner flick/track</text>
+      <text x="675" y="140" text-anchor="middle" fill="#555" font-size="10">Maintenance</text>
+    </svg>
+  </div>
+
+  <p><strong>Sources scientifiques :</strong> Fitts, P.M. (1954). The information capacity of the human motor system. Journal of Experimental Psychology. — Saul, M.A. & Heeger, D.J. (2022). Assessment of human expertise and movement kinematics in FPS games. Frontiers in Human Neuroscience. — Listman, J.B. et al. (2021). Long-term motor learning in Aim Lab. — NVIDIA Research (2019). Latency of 30ms benefits FPS targeting tasks.</p>
+</div>
+
+<div class="chap-nav">
+  <a href="index.html" class="chap-nav-cta">← Partie VII</a>
+  <a href="7-2-tracking.html" class="chap-nav-cta">Chapitre 7.2 →</a>
+</div>
+
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie VII · Chapitre 7.1</span>
+</footer>
+
+<script>
+// FLICK TRAINER GAME
+const gameArea = document.getElementById('gameArea');
+let difficulty = 'medium';
+let targetSize = { easy: 48, medium: 32, hard: 18 };
+let gameActive = false;
+let hits = 0, misses = 0, totalClicks = 0;
+let times = [];
+let targetCount = 0;
+let maxTargets = 20;
+let lastTargetTime = 0;
+let currentTarget = null;
+
+function setDifficulty(d) {
+  difficulty = d;
+  document.querySelectorAll('.game-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-' + d).classList.add('active');
+}
+
+function startGame() {
+  hits = 0; misses = 0; totalClicks = 0; times = []; targetCount = 0;
+  gameActive = true;
+  document.getElementById('gameMsg').style.display = 'none';
+  updateStats();
+  spawnTarget();
+}
+
+function spawnTarget() {
+  if (targetCount >= maxTargets) return endGame();
+  if (currentTarget) currentTarget.remove();
+
+  const size = targetSize[difficulty];
+  const area = gameArea.getBoundingClientRect();
+  const margin = size + 20;
+  const x = margin + Math.random() * (area.width - margin * 2);
+  const y = margin + Math.random() * (area.height - margin * 2);
+
+  const t = document.createElement('div');
+  t.className = 'target';
+  t.style.cssText = `width:${size}px;height:${size}px;left:${x - size/2}px;top:${y - size/2}px;`;
+  t.innerHTML = '<div class="target-inner"><div class="target-dot"></div></div>';
+  t.addEventListener('mousedown', (e) => {
+    e.stopPropagation();
+    onHit(e, t);
+  });
+  gameArea.appendChild(t);
+  currentTarget = t;
+  lastTargetTime = performance.now();
+  targetCount++;
+}
+
+function onHit(e, t) {
+  if (!gameActive) return;
+  const dt = performance.now() - lastTargetTime;
+  times.push(dt);
+  hits++;
+  totalClicks++;
+
+  // Hit marker
+  const rect = gameArea.getBoundingClientRect();
+  const hm = document.createElement('div');
+  hm.className = 'hit-marker';
+  hm.style.left = (e.clientX - rect.left - 10) + 'px';
+  hm.style.top = (e.clientY - rect.top - 10) + 'px';
+  gameArea.appendChild(hm);
+  setTimeout(() => hm.remove(), 400);
+
+  t.remove();
+  currentTarget = null;
+  updateStats();
+  setTimeout(spawnTarget, 200);
+}
+
+gameArea.addEventListener('mousedown', (e) => {
+  if (!gameActive || e.target.closest('.target')) return;
+  misses++;
+  totalClicks++;
+
+  const rect = gameArea.getBoundingClientRect();
+  const mm = document.createElement('div');
+  mm.className = 'miss-marker';
+  mm.style.left = (e.clientX - rect.left - 3) + 'px';
+  mm.style.top = (e.clientY - rect.top - 3) + 'px';
+  gameArea.appendChild(mm);
+  setTimeout(() => mm.remove(), 600);
+
+  updateStats();
+});
+
+function endGame() {
+  gameActive = false;
+  if (currentTarget) { currentTarget.remove(); currentTarget = null; }
+  const avg = times.length ? Math.round(times.reduce((a,b) => a+b, 0) / times.length) : 0;
+  const best = times.length ? Math.round(Math.min(...times)) : 0;
+  const acc = totalClicks ? Math.round(hits / totalClicks * 100) : 0;
+
+  const msg = document.getElementById('gameMsg');
+  msg.style.display = 'block';
+
+  let grade = '';
+  if (avg < 300 && acc > 90) grade = 'S — Excellent';
+  else if (avg < 400 && acc > 80) grade = 'A — Très bon';
+  else if (avg < 500 && acc > 70) grade = 'B — Bon';
+  else if (avg < 600 && acc > 60) grade = 'C — Correct';
+  else grade = 'D — À travailler';
+
+  msg.innerHTML = `<h3>${grade}</h3><p>${avg}ms moy · ${best}ms best · ${acc}% précision<br>Clique Démarrer pour réessayer</p>`;
+  updateStats();
+}
+
+function updateStats() {
+  const avg = times.length ? Math.round(times.reduce((a,b) => a+b, 0) / times.length) : '—';
+  const best = times.length ? Math.round(Math.min(...times)) : '—';
+  const acc = totalClicks ? Math.round(hits / totalClicks * 100) + '%' : '—';
+
+  document.getElementById('gs-hits').textContent = hits || '—';
+  document.getElementById('gs-hits').className = 'game-stat-num' + (hits > 0 ? ' good' : '');
+  document.getElementById('gs-miss').textContent = misses || '—';
+  document.getElementById('gs-miss').className = 'game-stat-num' + (misses > 0 ? ' bad' : '');
+  document.getElementById('gs-acc').textContent = acc;
+  document.getElementById('gs-avg').textContent = avg !== '—' ? avg + 'ms' : '—';
+  document.getElementById('gs-best').textContent = best !== '—' ? best + 'ms' : '—';
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>7.3 Target Switching — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --red-dim: #8a1f1a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); --cyan: #4ecdc4; }
+  html{scroll-behavior:smooth}body{background:var(--black);color:var(--white);font-family:'Barlow',sans-serif;font-weight:300;line-height:1.7;overflow-x:hidden}
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:64px;border-bottom:1px solid var(--border);background:rgba(10,10,10,0.88);backdrop-filter:blur(12px)}
+  .nav-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--white);text-decoration:none}.nav-logo span{color:var(--red)}
+  .nav-back{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);text-decoration:none;transition:color .2s}.nav-back:hover{color:var(--white)}
+  .chap-hero{padding:120px 48px 64px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+  .chap-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 60% at 70% 30%,rgba(200,48,42,0.1) 0%,transparent 70%)}
+  .chap-hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:60px 60px;mask-image:linear-gradient(180deg,transparent 0%,black 30%,black 70%,transparent 100%)}
+  .chap-eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:16px;display:flex;align-items:center;gap:12px;position:relative}.chap-eyebrow::before{content:'';display:block;width:28px;height:1px;background:var(--red)}
+  .chap-num{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,10vw,120px);line-height:.85;letter-spacing:2px;color:rgba(255,255,255,0.04);position:absolute;right:48px;top:80px;pointer-events:none}
+  .chap-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,6vw,72px);letter-spacing:2px;line-height:.95;margin-bottom:12px;position:relative}
+  .chap-subtitle{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:300;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text);margin-bottom:32px;position:relative}
+  .chap-meta{display:flex;gap:32px;position:relative;flex-wrap:wrap}.chap-meta-item{display:flex;flex-direction:column;gap:2px}
+  .chap-meta-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text)}
+  .chap-meta-val{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:500;letter-spacing:1px;color:var(--white)}
+  .content{max-width:860px;margin:0 auto;padding:64px 48px}
+  .section-tag{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:24px;display:flex;align-items:center;gap:10px}.section-tag::before{content:'';display:block;width:20px;height:1px;background:var(--red)}
+  .content h2{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;margin-bottom:20px;line-height:1.1}
+  .content p{font-size:15px;color:var(--gray-text);line-height:1.9;margin-bottom:20px}.content strong{color:var(--white);font-weight:500}
+  .separator{border:none;border-top:1px solid var(--border);margin:56px 0}
+  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin:32px 0}.stat-box{background:var(--gray);padding:20px}
+  .stat-num{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;line-height:1}.stat-num span{color:var(--red)}
+  .stat-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);margin-top:4px}
+  .insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin:32px 0}
+  .insight-card{background:var(--gray);padding:24px;border-left:3px solid var(--red-dim)}
+  .insight-card h4{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;margin-bottom:8px}
+  .insight-card p{font-size:13px;color:var(--gray-text);line-height:1.6;margin:0}
+  .diagram-container{background:var(--gray);border:1px solid var(--border);padding:32px;margin:32px 0;position:relative;overflow:hidden}
+  .diagram-title{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text);margin-bottom:20px}
+  .diagram-svg{width:100%;height:auto;display:block}
+  .game-section{background:var(--gray);border:1px solid var(--border);margin:32px 0;overflow:hidden}
+  .game-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+  .game-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px}
+  .game-btn{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;padding:8px 20px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:var(--white);cursor:pointer;transition:all .2s}
+  .game-btn:hover,.game-btn.active{background:var(--red);border-color:var(--red)}
+  .game-area{position:relative;width:100%;height:420px;background:#111;cursor:crosshair;user-select:none;overflow:hidden}
+  .sw-target{position:absolute;border-radius:50%;cursor:crosshair;transition:none;display:flex;align-items:center;justify-content:center}
+  .sw-target .num{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--white);pointer-events:none}
+  .sw-target.next{box-shadow:0 0 0 2px var(--white),0 0 15px rgba(245,242,237,0.3)}
+  .game-stats{padding:16px 24px;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .game-stat{text-align:center}.game-stat-num{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;line-height:1}
+  .game-stat-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);margin-top:2px}
+  .chap-nav{border-top:1px solid var(--border);padding:48px;display:flex;justify-content:space-between;align-items:center}
+  .chap-nav-cta{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--white);text-decoration:none;padding:14px 28px;border:1px solid rgba(255,255,255,0.2);transition:all .25s;display:inline-block}
+  .chap-nav-cta:hover{background:var(--red);border-color:var(--red)}
+  footer{border-top:1px solid var(--border);padding:24px 48px;display:flex;justify-content:space-between;align-items:center}
+  .footer-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;color:var(--gray-text)}.footer-logo span{color:var(--red)}
+  .footer-text{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;color:var(--gray-light);text-transform:uppercase}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  .chap-eyebrow{animation:fadeUp .6s ease both}.chap-title{animation:fadeUp .6s .1s ease both}
+  @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.3)}100%{transform:scale(0);opacity:0}}
+  @media(max-width:768px){nav{padding:0 24px}.chap-hero{padding:100px 24px 48px}.content{padding:48px 24px}.stat-row,.insight-grid{grid-template-columns:1fr}.game-area{height:300px}.game-stats{grid-template-columns:repeat(2,1fr)}.chap-nav{flex-direction:column;gap:16px;padding:32px 24px}footer{padding:20px 24px;flex-direction:column;gap:8px;text-align:center}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="index.html" class="nav-back">← Retour aux chapitres</a>
+</nav>
+
+<section class="chap-hero">
+  <div class="chap-hero-grid"></div>
+  <div class="chap-num">7.3</div>
+  <div class="chap-eyebrow">Partie VII — Motricité & jeux interactifs</div>
+  <h1 class="chap-title">Target Switching</h1>
+  <p class="chap-subtitle">Transitions multi-cibles</p>
+  <div class="chap-meta">
+    <div class="chap-meta-item"><span class="chap-meta-label">Discipline</span><span class="chap-meta-val">Cognition motrice · Neurosciences attentionnelles</span></div>
+    <div class="chap-meta-item"><span class="chap-meta-label">Mécanique</span><span class="chap-meta-val">Multi-kill · Spray transfer · Retake</span></div>
+    <div class="chap-meta-item"><span class="chap-meta-label">Niveau</span><span class="chap-meta-val">Intermédiaire — Avancé</span></div>
+  </div>
+</section>
+
+<div class="content">
+  <div class="section-tag">Introduction</div>
+  <h2>Changer de cible = reprogrammer le cerveau</h2>
+  <p>Le target switching est le mouvement le plus <strong>cognitivement coûteux</strong> dans un FPS. Contrairement au flick (un seul programme moteur) ou au tracking (une boucle continue), le switch exige de <strong>terminer</strong> un programme moteur, en <strong>initier</strong> un nouveau, tout en <strong>réidentifiant</strong> visuellement la prochaine cible. C'est trois processus simultanés, chacun avec son coût en millisecondes.</p>
+  <p>Dans R6 Siege, le target switching est omniprésent : <strong>retakes</strong> où tu entres sur site face à 2–3 défenseurs, <strong>spray transfers</strong> en spray continu, <strong>rotations rapides</strong> en roaming. Les joueurs qui switchent vite et proprement ont un impact disproportionné — un double kill en retake vaut plus que deux kills séparés car il crée un avantage numérique instantané.</p>
+
+  <div class="stat-row">
+    <div class="stat-box"><div class="stat-num">200<span>ms</span></div><div class="stat-label">Coût neuronal du switch</div></div>
+    <div class="stat-box"><div class="stat-num">IOR</div><div class="stat-label">Inhibition of Return</div></div>
+    <div class="stat-box"><div class="stat-num">50<span>ms</span></div><div class="stat-label">Saccade oculaire inter-cibles</div></div>
+    <div class="stat-box"><div class="stat-num">2<span>×</span></div><div class="stat-label">Impact d'un double kill</div></div>
+  </div>
+
+  <hr class="separator">
+
+  <div class="section-tag">Section 1</div>
+  <h2>Le coût neuronal du switch</h2>
+  <p>Quand tu passes d'une cible à une autre, le cerveau doit exécuter une séquence en trois étapes, chacune incompressible :</p>
+
+  <div class="diagram-container">
+    <div class="diagram-title">Séquence neuronale du target switch</div>
+    <svg class="diagram-svg" viewBox="0 0 760 160" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="30" width="220" height="100" rx="3" fill="#1c1c1c" stroke="rgba(200,48,42,0.3)" stroke-width="1"/>
+      <text x="130" y="60" text-anchor="middle" fill="#c8302a" font-size="13" font-weight="600">1. Désengagement</text>
+      <text x="130" y="82" text-anchor="middle" fill="#999" font-size="11">Lobe pariétal arrête le</text>
+      <text x="130" y="98" text-anchor="middle" fill="#999" font-size="11">tracking de la cible actuelle</text>
+      <text x="130" y="118" text-anchor="middle" fill="#555" font-size="10">~50ms</text>
+
+      <text x="252" y="80" fill="#555" font-size="20">→</text>
+
+      <rect x="270" y="30" width="220" height="100" rx="3" fill="#1c1c1c" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+      <text x="380" y="60" text-anchor="middle" fill="#f5f2ed" font-size="13" font-weight="600">2. Saccade + Identification</text>
+      <text x="380" y="82" text-anchor="middle" fill="#999" font-size="11">L'œil saute vers la nouvelle cible</text>
+      <text x="380" y="98" text-anchor="middle" fill="#999" font-size="11">V1+V4 confirment : c'est un ennemi</text>
+      <text x="380" y="118" text-anchor="middle" fill="#555" font-size="10">~80ms</text>
+
+      <text x="502" y="80" fill="#555" font-size="20">→</text>
+
+      <rect x="520" y="30" width="220" height="100" rx="3" fill="#1c1c1c" stroke="rgba(78,205,196,0.3)" stroke-width="1"/>
+      <text x="630" y="60" text-anchor="middle" fill="#4ecdc4" font-size="13" font-weight="600">3. Nouveau programme moteur</text>
+      <text x="630" y="82" text-anchor="middle" fill="#999" font-size="11">Cortex moteur calcule le nouveau</text>
+      <text x="630" y="98" text-anchor="middle" fill="#999" font-size="11">vecteur de flick vers cible 2</text>
+      <text x="630" y="118" text-anchor="middle" fill="#555" font-size="10">~70ms</text>
+    </svg>
+  </div>
+
+  <p>Total : <strong>~200ms incompressibles</strong> entre la fin du premier kill et le début du mouvement vers la deuxième cible. C'est ce que les joueurs appellent "le freeze après le kill" — ce n'est pas de l'hésitation, c'est le coût biologique du switch. Les joueurs d'élite réduisent ce délai en <strong>pré-identifiant la deuxième cible</strong> pendant qu'ils engagent la première (via la vision périphérique), ce qui permet de paralléliser les étapes 1 et 2.</p>
+
+  <hr class="separator">
+
+  <div class="section-tag">Section 2</div>
+  <h2>Inhibition of Return (IOR)</h2>
+  <p>L'<strong>IOR</strong> est un phénomène neurologique découvert par Posner & Cohen (1984) : après avoir porté attention à un endroit, le cerveau <strong>inhibe activement</strong> le retour de l'attention vers ce même endroit pendant ~300ms. C'est un mécanisme d'efficacité attentionnelle — il force l'exploration de nouvelles zones.</p>
+  <p>Dans R6, l'IOR a une conséquence directe : après avoir tué un ennemi à un angle, ton attention est <strong>biaisée vers d'autres zones</strong>. Si un deuxième ennemi se trouve au même endroit (derrière le corps du premier, ou dans la même fenêtre), ton temps de réaction sera plus long de 50–80ms. Les joueurs experts contournent ça en <strong>scannant systématiquement</strong> plutôt qu'en réagissant — ils suivent un pattern de balayage plutôt que de laisser l'attention spontanée guider leur regard.</p>
+
+  <hr class="separator">
+
+  <div class="section-tag">Section 3 — Entraînement interactif</div>
+  <h2>Switch Trainer</h2>
+  <p>6 cibles apparaissent numérotées. Clique-les <strong>dans l'ordre</strong> le plus vite possible. Le jeu mesure ton temps total et le temps inter-cibles. L'objectif est de réduire le temps de switch entre chaque kill.</p>
+</div>
+
+<div class="content" style="padding-top:0;">
+  <div class="game-section">
+    <div class="game-header">
+      <div class="game-title">Switch Trainer</div>
+      <button class="game-btn" onclick="startSwitch()">Démarrer</button>
+    </div>
+    <div class="game-area" id="switchArea"></div>
+    <div class="game-stats">
+      <div class="game-stat"><div class="game-stat-num" id="sw-total">—</div><div class="game-stat-label">Temps total</div></div>
+      <div class="game-stat"><div class="game-stat-num" id="sw-avg">—</div><div class="game-stat-label">Moy. inter-cibles</div></div>
+      <div class="game-stat"><div class="game-stat-num" id="sw-best">—</div><div class="game-stat-label">Switch le + rapide</div></div>
+      <div class="game-stat"><div class="game-stat-num" id="sw-worst">—</div><div class="game-stat-label">Switch le + lent</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="content" style="padding-top:0;">
+  <hr class="separator">
+  <div class="section-tag">Section 4</div>
+  <h2>Application dans R6 Siege</h2>
+
+  <div class="insight-grid">
+    <div class="insight-card">
+      <h4>Spray transfer</h4>
+      <p>Le spray transfer est un switch sans interruption de tir. Après le kill, tu maintiens le spray et déplaces ton crosshair vers la cible suivante en ~150ms. Le challenge : compenser le recul vertical pendant un flick horizontal. Les pros s'entraînent à des patterns de transfer spécifiques par arme (AK-12, F2, C7E).</p>
+    </div>
+    <div class="insight-card">
+      <h4>Ordre de priorité</h4>
+      <p>En retake, l'ordre dans lequel tu switch est stratégique. Priorité 1 : l'ennemi qui te voit (menace immédiate). Priorité 2 : l'ennemi sur le plant/defuse. Priorité 3 : l'ennemi positionné pour le refrag. Les joueurs qui "killent dans le bon ordre" gagnent plus de rounds que ceux qui killent plus vite mais dans le mauvais ordre.</p>
+    </div>
+    <div class="insight-card">
+      <h4>Pré-identification périphérique</h4>
+      <p>Les joueurs d'élite utilisent leur vision périphérique (bâtonnets, voie dorsale ~80ms) pour détecter la position de la prochaine cible pendant qu'ils engagent la première. Quand le premier ennemi tombe, le switch est déjà pré-programmé — la saccade oculaire a une destination calculée.</p>
+    </div>
+    <div class="insight-card">
+      <h4>Le double peek</h4>
+      <p>Contre un target switcher, le double peek est la meilleure défense : deux défenseurs peekent le même angle simultanément. L'attaquant doit tuer le premier, subir le coût de switch (~200ms), puis engager le second — qui a déjà 200ms d'avantage pour tirer. C'est pourquoi la coordination défensive est si puissante.</p>
+    </div>
+  </div>
+
+  <p><strong>Sources :</strong> Posner, M.I. & Cohen, Y. (1984). Components of visual orienting — découverte de l'IOR. — Monsell, S. (2003). Task switching. Trends in Cognitive Sciences — coût du switch attentionnel. — Saul & Heeger (2022). Movement kinematics in FPS — transition entre programmes moteurs.</p>
+</div>
+
+<div class="chap-nav">
+  <a href="7-2-tracking.html" class="chap-nav-cta">← Chapitre 7.2</a>
+  <a href="7-4-micro-ajustements.html" class="chap-nav-cta">Chapitre 7.4 →</a>
+</div>
+
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Partie VII · Chapitre 7.3</span>
+</footer>
+
+<script>
+const area = document.getElementById('switchArea');
+let targets = [], currentIdx = 0, switchTimes = [], lastClickTime = 0, gameStartTime = 0;
+
+function startSwitch() {
+  area.innerHTML = '';
+  targets = []; currentIdx = 0; switchTimes = [];
+  const count = 6;
+  const w = area.offsetWidth, h = area.offsetHeight;
+  const positions = [];
+
+  for (let i = 0; i < count; i++) {
+    let x, y, valid;
+    do {
+      x = 40 + Math.random() * (w - 80);
+      y = 40 + Math.random() * (h - 80);
+      valid = positions.every(p => Math.hypot(p.x - x, p.y - y) > 80);
+    } while (!valid);
+    positions.push({ x, y });
+
+    const el = document.createElement('div');
+    el.className = 'sw-target' + (i === 0 ? ' next' : '');
+    el.style.cssText = `width:40px;height:40px;left:${x-20}px;top:${y-20}px;background:${i===0?'var(--red)':'var(--gray-mid)'};border:2px solid ${i===0?'var(--red)':'var(--gray-light)'};`;
+    el.innerHTML = `<span class="num">${i + 1}</span>`;
+    el.dataset.idx = i;
+    el.addEventListener('mousedown', onSwitchClick);
+    area.appendChild(el);
+    targets.push(el);
+  }
+
+  gameStartTime = performance.now();
+  lastClickTime = gameStartTime;
+  updateSwitchStats();
+}
+
+function onSwitchClick(e) {
+  const idx = parseInt(e.currentTarget.dataset.idx);
+  if (idx !== currentIdx) return;
+
+  const now = performance.now();
+  if (currentIdx > 0) switchTimes.push(now - lastClickTime);
+  lastClickTime = now;
+
+  // Animate hit
+  e.currentTarget.style.background = 'var(--cyan)';
+  e.currentTarget.style.borderColor = 'var(--cyan)';
+  e.currentTarget.style.animation = 'pop 0.3s ease forwards';
+  e.currentTarget.style.pointerEvents = 'none';
+
+  currentIdx++;
+
+  if (currentIdx < targets.length) {
+    targets[currentIdx].classList.add('next');
+    targets[currentIdx].style.background = 'var(--red)';
+    targets[currentIdx].style.borderColor = 'var(--red)';
+  } else {
+    const total = now - gameStartTime;
+    document.getElementById('sw-total').textContent = Math.round(total) + 'ms';
+  }
+
+  updateSwitchStats();
+}
+
+function updateSwitchStats() {
+  if (switchTimes.length > 0) {
+    const avg = Math.round(switchTimes.reduce((a,b)=>a+b,0) / switchTimes.length);
+    const best = Math.round(Math.min(...switchTimes));
+    const worst = Math.round(Math.max(...switchTimes));
+    document.getElementById('sw-avg').textContent = avg + 'ms';
+    document.getElementById('sw-best').textContent = best + 'ms';
+    document.getElementById('sw-worst').textContent = worst + 'ms';
+  }
+}
+</script>
+
+</body>
+</html>

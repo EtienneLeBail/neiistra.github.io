@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>7.4 Micro-ajustements — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--black:#0a0a0a;--white:#f5f2ed;--red:#c8302a;--red-dim:#8a1f1a;--gray:#1c1c1c;--gray-mid:#2e2e2e;--gray-light:#555;--gray-text:#999;--border:rgba(255,255,255,0.08);--cyan:#4ecdc4}html{scroll-behavior:smooth}body{background:var(--black);color:var(--white);font-family:'Barlow',sans-serif;font-weight:300;line-height:1.7;overflow-x:hidden}nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:64px;border-bottom:1px solid var(--border);background:rgba(10,10,10,0.88);backdrop-filter:blur(12px)}.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--white);text-decoration:none}.nav-logo span{color:var(--red)}.nav-back{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);text-decoration:none;transition:color .2s}.nav-back:hover{color:var(--white)}.chap-hero{padding:120px 48px 64px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}.chap-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 60% at 70% 30%,rgba(200,48,42,0.1) 0%,transparent 70%)}.chap-hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:60px 60px;mask-image:linear-gradient(180deg,transparent 0%,black 30%,black 70%,transparent 100%)}.chap-eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:16px;display:flex;align-items:center;gap:12px;position:relative}.chap-eyebrow::before{content:'';display:block;width:28px;height:1px;background:var(--red)}.chap-num{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,10vw,120px);line-height:.85;letter-spacing:2px;color:rgba(255,255,255,0.04);position:absolute;right:48px;top:80px;pointer-events:none}.chap-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,6vw,72px);letter-spacing:2px;line-height:.95;margin-bottom:12px;position:relative}.chap-subtitle{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:300;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text);margin-bottom:32px;position:relative}.chap-meta{display:flex;gap:32px;position:relative;flex-wrap:wrap}.chap-meta-item{display:flex;flex-direction:column;gap:2px}.chap-meta-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text)}.chap-meta-val{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:500;letter-spacing:1px;color:var(--white)}.content{max-width:860px;margin:0 auto;padding:64px 48px}.section-tag{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:24px;display:flex;align-items:center;gap:10px}.section-tag::before{content:'';display:block;width:20px;height:1px;background:var(--red)}.content h2{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;margin-bottom:20px;line-height:1.1}.content p{font-size:15px;color:var(--gray-text);line-height:1.9;margin-bottom:20px}.content strong{color:var(--white);font-weight:500}.separator{border:none;border-top:1px solid var(--border);margin:56px 0}.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin:32px 0}.stat-box{background:var(--gray);padding:20px}.stat-num{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;line-height:1}.stat-num span{color:var(--red)}.stat-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);margin-top:4px}.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin:32px 0}.insight-card{background:var(--gray);padding:24px;border-left:3px solid var(--red-dim)}.insight-card h4{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;margin-bottom:8px}.insight-card p{font-size:13px;color:var(--gray-text);line-height:1.6;margin:0}.game-section{background:var(--gray);border:1px solid var(--border);margin:32px 0;overflow:hidden}.game-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.game-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px}.game-btn{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;padding:8px 20px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:var(--white);cursor:pointer;transition:all .2s}.game-btn:hover,.game-btn.active{background:var(--red);border-color:var(--red)}.game-area{position:relative;width:100%;height:420px;background:#111;cursor:crosshair;user-select:none;overflow:hidden}.game-stats{padding:16px 24px;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.game-stat{text-align:center}.game-stat-num{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;line-height:1}.game-stat-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);margin-top:2px}.chap-nav{border-top:1px solid var(--border);padding:48px;display:flex;justify-content:space-between;align-items:center}.chap-nav-cta{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--white);text-decoration:none;padding:14px 28px;border:1px solid rgba(255,255,255,0.2);transition:all .25s;display:inline-block}.chap-nav-cta:hover{background:var(--red);border-color:var(--red)}footer{border-top:1px solid var(--border);padding:24px 48px;display:flex;justify-content:space-between;align-items:center}.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;color:var(--gray-text)}.footer-logo span{color:var(--red)}.footer-text{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;color:var(--gray-light);text-transform:uppercase}@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.chap-eyebrow{animation:fadeUp .6s ease both}.chap-title{animation:fadeUp .6s .1s ease both}.micro-target{position:absolute;border-radius:50%;border:1px solid var(--red);cursor:crosshair;display:flex;align-items:center;justify-content:center}.micro-target::after{content:'';width:2px;height:2px;background:var(--white);border-radius:50%}@keyframes hitPop{0%{transform:scale(1);opacity:1}100%{transform:scale(3);opacity:0}}@media(max-width:768px){nav{padding:0 24px}.chap-hero{padding:100px 24px 48px}.content{padding:48px 24px}.stat-row,.insight-grid{grid-template-columns:1fr}.game-area{height:300px}.game-stats{grid-template-columns:repeat(2,1fr)}.chap-nav{flex-direction:column;gap:16px;padding:32px 24px}footer{padding:20px 24px;flex-direction:column;gap:8px;text-align:center}}
+</style>
+</head>
+<body>
+<nav><a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a><a href="index.html" class="nav-back">← Retour aux chapitres</a></nav>
+
+<section class="chap-hero">
+<div class="chap-hero-grid"></div><div class="chap-num">7.4</div>
+<div class="chap-eyebrow">Partie VII — Motricité & jeux interactifs</div>
+<h1 class="chap-title">Micro-ajustements</h1>
+<p class="chap-subtitle">Corrections fines & précision sub-pixel</p>
+<div class="chap-meta">
+<div class="chap-meta-item"><span class="chap-meta-label">Discipline</span><span class="chap-meta-val">Contrôle moteur fin · Neurophysiologie</span></div>
+<div class="chap-meta-item"><span class="chap-meta-label">Mécanique</span><span class="chap-meta-val">Headshot · Angle hold · Pixel peek</span></div>
+<div class="chap-meta-item"><span class="chap-meta-label">Niveau</span><span class="chap-meta-val">Intermédiaire — Avancé</span></div>
+</div>
+</section>
+
+<div class="content">
+<div class="section-tag">Introduction</div>
+<h2>La dernière milliseconde du mouvement</h2>
+<p>Le micro-ajustement est le geste le plus fin du FPS. C'est la <strong>correction de 1 à 5 pixels</strong> qui sépare un bodyshot d'un headshot, un miss d'un hit. Là où le flick couvre 5°–45° et le tracking suit une trajectoire continue, le micro-ajustement opère dans un espace de <strong>moins de 2° d'angle</strong> — la zone où le contrôle moteur bascule des muscles du poignet vers les muscles intrinsèques des doigts.</p>
+<p>Dans R6 Siege, un jeu où le headshot est un one-shot kill avec n'importe quelle arme, la différence entre un joueur Gold et un joueur Diamond se joue souvent dans ces <strong>2 à 5 pixels</strong>. Les pros n'ont pas un meilleur temps de réaction — ils ont un meilleur micro-ajustement final.</p>
+
+<div class="stat-row">
+<div class="stat-box"><div class="stat-num">~8<span>px</span></div><div class="stat-label">Tête à 20m dans R6</div></div>
+<div class="stat-box"><div class="stat-num">< 2<span>°</span></div><div class="stat-label">Angle du micro-ajustement</div></div>
+<div class="stat-box"><div class="stat-num">3<span>types</span></div><div class="stat-label">Unités motrices impliquées</div></div>
+<div class="stat-box"><div class="stat-num">1000<span>Hz</span></div><div class="stat-label">Polling rate recommandé</div></div>
+</div>
+
+<hr class="separator">
+
+<div class="section-tag">Section 1</div>
+<h2>Unités motrices et contrôle fin</h2>
+<p>Les muscles de la main contiennent trois types d'<strong>unités motrices</strong> (un motoneurone + les fibres musculaires qu'il innerve). Les unités motrices à <strong>seuil bas</strong> contrôlent 3 à 5 fibres musculaires chacune — c'est le niveau de précision le plus fin du corps humain, comparable à celui des muscles oculaires. Ces unités sont recrutées en premier lors des micro-mouvements.</p>
+<p>Les unités motrices à <strong>seuil élevé</strong> contrôlent 100+ fibres et génèrent les forces nécessaires aux grands mouvements (swipes, 180°). Le problème : quand tu recrutes les unités à seuil élevé (mouvement rapide), tu <strong>perds l'accès au contrôle fin</strong> des unités à seuil bas. C'est le fondement physiologique du speed-accuracy trade-off.</p>
+<p>Conséquence pratique : un flick rapide ne peut physiquement pas se terminer par un micro-ajustement précis. C'est pourquoi les meilleurs joueurs décomposent le mouvement en deux phases : un <strong>flick balistique rapide</strong> (unités à seuil élevé) qui amène le crosshair à ~5px de la cible, puis un <strong>micro-ajustement fin</strong> (unités à seuil bas) pour les derniers pixels. Cette transition prend ~30–50ms.</p>
+
+<hr class="separator">
+
+<div class="section-tag">Section 2</div>
+<h2>Hardware et résolution du mouvement</h2>
+<p>Le micro-ajustement est le contexte où le <strong>hardware compte le plus</strong>. À 400 DPI, un count (le plus petit mouvement détectable par le capteur) correspond à un déplacement de ~6.35mm sur le mousepad. À 800 DPI, c'est ~3.17mm. Plus le DPI est élevé, plus la résolution du capteur est fine — mais au-delà de 1600 DPI, les capteurs peuvent introduire du smoothing ou du bruit qui dégrade la précision.</p>
+<p>Le <strong>polling rate</strong> joue aussi : à 125Hz, le PC ne reçoit la position de la souris que 8 fois par frame à 60fps. À 1000Hz, c'est une mise à jour par milliseconde — la résolution temporelle du mouvement est 8× supérieure. Pour les micro-ajustements, cette granularité temporelle est cruciale car le mouvement est si petit qu'il peut tenir dans un seul intervalle de polling.</p>
+
+<div class="insight-grid">
+<div class="insight-card">
+<h4>Le multiplicateur R6</h4>
+<p>R6 Siege permet de régler un multiplicateur de sensibilité (défaut 0.02, certains pros utilisent 0.00223). À 0.00223, chaque step du slider in-game change la sensibilité effective de seulement 0.0015 au lieu de 0.02 — ce qui permet un réglage 13× plus fin. C'est un outil de micro-optimisation pour trouver la sensibilité exacte où les micro-ajustements se sentent naturels.</p>
+</div>
+<div class="insight-card">
+<h4>Grip et micro-contrôle</h4>
+<p>Le fingertip grip offre la meilleure résolution de micro-ajustement car les doigts contrôlent directement la souris sans intermédiaire. Le palm grip offre plus de stabilité pour les grands mouvements mais moins de finesse. Le claw grip est un compromis. Cependant, la recherche montre que le grip n'affecte pas significativement les performances mesurables — la préférence individuelle prime.</p>
+</div>
+</div>
+
+<hr class="separator">
+
+<div class="section-tag">Section 3 — Entraînement interactif</div>
+<h2>Precision Trainer</h2>
+<p>Des cibles très petites apparaissent — certaines de seulement 8 pixels de diamètre (la taille d'une tête R6 à longue distance). Ta précision et ton temps sont mesurés. Pas de rush : la précision est prioritaire.</p>
+</div>
+
+<div class="content" style="padding-top:0;">
+<div class="game-section">
+<div class="game-header">
+<div class="game-title">Precision Trainer</div>
+<button class="game-btn" onclick="startMicro()">Démarrer</button>
+</div>
+<div class="game-area" id="microArea"></div>
+<div class="game-stats">
+<div class="game-stat"><div class="game-stat-num" id="mi-hits">—</div><div class="game-stat-label">Hits</div></div>
+<div class="game-stat"><div class="game-stat-num" id="mi-miss">—</div><div class="game-stat-label">Miss</div></div>
+<div class="game-stat"><div class="game-stat-num" id="mi-acc">—</div><div class="game-stat-label">Précision</div></div>
+<div class="game-stat"><div class="game-stat-num" id="mi-avg">—</div><div class="game-stat-label">Temps moyen</div></div>
+</div>
+</div>
+</div>
+
+<div class="content" style="padding-top:0;">
+<hr class="separator">
+<div class="section-tag">Section 4</div>
+<h2>Application dans R6 Siege</h2>
+<div class="insight-grid">
+<div class="insight-card">
+<h4>Le pixel peek</h4>
+<p>Tenir un angle où seul 1–2 pixels de ta tête sont visibles demande un micro-ajustement parfait de ta position ET de ton crosshair. Le défenseur qui maîtrise le pixel peek force l'attaquant à flick sur une cible de ~4px — un ID de Fitts si élevé que le hit est statistiquement improbable en première balle.</p>
+</div>
+<div class="insight-card">
+<h4>Le headshot long range</h4>
+<p>À 30+ mètres dans R6, la tête d'un opérateur fait moins de 6 pixels. Le micro-ajustement est le seul type de mouvement qui permet de toucher une cible de cette taille. C'est pourquoi les angles longs favorisent les joueurs à basse sensibilité — ils ont plus de résolution physique par pixel.</p>
+</div>
+</div>
+<p><strong>Sources :</strong> Enoka, R.M. (2015). Neuromechanics of Human Movement — recrutement des unités motrices. — ProSettings.net (2025). R6 Siege X Pro Settings — données sensibilité et multiplicateur. — Frontiers in Human Neuroscience (2022) — mouse grip et performances FPS.</p>
+</div>
+
+<div class="chap-nav">
+<a href="7-3-target-switching.html" class="chap-nav-cta">← Chapitre 7.3</a>
+<a href="7-5-coordination.html" class="chap-nav-cta">Chapitre 7.5 →</a>
+</div>
+<footer><span class="footer-logo">NEI<span>I</span>STRA</span><span class="footer-text">R6 Process — Partie VII · Chapitre 7.4</span></footer>
+
+<script>
+const microArea=document.getElementById('microArea');
+let mHits=0,mMiss=0,mTimes=[],mCount=0,mMax=15,mTarget=null,mLastTime=0,mActive=false;
+const sizes=[8,10,12,14,16,10,8,12,8,10,14,8,10,8,12];
+
+function startMicro(){
+mHits=0;mMiss=0;mTimes=[];mCount=0;mActive=true;
+microArea.innerHTML='';spawnMicro();updateMi();
+}
+function spawnMicro(){
+if(mCount>=mMax){endMicro();return;}
+if(mTarget)mTarget.remove();
+const s=sizes[mCount],w=microArea.offsetWidth,h=microArea.offsetHeight;
+const x=40+Math.random()*(w-80),y=40+Math.random()*(h-80);
+const el=document.createElement('div');
+el.className='micro-target';
+el.style.cssText=`width:${s}px;height:${s}px;left:${x-s/2}px;top:${y-s/2}px;background:rgba(200,48,42,0.8);`;
+el.addEventListener('mousedown',e=>{e.stopPropagation();onMicroHit(el);});
+microArea.appendChild(el);
+mTarget=el;mLastTime=performance.now();mCount++;
+}
+function onMicroHit(el){
+if(!mActive)return;
+mHits++;mTimes.push(performance.now()-mLastTime);
+el.style.background='var(--cyan)';el.style.animation='hitPop 0.3s ease forwards';
+setTimeout(()=>spawnMicro(),250);updateMi();
+}
+microArea.addEventListener('mousedown',e=>{
+if(!mActive||e.target.closest('.micro-target'))return;
+mMiss++;updateMi();
+});
+function endMicro(){
+mActive=false;microArea.innerHTML='<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center"><h3 style="font-family:Bebas Neue;font-size:32px;letter-spacing:3px">Terminé</h3><p style="font-family:Barlow Condensed;font-size:14px;color:#999">Clique Démarrer pour recommencer</p></div>';
+updateMi();
+}
+function updateMi(){
+const total=mHits+mMiss;
+document.getElementById('mi-hits').textContent=mHits||'—';
+document.getElementById('mi-miss').textContent=mMiss||'—';
+document.getElementById('mi-acc').textContent=total?(Math.round(mHits/total*100)+'%'):'—';
+document.getElementById('mi-avg').textContent=mTimes.length?(Math.round(mTimes.reduce((a,b)=>a+b,0)/mTimes.length)+'ms'):'—';
+}
+</script>
+</body>
+</html>

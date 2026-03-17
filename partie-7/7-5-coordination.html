@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>7.5 Coordination main-œil — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--black:#0a0a0a;--white:#f5f2ed;--red:#c8302a;--red-dim:#8a1f1a;--gray:#1c1c1c;--gray-mid:#2e2e2e;--gray-light:#555;--gray-text:#999;--border:rgba(255,255,255,0.08);--cyan:#4ecdc4;--green:#2ecc71}html{scroll-behavior:smooth}body{background:var(--black);color:var(--white);font-family:'Barlow',sans-serif;font-weight:300;line-height:1.7;overflow-x:hidden}nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:64px;border-bottom:1px solid var(--border);background:rgba(10,10,10,0.88);backdrop-filter:blur(12px)}.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--white);text-decoration:none}.nav-logo span{color:var(--red)}.nav-back{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);text-decoration:none;transition:color .2s}.nav-back:hover{color:var(--white)}.chap-hero{padding:120px 48px 64px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}.chap-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 60% at 70% 30%,rgba(200,48,42,0.1) 0%,transparent 70%)}.chap-hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:60px 60px;mask-image:linear-gradient(180deg,transparent 0%,black 30%,black 70%,transparent 100%)}.chap-eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:16px;display:flex;align-items:center;gap:12px;position:relative}.chap-eyebrow::before{content:'';display:block;width:28px;height:1px;background:var(--red)}.chap-num{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,10vw,120px);line-height:.85;letter-spacing:2px;color:rgba(255,255,255,0.04);position:absolute;right:48px;top:80px;pointer-events:none}.chap-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,6vw,72px);letter-spacing:2px;line-height:.95;margin-bottom:12px;position:relative}.chap-subtitle{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:300;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text);margin-bottom:32px;position:relative}.chap-meta{display:flex;gap:32px;position:relative;flex-wrap:wrap}.chap-meta-item{display:flex;flex-direction:column;gap:2px}.chap-meta-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text)}.chap-meta-val{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:500;letter-spacing:1px;color:var(--white)}.content{max-width:860px;margin:0 auto;padding:64px 48px}.section-tag{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:24px;display:flex;align-items:center;gap:10px}.section-tag::before{content:'';display:block;width:20px;height:1px;background:var(--red)}.content h2{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;margin-bottom:20px;line-height:1.1}.content p{font-size:15px;color:var(--gray-text);line-height:1.9;margin-bottom:20px}.content strong{color:var(--white);font-weight:500}.separator{border:none;border-top:1px solid var(--border);margin:56px 0}.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin:32px 0}.stat-box{background:var(--gray);padding:20px}.stat-num{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;line-height:1}.stat-num span{color:var(--red)}.stat-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);margin-top:4px}.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin:32px 0}.insight-card{background:var(--gray);padding:24px;border-left:3px solid var(--red-dim)}.insight-card h4{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;margin-bottom:8px}.insight-card p{font-size:13px;color:var(--gray-text);line-height:1.6;margin:0}.game-section{background:var(--gray);border:1px solid var(--border);margin:32px 0;overflow:hidden}.game-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.game-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px}.game-btn{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;padding:8px 20px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:var(--white);cursor:pointer;transition:all .2s}.game-btn:hover,.game-btn.active{background:var(--red);border-color:var(--red)}.game-area{position:relative;width:100%;height:420px;background:#111;cursor:crosshair;user-select:none;overflow:hidden;display:flex;align-items:center;justify-content:center}.game-stats{padding:16px 24px;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.game-stat{text-align:center}.game-stat-num{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;line-height:1}.game-stat-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);margin-top:2px}.chap-nav{border-top:1px solid var(--border);padding:48px;display:flex;justify-content:space-between;align-items:center}.chap-nav-cta{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--white);text-decoration:none;padding:14px 28px;border:1px solid rgba(255,255,255,0.2);transition:all .25s;display:inline-block}.chap-nav-cta:hover{background:var(--red);border-color:var(--red)}footer{border-top:1px solid var(--border);padding:24px 48px;display:flex;justify-content:space-between;align-items:center}.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;color:var(--gray-text)}.footer-logo span{color:var(--red)}.footer-text{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;color:var(--gray-light);text-transform:uppercase}@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.chap-eyebrow{animation:fadeUp .6s ease both}.chap-title{animation:fadeUp .6s .1s ease both}.react-circle{width:200px;height:200px;border-radius:50%;background:var(--gray-mid);border:2px solid var(--gray-light);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .1s;user-select:none;position:relative}.react-circle .label{font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:2px;color:var(--gray-text);text-transform:uppercase;pointer-events:none}@media(max-width:768px){nav{padding:0 24px}.chap-hero{padding:100px 24px 48px}.content{padding:48px 24px}.stat-row,.insight-grid{grid-template-columns:1fr}.game-area{height:300px}.game-stats{grid-template-columns:repeat(2,1fr)}.chap-nav{flex-direction:column;gap:16px;padding:32px 24px}footer{padding:20px 24px;flex-direction:column;gap:8px;text-align:center}}
+</style>
+</head>
+<body>
+<nav><a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a><a href="index.html" class="nav-back">← Retour aux chapitres</a></nav>
+
+<section class="chap-hero">
+<div class="chap-hero-grid"></div><div class="chap-num">7.5</div>
+<div class="chap-eyebrow">Partie VII — Motricité & jeux interactifs</div>
+<h1 class="chap-title">Coordination<br>Main-Œil</h1>
+<p class="chap-subtitle">Réflexes composites</p>
+<div class="chap-meta">
+<div class="chap-meta-item"><span class="chap-meta-label">Discipline</span><span class="chap-meta-val">Neurosciences visuomotrices</span></div>
+<div class="chap-meta-item"><span class="chap-meta-label">Mécanique</span><span class="chap-meta-val">Réaction sélective · Go/No-Go · Clutch</span></div>
+<div class="chap-meta-item"><span class="chap-meta-label">Niveau</span><span class="chap-meta-val">Tous niveaux</span></div>
+</div>
+</section>
+
+<div class="content">
+<div class="section-tag">Introduction</div>
+<h2>La coordination visuomotrice n'est pas un "réflexe"</h2>
+<p>Quand on parle de "bons réflexes" dans un FPS, on commet une erreur neurologique. Un réflexe pur est un arc neural simple — stimulus → réponse, sans traitement cortical (comme le réflexe rotulien). Ce que les joueurs appellent "réflexes" est en réalité une <strong>coordination visuomotrice complexe</strong> : un pipeline qui part de la rétine, traverse le cortex visuel, passe par le cortex préfrontal pour la décision (tirer ou ne pas tirer ?), et se termine dans le cortex moteur.</p>
+<p>La distinction est fondamentale car un vrai réflexe est <strong>impossible à améliorer par l'entraînement</strong> — il est câblé anatomiquement. La coordination visuomotrice, elle, est <strong>hautement entraînable</strong>. Ce que les pros ont développé, ce n'est pas un système nerveux plus rapide — c'est un pipeline de décision plus efficace, avec des raccourcis appris par la répétition.</p>
+
+<div class="stat-row">
+<div class="stat-box"><div class="stat-num">180<span>ms</span></div><div class="stat-label">Réaction simple moyenne</div></div>
+<div class="stat-box"><div class="stat-num">250<span>ms</span></div><div class="stat-label">Réaction sélective (Go/No-Go)</div></div>
+<div class="stat-box"><div class="stat-num">70<span>ms</span></div><div class="stat-label">Gain par pré-programmation</div></div>
+<div class="stat-box"><div class="stat-num">10k<span>h</span></div><div class="stat-label">Pour expertise motrice (Ericsson)</div></div>
+</div>
+
+<hr class="separator">
+
+<div class="section-tag">Section 1</div>
+<h2>Réaction simple vs réaction sélective</h2>
+<p>La <strong>réaction simple</strong> (un seul stimulus, une seule réponse) prend ~180ms en moyenne. C'est le test du chapitre 2.1. Mais dans R6, la réaction n'est jamais simple. Tu dois :</p>
+<p>1. <strong>Détecter</strong> un mouvement (voie dorsale, ~80ms)<br>
+2. <strong>Identifier</strong> si c'est un ennemi ou un allié (voie ventrale, ~120ms)<br>
+3. <strong>Décider</strong> de tirer ou non (cortex préfrontal, ~30ms supplémentaires)<br>
+4. <strong>Exécuter</strong> le mouvement moteur (cortex moteur → main, ~50ms)</p>
+<p>C'est une <strong>réaction sélective de type Go/No-Go</strong> : le cerveau doit choisir entre agir et ne pas agir. Cette décision ajoute ~70ms au temps de réaction total. C'est pourquoi les team-kills arrivent : sous pression, le cerveau court-circuite l'étape d'identification et tire sur la voie dorsale seule (mouvement détecté → tirer).</p>
+
+<hr class="separator">
+
+<div class="section-tag">Section 2</div>
+<h2>Le raccourci de la pré-programmation</h2>
+<p>Les joueurs experts ne réagissent pas plus vite — ils <strong>réagissent à moins de choses</strong>. En pré-aimant un angle spécifique, le cerveau pré-programme l'action : "si quelque chose apparaît dans cette zone de 10 pixels, tirer". Le pipeline de décision se réduit à une confirmation binaire (oui/non) plutôt qu'à un calcul complet. Résultat : le temps de réaction effective passe de ~250ms (sélectif) à ~150ms (pré-programmé).</p>
+<p>C'est exactement le même mécanisme que celui d'un gardien de but au penalty : il ne réagit pas au ballon (c'est physiquement impossible), il pré-programme un plongeon et lance le mouvement dès qu'il détecte un pattern dans la course du tireur.</p>
+
+<div class="insight-grid">
+<div class="insight-card">
+<h4>Le clutch est une question de séquençage</h4>
+<p>Dans un 1v3, le joueur ne peut pas traiter 3 menaces simultanément. Il doit séquencer : isoler un duel, le résoudre, puis switcher au suivant. Les meilleurs clutchers sont ceux qui repositionnent entre chaque kill pour créer des duels 1v1 successifs plutôt qu'un 1v3 simultané. C'est de la gestion de bande passante cognitive.</p>
+</div>
+<div class="insight-card">
+<h4>L'entraînement consolide les raccourcis</h4>
+<p>La neuroplasticité permet au cerveau de créer des circuits dédiés pour des patterns visuels spécifiques. Un joueur avec 2000h sur R6 reconnaît instantanément la silhouette de chaque opérateur — la voie ventrale a créé des "templates" qui réduisent le temps d'identification de 120ms à ~60ms pour les opérateurs connus.</p>
+</div>
+</div>
+
+<hr class="separator">
+
+<div class="section-tag">Section 3 — Entraînement interactif</div>
+<h2>Go/No-Go Reaction Test</h2>
+<p>Le cercle change de couleur. <strong>Clique uniquement quand il devient vert</strong> (ennemi). Ne clique PAS quand il devient bleu (allié). Ce test mesure ta réaction sélective — la capacité à inhiber un mouvement quand l'identification dit "non".</p>
+</div>
+
+<div class="content" style="padding-top:0;">
+<div class="game-section">
+<div class="game-header">
+<div class="game-title">Go / No-Go Test</div>
+<button class="game-btn" onclick="startGNG()">Démarrer (20 rounds)</button>
+</div>
+<div class="game-area" id="gngArea">
+<div class="react-circle" id="gngCircle" onclick="gngClick()">
+<span class="label" id="gngLabel">Cliquer pour commencer</span>
+</div>
+</div>
+<div class="game-stats">
+<div class="game-stat"><div class="game-stat-num" id="gn-correct">—</div><div class="game-stat-label">Correct</div></div>
+<div class="game-stat"><div class="game-stat-num" id="gn-false">—</div><div class="game-stat-label">Faux positifs</div></div>
+<div class="game-stat"><div class="game-stat-num" id="gn-missed">—</div><div class="game-stat-label">Ratés</div></div>
+<div class="game-stat"><div class="game-stat-num" id="gn-avg">—</div><div class="game-stat-label">Temps Go moyen</div></div>
+</div>
+</div>
+</div>
+
+<div class="content" style="padding-top:0;">
+<hr class="separator">
+<div class="section-tag">Section 4</div>
+<h2>Application dans R6 Siege</h2>
+<div class="insight-grid">
+<div class="insight-card">
+<h4>Friendly fire & discipline</h4>
+<p>R6 est l'un des rares FPS compétitifs avec le friendly fire activé en ranked. Chaque tir est une décision Go/No-Go. Les joueurs qui progressent le plus vite sont ceux qui développent une discipline de tir — ne jamais tirer sur la voie dorsale seule, toujours attendre la confirmation de la voie ventrale (même si ça coûte 40ms).</p>
+</div>
+<div class="insight-card">
+<h4>Le pré-fire intelligent</h4>
+<p>Le pré-fire est l'extrême de la pré-programmation : tirer avant même de voir l'ennemi, basé sur l'information sonore ou le timing prédit. C'est un raccourci qui élimine entièrement le pipeline visuel. Risque : si c'est un allié, le friendly fire est inévitable. Le pré-fire n'est viable que quand l'information est fiable (drone, son confirmé, callout).</p>
+</div>
+</div>
+<p><strong>Sources :</strong> Luce, R.D. (1986). Response Times — temps de réaction simple vs sélectif. — Hick, W.E. (1952). On the rate of gain of information — loi de Hick (temps de réaction proportionnel au log du nombre de choix). — Ericsson, K.A. (1993). The role of deliberate practice — expertise motrice.</p>
+</div>
+
+<div class="chap-nav">
+<a href="7-4-micro-ajustements.html" class="chap-nav-cta">← Chapitre 7.4</a>
+<a href="7-6-speed-accuracy.html" class="chap-nav-cta">Chapitre 7.6 →</a>
+</div>
+<footer><span class="footer-logo">NEI<span>I</span>STRA</span><span class="footer-text">R6 Process — Partie VII · Chapitre 7.5</span></footer>
+
+<script>
+const circle=document.getElementById('gngCircle'),label=document.getElementById('gngLabel');
+let gngActive=false,gngRound=0,gngMax=20,gngTimer=null,gngState='idle';
+let gngCorrect=0,gngFalse=0,gngMissed=0,goTimes=[],gngShowTime=0;
+const colors=['go','go','go','nogo','go','nogo','go','go','nogo','go','go','go','nogo','go','go','nogo','go','go','go','go'];
+
+function startGNG(){
+gngActive=true;gngRound=0;gngCorrect=0;gngFalse=0;gngMissed=0;goTimes=[];
+shuffleArray(colors);
+nextGNGRound();
+}
+
+function shuffleArray(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
+
+function nextGNGRound(){
+if(gngRound>=gngMax){endGNG();return;}
+gngState='waiting';
+circle.style.background='var(--gray-mid)';circle.style.borderColor='var(--gray-light)';
+label.textContent='Attends...';label.style.color='var(--gray-text)';
+const delay=1000+Math.random()*2000;
+gngTimer=setTimeout(()=>{
+const type=colors[gngRound];
+if(type==='go'){
+circle.style.background='rgba(46,204,113,0.3)';circle.style.borderColor='#2ecc71';
+label.textContent='ENNEMI — TIRE !';label.style.color='#2ecc71';
+}else{
+circle.style.background='rgba(52,152,219,0.3)';circle.style.borderColor='#3498db';
+label.textContent='ALLIÉ — NE TIRE PAS';label.style.color='#3498db';
+}
+gngState=type;gngShowTime=performance.now();
+// Auto-advance after 1.5s if no click
+setTimeout(()=>{
+if(gngState===type){
+if(type==='go')gngMissed++;
+// nogo correct = do nothing, already counted
+if(type==='nogo')gngCorrect++;
+gngRound++;updateGNGStats();nextGNGRound();
+}
+},1500);
+},delay);
+}
+
+function gngClick(){
+if(!gngActive){startGNG();return;}
+if(gngState==='waiting')return;
+if(gngState==='go'){
+gngCorrect++;goTimes.push(performance.now()-gngShowTime);
+circle.style.background='rgba(46,204,113,0.6)';
+}else if(gngState==='nogo'){
+gngFalse++;
+circle.style.background='rgba(200,48,42,0.6)';circle.style.borderColor='var(--red)';
+label.textContent='TEAM KILL !';label.style.color='var(--red)';
+}
+gngState='done';gngRound++;updateGNGStats();
+setTimeout(nextGNGRound,600);
+}
+
+function endGNG(){
+gngActive=false;gngState='idle';
+circle.style.background='var(--gray-mid)';circle.style.borderColor='var(--gray-light)';
+const avg=goTimes.length?Math.round(goTimes.reduce((a,b)=>a+b,0)/goTimes.length):0;
+label.innerHTML=`Terminé<br><span style="font-size:11px;color:var(--gray-text)">${gngCorrect} corrects · ${gngFalse} TK · ${gngMissed} ratés · ${avg}ms moy</span>`;
+label.style.color='var(--white)';
+}
+
+function updateGNGStats(){
+document.getElementById('gn-correct').textContent=gngCorrect||'—';
+document.getElementById('gn-false').textContent=gngFalse||'—';
+document.getElementById('gn-missed').textContent=gngMissed||'—';
+document.getElementById('gn-avg').textContent=goTimes.length?(Math.round(goTimes.reduce((a,b)=>a+b,0)/goTimes.length)+'ms'):'—';
+}
+</script>
+</body>
+</html>
