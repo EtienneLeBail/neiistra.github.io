@@ -15,10 +15,13 @@
 
 .blueprint-wrap{position:relative;width:100%;overflow:auto;background:#0a0a0a;display:flex;align-items:center;justify-content:center;min-height:500px;cursor:grab}.blueprint-wrap.panning{cursor:grabbing}.blueprint-container{position:relative;display:inline-block}.blueprint-img-wrapper{position:relative;display:inline-block}.blueprint-wrap img{max-width:100%;height:auto;display:block;user-select:none;-webkit-user-drag:none;transition:transform .2s}.blueprint-wrap.zoomed img{max-width:none}#drawingCanvas{position:absolute;top:0;left:0;cursor:crosshair;background:transparent;display:block;pointer-events:none}#drawingCanvas.active{pointer-events:auto}#textCanvas{position:absolute;top:0;left:0;cursor:text;background:transparent;display:block;pointer-events:none}#textCanvas.active{pointer-events:auto}
 
-.zoom-controls{position:absolute;bottom:16px;right:16px;display:flex;gap:4px;z-index:10}.zoom-btn{font-family:'Bebas Neue',sans-serif;font-size:18px;width:36px;height:36px;background:rgba(10,10,10,0.8);border:1px solid var(--border);color:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;backdrop-filter:blur(4px)}.zoom-btn:hover{background:var(--red);border-color:var(--red)}.map-info{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:24px;flex-wrap:wrap;align-items:center}.info-item{display:flex;flex-direction:column;gap:2px}.info-label{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text)}.info-value{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:500;letter-spacing:1px;color:var(--white)}.shortcut-hint{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:1px;color:var(--gray-light);padding:8px 24px;border-top:1px solid var(--border);text-align:center}
+.zoom-controls{position:fixed;bottom:16px;right:16px;display:flex;gap:4px;z-index:10}.zoom-btn{font-family:'Bebas Neue',sans-serif;font-size:18px;width:36px;height:36px;background:rgba(10,10,10,0.8);border:1px solid var(--border);color:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;backdrop-filter:blur(4px)}.zoom-btn:hover{background:var(--red);border-color:var(--red)}.map-info{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:24px;flex-wrap:wrap;align-items:center}.info-item{display:flex;flex-direction:column;gap:2px}.info-label{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text)}.info-value{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:500;letter-spacing:1px;color:var(--white)}.shortcut-hint{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:1px;color:var(--gray-light);padding:8px 24px;border-top:1px solid var(--border);text-align:center}
 
 /* Modal d'édition de texte */
 .text-editor-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px)}.text-editor-modal.open{display:flex}.text-editor-box{background:var(--gray);border:1px solid var(--red);border-radius:4px;padding:24px;max-width:400px;width:90%;box-shadow:0 10px 40px rgba(200,48,42,0.3)}.text-editor-box h3{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;margin-bottom:16px;color:var(--white)}.text-editor-box textarea{width:100%;height:100px;padding:12px;background:var(--black);border:1px solid var(--border);color:var(--white);font-family:'Barlow',sans-serif;resize:vertical;margin-bottom:12px;border-radius:3px}.text-editor-box input{width:100%;padding:8px 12px;background:var(--black);border:1px solid var(--border);color:var(--white);font-family:'Barlow Condensed',sans-serif;margin-bottom:12px;border-radius:3px}.text-editor-buttons{display:flex;gap:8px}.text-editor-buttons button{flex:1;padding:10px;border:1px solid var(--border);cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:500;letter-spacing:1px;border-radius:3px;transition:all .2s}.text-editor-buttons .save{background:var(--red);color:var(--white);border-color:var(--red)}.text-editor-buttons .save:hover{background:var(--red-dim)}.text-editor-buttons .cancel{background:var(--gray-mid);color:var(--white);border-color:var(--border)}.text-editor-buttons .cancel:hover{background:var(--gray)}.text-editor-buttons .delete{background:transparent;color:var(--gray-text);border-color:var(--border)}.text-editor-buttons .delete:hover{color:var(--red);border-color:var(--red)}
+
+/* Input de texte inline sur la map */
+#inlineTextInput{position:absolute;top:0;left:0;background:transparent;border:2px solid black;border-radius:2px;padding:4px 6px;font-family:'Barlow',sans-serif;font-size:14px;color:var(--white);z-index:50;display:none;min-width:100px;outline:none;box-shadow:inset 0 0 0 1px var(--red)}
 
 footer{border-top:1px solid var(--border);padding:24px 48px;display:flex;justify-content:space-between;align-items:center}.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;color:var(--gray-text)}.footer-logo span{color:var(--red)}.footer-text{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;color:var(--gray-light);text-transform:uppercase}@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.hero-tag{animation:fadeUp .6s ease both}.hero-title{animation:fadeUp .6s .1s ease both}@media(max-width:768px){nav{padding:0 24px}.hero{padding:100px 24px 48px}.content{padding:16px}.map-tab{font-size:10px;padding:8px 10px;letter-spacing:1px}.floor-tab{font-size:10px;padding:8px 12px}.blueprint-wrap{min-height:300px}.map-info{gap:16px}.toolbar{padding:8px 12px}.toolbar-btn{width:32px;height:32px;font-size:14px}.size-input{width:40px}.toolbar-label{font-size:9px}footer{padding:20px 24px;flex-direction:column;gap:8px;text-align:center}}
 </style>
@@ -70,19 +73,8 @@ footer{border-top:1px solid var(--border);padding:24px 48px;display:flex;justify
 </div>
 </div>
 
-<!-- Modal d'édition de texte -->
-<div class="text-editor-modal" id="textEditorModal">
-  <div class="text-editor-box">
-    <h3>Ajouter du texte</h3>
-    <textarea id="textContent" placeholder="Entrez votre texte..."></textarea>
-    <input type="color" id="textColor" value="#c8302a" style="height:36px;padding:0;" title="Couleur du texte">
-    <div class="text-editor-buttons">
-      <button class="save" onclick="saveText()">Ajouter</button>
-      <button class="cancel" onclick="cancelText()">Annuler</button>
-      <button class="delete" onclick="deleteText()">Supprimer</button>
-    </div>
-  </div>
-</div>
+<!-- Input de texte inline sur la map -->
+<input type="text" id="inlineTextInput" placeholder="Écrivez ici...">
 
 <footer><span class="footer-logo">NEI<span>I</span>STRA</span><span class="footer-text">R6 Process — Blueprints · Images © Ubisoft</span></footer>
 <script>
@@ -184,8 +176,11 @@ ctx.clearRect(0,0,drawingCanvas.width,drawingCanvas.height);
 function redrawDrawing(){
 clearDrawing();
 if(drawHistory.length>0){
-const imgData=drawHistory[drawHistory.length-1];
-ctx.putImageData(imgData,0,0);
+for(let action of drawHistory){
+if(action.type==='drawing'&&action.data){
+ctx.putImageData(action.data,0,0);
+}
+}
 }
 }
 
@@ -224,19 +219,41 @@ updateToolButtons();
 });
 
 // Undo/Redo
+function addToHistory(type){
+if(type==='drawing'){
+const imgData=ctx.getImageData(0,0,drawingCanvas.width,drawingCanvas.height);
+drawHistory.push({type:'drawing',data:imgData});
+}else if(type==='text'){
+drawHistory.push({type:'text',data:JSON.parse(JSON.stringify(textItems))});
+}
+redoHistory=[];
+}
+
 document.getElementById('undoBtn').addEventListener('click',()=>{
 if(drawHistory.length>0){
-const current=drawHistory.pop();
-redoHistory.push(current);
+const action=drawHistory.pop();
+if(action.type==='drawing'){
+redoHistory.push(action);
 redrawDrawing();
+}else if(action.type==='text'){
+redoHistory.push({type:'text',data:JSON.parse(JSON.stringify(textItems))});
+textItems=JSON.parse(JSON.stringify(action.data));
+redrawText();
+}
 }
 });
 
 document.getElementById('redoBtn').addEventListener('click',()=>{
 if(redoHistory.length>0){
-const imgData=redoHistory.pop();
-drawHistory.push(imgData);
+const action=redoHistory.pop();
+if(action.type==='drawing'){
+drawHistory.push(action);
 redrawDrawing();
+}else if(action.type==='text'){
+drawHistory.push({type:'text',data:JSON.parse(JSON.stringify(textItems))});
+textItems=JSON.parse(JSON.stringify(action.data));
+redrawText();
+}
 }
 });
 
@@ -247,39 +264,54 @@ clearDrawing();textCtx.clearRect(0,0,textCanvas.width,textCanvas.height);
 }
 });
 
-// Modal de texte
+// Input de texte inline
 function openTextEditor(x,y){
-currentTextItem={x,y,text:'',color:document.getElementById('textColor').value,size:16};
-document.getElementById('textContent').value='';
-document.getElementById('textColor').value='#c8302a';
-document.getElementById('textEditorModal').classList.add('open');
-document.getElementById('textContent').focus();
+const inlineInput=document.getElementById('inlineTextInput');
+currentTextItem={x:Math.round(x),y:Math.round(y),text:'',color:'#c8302a',size:16};
+inlineInput.value='';
+inlineInput.style.left=x+'px';
+inlineInput.style.top=y+'px';
+inlineInput.style.display='block';
+inlineInput.focus();
 }
 
 function saveText(){
-const text=document.getElementById('textContent').value.trim();
+const inlineInput=document.getElementById('inlineTextInput');
+const text=inlineInput.value.trim();
 if(!text)return;
 currentTextItem.text=text;
-currentTextItem.color=document.getElementById('textColor').value;
+currentTextItem.color='#c8302a';
 currentTextItem.size=16;
 textItems.push(currentTextItem);
+addToHistory('text');
 redrawText();
 cancelText();
 }
 
 function cancelText(){
+const inlineInput=document.getElementById('inlineTextInput');
+inlineInput.style.display='none';
 currentTextItem=null;
-document.getElementById('textEditorModal').classList.remove('open');
 // Garder textMode actif pour continuer à ajouter du texte
 }
 
 function deleteText(){
 if(currentTextItem&&textItems.includes(currentTextItem)){
 textItems.splice(textItems.indexOf(currentTextItem),1);
+addToHistory('text');
 redrawText();
 }
 cancelText();
 }
+
+// Listener pour l'input inline
+document.getElementById('inlineTextInput').addEventListener('keydown',e=>{
+if(e.key==='Enter'){
+saveText();
+}else if(e.key==='Escape'){
+cancelText();
+}
+});
 
 // Pan avec la main
 const blueprintWrap=document.getElementById('blueprintWrap');
@@ -325,9 +357,7 @@ ctx.stroke();
 document.addEventListener('mouseup',()=>{
 if(isDrawing && drawingMode){
 isDrawing=false;
-const imgData=ctx.getImageData(0,0,drawingCanvas.width,drawingCanvas.height);
-drawHistory.push(imgData);
-redoHistory=[];
+addToHistory('drawing');
 }
 isPanning=false;
 blueprintWrap.classList.remove('panning');
@@ -367,6 +397,17 @@ container.style.transformOrigin='top left';
 if(zoomLevel>1.1)wrap.classList.add('zoomed');
 else wrap.classList.remove('zoomed');
 }
+
+// Empêcher le zoom/scroll à la molette et pavet tactile
+blueprintWrap.addEventListener('wheel',e=>{
+e.preventDefault();
+},{passive:false});
+
+blueprintWrap.addEventListener('touchmove',e=>{
+if(e.touches.length===1&&!panMode){
+e.preventDefault();
+}
+},{passive:false});
 
 // Download
 document.getElementById('downloadBtn').addEventListener('click',()=>{
