@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>8.2 Chemins de Jeu — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--black:#0a0a0a;--white:#f5f2ed;--red:#c8302a;--red-dim:#8a1f1a;--gray:#1c1c1c;--gray-mid:#2e2e2e;--gray-light:#555;--gray-text:#999;--border:rgba(255,255,255,0.08);--cyan:#4ecdc4}html{scroll-behavior:smooth}body{background:var(--black);color:var(--white);font-family:'Barlow',sans-serif;font-weight:300;line-height:1.7;overflow-x:hidden}nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:64px;border-bottom:1px solid var(--border);background:rgba(10,10,10,0.88);backdrop-filter:blur(12px)}.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--white);text-decoration:none}.nav-logo span{color:var(--red)}.nav-back{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);text-decoration:none;transition:color .2s}.nav-back:hover{color:var(--white)}.chap-hero{padding:120px 48px 64px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}.chap-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 60% at 70% 30%,rgba(200,48,42,0.1) 0%,transparent 70%)}.chap-hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:60px 60px;mask-image:linear-gradient(180deg,transparent 0%,black 30%,black 70%,transparent 100%)}.chap-eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:16px;display:flex;align-items:center;gap:12px;position:relative}.chap-eyebrow::before{content:'';display:block;width:28px;height:1px;background:var(--red)}.chap-num{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,10vw,120px);line-height:.85;letter-spacing:2px;color:rgba(255,255,255,0.04);position:absolute;right:48px;top:80px;pointer-events:none}.chap-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,6vw,72px);letter-spacing:2px;line-height:.95;margin-bottom:12px;position:relative}.chap-subtitle{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:300;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text);margin-bottom:32px;position:relative}.chap-meta{display:flex;gap:32px;position:relative;flex-wrap:wrap}.chap-meta-item{display:flex;flex-direction:column;gap:2px}.chap-meta-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text)}.chap-meta-val{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:500;letter-spacing:1px;color:var(--white)}.content{max-width:860px;margin:0 auto;padding:64px 48px}.section-tag{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:24px;display:flex;align-items:center;gap:10px}.section-tag::before{content:'';display:block;width:20px;height:1px;background:var(--red)}.content h2{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;margin-bottom:20px;line-height:1.1}.content p{font-size:15px;color:var(--gray-text);line-height:1.9;margin-bottom:20px}.content strong{color:var(--white);font-weight:500}.separator{border:none;border-top:1px solid var(--border);margin:56px 0}.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin:32px 0}.stat-box{background:var(--gray);padding:20px}.stat-num{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;line-height:1}.stat-num span{color:var(--red)}.stat-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);margin-top:4px}.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin:32px 0}.insight-card{background:var(--gray);padding:24px;border-left:3px solid var(--red-dim)}.insight-card h4{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;margin-bottom:8px}.insight-card p{font-size:13px;color:var(--gray-text);line-height:1.6;margin:0}.diagram-container{background:var(--gray);border:1px solid var(--border);padding:32px;margin:32px 0;position:relative;overflow:hidden}.diagram-title{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text);margin-bottom:20px}.diagram-svg{width:100%;height:auto;display:block}.chap-nav{border-top:1px solid var(--border);padding:48px;display:flex;justify-content:space-between;align-items:center}.chap-nav-cta{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--white);text-decoration:none;padding:14px 28px;border:1px solid rgba(255,255,255,0.2);transition:all .25s;display:inline-block}.chap-nav-cta:hover{background:var(--red);border-color:var(--red)}.chap-nav-cta.disabled{color:var(--gray-light);border-color:var(--border);cursor:default;pointer-events:none}footer{border-top:1px solid var(--border);padding:24px 48px;display:flex;justify-content:space-between;align-items:center}.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;color:var(--gray-text)}.footer-logo span{color:var(--red)}.footer-text{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;color:var(--gray-light);text-transform:uppercase}@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.chap-eyebrow{animation:fadeUp .6s ease both}.chap-title{animation:fadeUp .6s .1s ease both}@media(max-width:768px){nav{padding:0 24px}.chap-hero{padding:100px 24px 48px}.content{padding:48px 24px}.stat-row,.insight-grid{grid-template-columns:1fr}.chap-nav{flex-direction:column;gap:16px;padding:32px 24px}footer{padding:20px 24px;flex-direction:column;gap:8px;text-align:center}}</style>
+</head>
+<body>
+<nav><a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a><a href="index.html" class="nav-back">← Retour aux chapitres</a></nav>
+<section class="chap-hero">
+<div class="chap-hero-grid"></div><div class="chap-num">8.2</div>
+<div class="chap-eyebrow">Partie VIII — Solo Queue &amp; impact individuel</div>
+<h1 class="chap-title">Chemins de Jeu</h1>
+<p class="chap-subtitle">Rotations &amp; timing</p>
+<div class="chap-meta">
+<div class="chap-meta-item"><span class="chap-meta-label">Discipline</span><span class="chap-meta-val">Cartographie tactique &middot; Graph theory</span></div>
+<div class="chap-meta-item"><span class="chap-meta-label">Mécanique</span><span class="chap-meta-val">Map control &middot; Entry path &middot; Timing</span></div>
+<div class="chap-meta-item"><span class="chap-meta-label">Niveau</span><span class="chap-meta-val">Intermédiaire</span></div>
+</div>
+</section>
+
+<div class="content">
+<div class="section-tag">Introduction</div>
+<h2>Chaque map a un squelette — les chemins dominants</h2>
+<p>Une map de Siege n'est pas un espace ouvert — c'est un <strong>réseau de couloirs, d'escaliers et de pièces</strong> avec des points de contrôle clés. Certaines routes d'approche offrent plus d'information, moins d'exposition, et un meilleur timing que d'autres. Ces routes sont les <strong>chemins dominants</strong> de la map.</p>
+<p>En solo queue, connaître les chemins dominants est encore plus important qu'en stack. Sans communication, tu ne peux pas coordonner une push multi-angle. Mais tu peux choisir le chemin qui <strong>maximise ton information individuelle</strong> et minimise les angles où tu es vulnérable sans couverture.</p>
+
+<div class="stat-row">
+<div class="stat-box"><div class="stat-num">2<span>-3</span></div><div class="stat-label">Chemins d'entrée principaux/map</div></div>
+<div class="stat-box"><div class="stat-num">45<span>s</span></div><div class="stat-label">Timing optimal d'entrée</div></div>
+<div class="stat-box"><div class="stat-num">3<span>zones</span></div><div class="stat-label">Contrôle minimum pour plant</div></div>
+<div class="stat-box"><div class="stat-num">90<span>s</span></div><div class="stat-label">Seuil pour commit au push</div></div>
+</div>
+
+<hr class="separator">
+
+<div class="section-tag">Section 1</div>
+<h2>Anatomie d'un chemin d'entrée</h2>
+<p>Un bon chemin d'entrée en solo queue remplit 4 critères :</p>
+<div class="insight-grid">
+<div class="insight-card">
+<h4>1. Progression drônable</h4>
+<p>Chaque angle peut être pré-drôné avant de s'y engager. Les couloirs longs sans couverture intermédiaire sont des death traps en solo — tu ne peux pas te faire drôner par un teammate, donc tu dois pouvoir le faire toi-même puis push immédiatement après.</p>
+</div>
+<div class="insight-card">
+<h4>2. Angles limitables</h4>
+<p>Le chemin ne t'expose pas à plus de 2 angles simultanés. En stack, tu peux avoir un teammate qui couvre le flanc. En solo, chaque angle non couvert est un angle qui peut te tuer. Les escaliers secondaires et les petites pièces sont préférables aux grands espaces ouverts.</p>
+</div>
+<div class="insight-card">
+<h4>3. Réversibilité</h4>
+<p>Tu peux reculer si ça tourne mal. Un chemin irréversible (rappel, descente de hatch) est un engagement total — si l'info est mauvaise, tu meurs. En solo queue sans info fiable, privilégie les chemins avec une option de repli.</p>
+</div>
+<div class="insight-card">
+<h4>4. Convergence vers l'objectif</h4>
+<p>Le chemin mène vers le site ou vers une position de contrôle adjacente. Les flancs profonds (faire tout le tour de la map) sont risqués en solo — le timing est long, et tes teammates peuvent mourir avant que tu arrives.</p>
+</div>
+</div>
+
+<hr class="separator">
+
+<div class="section-tag">Section 2</div>
+<h2>Le timing du chrono</h2>
+<p>Le round d'attaque dure <strong>3 minutes (180s)</strong>. La gestion du chrono est radicalement différente en solo vs en stack :</p>
+<div class="diagram-container">
+<div class="diagram-title">Timeline du round — Solo Queue vs Stack</div>
+<svg class="diagram-svg" viewBox="0 0 760 160" xmlns="http://www.w3.org/2000/svg">
+<text x="20" y="20" fill="#c8302a" font-size="11" letter-spacing="2" font-family="Barlow Condensed" text-transform="uppercase">SOLO QUEUE</text>
+<rect x="20" y="30" width="180" height="30" rx="2" fill="rgba(78,205,196,0.15)" stroke="rgba(78,205,196,0.3)" stroke-width="1"/>
+<text x="110" y="50" text-anchor="middle" fill="#4ecdc4" font-size="10" font-family="Barlow Condensed">0-45s : Drone + lecture équipe</text>
+<rect x="200" y="30" width="200" height="30" rx="2" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+<text x="300" y="50" text-anchor="middle" fill="#999" font-size="10" font-family="Barlow Condensed">45-90s : Prise de contrôle map</text>
+<rect x="400" y="30" width="180" height="30" rx="2" fill="rgba(200,48,42,0.15)" stroke="rgba(200,48,42,0.3)" stroke-width="1"/>
+<text x="490" y="50" text-anchor="middle" fill="#c8302a" font-size="10" font-family="Barlow Condensed">90-150s : Push site + plant</text>
+<rect x="580" y="30" width="160" height="30" rx="2" fill="rgba(200,48,42,0.25)" stroke="rgba(200,48,42,0.5)" stroke-width="1"/>
+<text x="660" y="50" text-anchor="middle" fill="#c8302a" font-size="10" font-family="Barlow Condensed">150-180s : Post-plant / clutch</text>
+
+<text x="20" y="90" fill="#f5f2ed" font-size="11" letter-spacing="2" font-family="Barlow Condensed">STACK ORGANISÉ</text>
+<rect x="20" y="100" width="120" height="30" rx="2" fill="rgba(78,205,196,0.15)" stroke="rgba(78,205,196,0.3)" stroke-width="1"/>
+<text x="80" y="120" text-anchor="middle" fill="#4ecdc4" font-size="10" font-family="Barlow Condensed">0-30s : Drone coordonné</text>
+<rect x="140" y="100" width="160" height="30" rx="2" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+<text x="220" y="120" text-anchor="middle" fill="#999" font-size="10" font-family="Barlow Condensed">30-60s : Entry + contrôle</text>
+<rect x="300" y="100" width="200" height="30" rx="2" fill="rgba(200,48,42,0.15)" stroke="rgba(200,48,42,0.3)" stroke-width="1"/>
+<text x="400" y="120" text-anchor="middle" fill="#c8302a" font-size="10" font-family="Barlow Condensed">60-120s : Exécution strat</text>
+<rect x="500" y="100" width="240" height="30" rx="2" fill="rgba(200,48,42,0.25)" stroke="rgba(200,48,42,0.5)" stroke-width="1"/>
+<text x="620" y="120" text-anchor="middle" fill="#c8302a" font-size="10" font-family="Barlow Condensed">120-180s : Post-plant confortable</text>
+
+<text x="380" y="155" text-anchor="middle" fill="#555" font-size="10" font-family="Barlow Condensed">Le solo queue demande ~15s de plus pour la prise d'info individuelle</text>
+</svg>
+</div>
+
+<p>En solo queue, la <strong>phase de drone étendue</strong> (0-45s) est critique. Tu dois utiliser la prep phase pour lire ce que font tes teammates : qui va où, qui prend quel rôle. Cette lecture te permet d'adapter ton plan en temps réel. La règle des <strong>90 secondes</strong> est un seuil psychologique : si tu n'as pas commencé ton push vers le site à 90s restantes, les chances de plant chutent drastiquement en solo.</p>
+
+<p><strong>Sources :</strong> Immortalboost (2025). 20 Tips to rank up in R6 — gestion du chrono et map control. — GameTree (2026). R6 Ranks analysis — corrélation entre timing d'entry et win rate par rang.</p>
+</div>
+<div class="chap-nav">
+<a href="8-1-plans-de-jeu.html" class="chap-nav-cta">← Chapitre précédent</a>
+<a href="8-3-style-de-jeu.html" class="chap-nav-cta">Chapitre suivant →</a>
+</div>
+<footer><span class="footer-logo">NEI<span>I</span>STRA</span><span class="footer-text">R6 Process — Partie VIII · Chapitre 8.2</span></footer>
+</body></html>

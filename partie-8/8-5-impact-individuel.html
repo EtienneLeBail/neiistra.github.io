@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>8.5 Impact<br>Individuel — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--black:#0a0a0a;--white:#f5f2ed;--red:#c8302a;--red-dim:#8a1f1a;--gray:#1c1c1c;--gray-mid:#2e2e2e;--gray-light:#555;--gray-text:#999;--border:rgba(255,255,255,0.08);--cyan:#4ecdc4}html{scroll-behavior:smooth}body{background:var(--black);color:var(--white);font-family:'Barlow',sans-serif;font-weight:300;line-height:1.7;overflow-x:hidden}nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:64px;border-bottom:1px solid var(--border);background:rgba(10,10,10,0.88);backdrop-filter:blur(12px)}.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--white);text-decoration:none}.nav-logo span{color:var(--red)}.nav-back{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);text-decoration:none;transition:color .2s}.nav-back:hover{color:var(--white)}.chap-hero{padding:120px 48px 64px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}.chap-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 60% at 70% 30%,rgba(200,48,42,0.1) 0%,transparent 70%)}.chap-hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:60px 60px;mask-image:linear-gradient(180deg,transparent 0%,black 30%,black 70%,transparent 100%)}.chap-eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:16px;display:flex;align-items:center;gap:12px;position:relative}.chap-eyebrow::before{content:'';display:block;width:28px;height:1px;background:var(--red)}.chap-num{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,10vw,120px);line-height:.85;letter-spacing:2px;color:rgba(255,255,255,0.04);position:absolute;right:48px;top:80px;pointer-events:none}.chap-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,6vw,72px);letter-spacing:2px;line-height:.95;margin-bottom:12px;position:relative}.chap-subtitle{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:300;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text);margin-bottom:32px;position:relative}.chap-meta{display:flex;gap:32px;position:relative;flex-wrap:wrap}.chap-meta-item{display:flex;flex-direction:column;gap:2px}.chap-meta-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text)}.chap-meta-val{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:500;letter-spacing:1px;color:var(--white)}.content{max-width:860px;margin:0 auto;padding:64px 48px}.section-tag{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:24px;display:flex;align-items:center;gap:10px}.section-tag::before{content:'';display:block;width:20px;height:1px;background:var(--red)}.content h2{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;margin-bottom:20px;line-height:1.1}.content p{font-size:15px;color:var(--gray-text);line-height:1.9;margin-bottom:20px}.content strong{color:var(--white);font-weight:500}.separator{border:none;border-top:1px solid var(--border);margin:56px 0}.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin:32px 0}.stat-box{background:var(--gray);padding:20px}.stat-num{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;line-height:1}.stat-num span{color:var(--red)}.stat-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);margin-top:4px}.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin:32px 0}.insight-card{background:var(--gray);padding:24px;border-left:3px solid var(--red-dim)}.insight-card h4{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;margin-bottom:8px}.insight-card p{font-size:13px;color:var(--gray-text);line-height:1.6;margin:0}.diagram-container{background:var(--gray);border:1px solid var(--border);padding:32px;margin:32px 0;position:relative;overflow:hidden}.diagram-title{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text);margin-bottom:20px}.diagram-svg{width:100%;height:auto;display:block}.chap-nav{border-top:1px solid var(--border);padding:48px;display:flex;justify-content:space-between;align-items:center}.chap-nav-cta{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--white);text-decoration:none;padding:14px 28px;border:1px solid rgba(255,255,255,0.2);transition:all .25s;display:inline-block}.chap-nav-cta:hover{background:var(--red);border-color:var(--red)}.chap-nav-cta.disabled{color:var(--gray-light);border-color:var(--border);cursor:default;pointer-events:none}footer{border-top:1px solid var(--border);padding:24px 48px;display:flex;justify-content:space-between;align-items:center}.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;color:var(--gray-text)}.footer-logo span{color:var(--red)}.footer-text{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;color:var(--gray-light);text-transform:uppercase}@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.chap-eyebrow{animation:fadeUp .6s ease both}.chap-title{animation:fadeUp .6s .1s ease both}@media(max-width:768px){nav{padding:0 24px}.chap-hero{padding:100px 24px 48px}.content{padding:48px 24px}.stat-row,.insight-grid{grid-template-columns:1fr}.chap-nav{flex-direction:column;gap:16px;padding:32px 24px}footer{padding:20px 24px;flex-direction:column;gap:8px;text-align:center}}</style></head><body>
+<nav><a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a><a href="index.html" class="nav-back">← Retour aux chapitres</a></nav>
+<section class="chap-hero"><div class="chap-hero-grid"></div><div class="chap-num">8.5</div>
+<div class="chap-eyebrow">Partie VIII — Solo Queue &amp; impact individuel</div>
+<h1 class="chap-title">Impact<br>Individuel</h1><p class="chap-subtitle">Peser sur le round</p>
+<div class="chap-meta">
+<div class="chap-meta-item"><span class="chap-meta-label">Discipline</span><span class="chap-meta-val">Statistiques · Théorie de la valeur</span></div>
+<div class="chap-meta-item"><span class="chap-meta-label">Mécanique</span><span class="chap-meta-val">KOST · Trade · Plant · Entry kill</span></div>
+<div class="chap-meta-item"><span class="chap-meta-label">Niveau</span><span class="chap-meta-val">Intermédiaire — Avancé</span></div>
+</div></section>
+<div class="content">
+<div class="section-tag">Introduction</div>
+<h2>Un kill n'a pas toujours le même poids</h2>
+<p>Dans Siege, toutes les actions ne se valent pas. Un <strong>entry kill sur l'ancre du site</strong> ouvre le round entier. Un <strong>kill de sortie à 5 secondes de la fin</strong> ne change rien au résultat. Pourtant, les deux comptent comme "1 kill" dans les stats. C'est pourquoi le K/D est un indicateur trompeur de la valeur d'un joueur.</p>
+<p>L'<strong>impact individuel</strong> mesure la contribution réelle d'un joueur à la victoire du round, indépendamment du score brut. En solo queue, maximiser ton impact est la seule variable que tu contrôles — et c'est la variable qui détermine si tu montes ou si tu stagnes.</p>
+
+<div class="stat-row">
+<div class="stat-box"><div class="stat-num">KOST</div><div class="stat-label">Kill/Objective/Survive/Trade</div></div>
+<div class="stat-box"><div class="stat-num">1<span>st</span></div><div class="stat-label">Entry kill = impact max</div></div>
+<div class="stat-box"><div class="stat-num">5<span>s</span></div><div class="stat-label">Fenêtre de trade optimale</div></div>
+<div class="stat-box"><div class="stat-num">70<span>%+</span></div><div class="stat-label">KOST cible pour monter</div></div>
+</div>
+
+<hr class="separator">
+<div class="section-tag">Section 1</div>
+<h2>Hiérarchie de l'impact par action</h2>
+<div class="diagram-container">
+<div class="diagram-title">Valeur d'impact par type d'action — du plus au moins impactant</div>
+<svg class="diagram-svg" viewBox="0 0 760 280" xmlns="http://www.w3.org/2000/svg">
+<rect x="20" y="10" width="720" height="40" rx="3" fill="rgba(200,48,42,0.15)" stroke="rgba(200,48,42,0.4)" stroke-width="1"/>
+<text x="380" y="25" text-anchor="middle" fill="#c8302a" font-size="13" font-weight="600" font-family="Barlow Condensed" letter-spacing="1">ENTRY KILL — Ouvrir le round</text>
+<text x="380" y="42" text-anchor="middle" fill="#999" font-size="10" font-family="Barlow Condensed">Crée un avantage numérique quand il compte le plus. Équivalent d'un break au tennis.</text>
+
+<rect x="40" y="58" width="680" height="40" rx="3" fill="rgba(200,48,42,0.1)" stroke="rgba(200,48,42,0.25)" stroke-width="1"/>
+<text x="380" y="73" text-anchor="middle" fill="#f5f2ed" font-size="12" font-weight="500" font-family="Barlow Condensed">PLANT / DEFUSE — L'objectif du round</text>
+<text x="380" y="90" text-anchor="middle" fill="#999" font-size="10" font-family="Barlow Condensed">Le plant force les défenseurs à sortir de position. Le defuse sauve le round.</text>
+
+<rect x="60" y="106" width="640" height="40" rx="3" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+<text x="380" y="121" text-anchor="middle" fill="#f5f2ed" font-size="12" font-weight="500" font-family="Barlow Condensed">TRADE KILL — Compenser une perte immédiatement</text>
+<text x="380" y="138" text-anchor="middle" fill="#999" font-size="10" font-family="Barlow Condensed">Un trade dans les 5s maintient l'avantage numérique. Au-delà, l'ennemi a déjà repositionné.</text>
+
+<rect x="80" y="154" width="600" height="40" rx="3" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+<text x="380" y="169" text-anchor="middle" fill="#f5f2ed" font-size="12" font-weight="500" font-family="Barlow Condensed">INTEL — Callout, drone, scan, piège déclenché</text>
+<text x="380" y="186" text-anchor="middle" fill="#999" font-size="10" font-family="Barlow Condensed">L'information permet à l'équipe de prendre de meilleures décisions. Impact indirect mais cumulatif.</text>
+
+<rect x="100" y="202" width="560" height="40" rx="3" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+<text x="380" y="217" text-anchor="middle" fill="#999" font-size="12" font-weight="500" font-family="Barlow Condensed">UTILITY DENIAL — Détruire les gadgets adverses</text>
+<text x="380" y="234" text-anchor="middle" fill="#999" font-size="10" font-family="Barlow Condensed">Chaque ADS, mine, ou barbelé détruit rend le push plus facile pour toute l'équipe.</text>
+
+<rect x="120" y="250" width="520" height="28" rx="3" fill="rgba(255,255,255,0.01)" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+<text x="380" y="268" text-anchor="middle" fill="#555" font-size="11" font-family="Barlow Condensed">EXIT KILL — Kill tardif sans impact sur le résultat</text>
+</svg>
+</div>
+
+<hr class="separator">
+<div class="section-tag">Section 2</div>
+<h2>Maximiser l'impact en solo queue</h2>
+<div class="insight-grid">
+<div class="insight-card">
+<h4>Priorise le trade</h4>
+<p>En solo queue, le trade est l'action la plus reproductible et fiable. Quand un teammate meurt, sa position te donne une info gratuite sur la position de l'ennemi. Si tu es positionné pour le refrag (< 5 secondes, angle sur le kill), tu convertis une perte en échange neutre. Les joueurs avec un trade rate > 30% montent de manière consistante.</p>
+</div>
+<div class="insight-card">
+<h4>Ne meurs pas pour rien</h4>
+<p>La survie a une valeur intrinsèque dans Siege. Un joueur en vie = un vote sur la table. Un joueur mort ne peut plus contribuer. La mort n'est acceptable que si elle crée plus de valeur que la survie : un plant réussi, un trade obtenu, un entry qui ouvre le site. Mourir en peekant un angle sans information est un impact négatif net.</p>
+</div>
+<div class="insight-card">
+<h4>Le plant en solo</h4>
+<p>Planter le defuser est l'action la plus impactante du round après l'entry kill. En solo queue, le plant est souvent négligé car personne ne veut "être celui qui meurt en plantant". Prends le defuser si personne ne le fait — et plante dans des positions couvertes. Un plant réussi transforme l'économie du round : les défenseurs doivent maintenant sortir de position.</p>
+</div>
+<div class="insight-card">
+<h4>Le timing du clutch</h4>
+<p>En situation de clutch (1vX), chaque seconde de survie est un investissement. Ne rush pas le clutch — le chrono est ton allié si le defuser est planté, et ton ennemi sinon. Les clutchers experts jouent le chrono : repositionnement, isolation des duels, exploitation du bruit pour créer de la confusion.</p>
+</div>
+</div>
+
+<p><strong>Sources :</strong> SiegeGG — statistiques KOST et entry kills des joueurs professionnels. — R6Tracker (2026) — corrélation entre trade rate et progression en ranked. — EGamingHQ (2026) — analyse de l'impact des différentes actions sur le win rate.</p>
+</div>
+<div class="chap-nav">
+<a href="8-4-adaptation-random.html" class="chap-nav-cta">← Chapitre précédent</a>
+<a href="8-6-mindset-solo-q.html" class="chap-nav-cta">Chapitre suivant →</a>
+</div>
+<footer><span class="footer-logo">NEI<span>I</span>STRA</span><span class="footer-text">R6 Process — Partie VIII · Chapitre 8.5</span></footer>
+</body></html>

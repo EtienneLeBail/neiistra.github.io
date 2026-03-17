@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>8.4 Adaptation au<br>Random — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--black:#0a0a0a;--white:#f5f2ed;--red:#c8302a;--red-dim:#8a1f1a;--gray:#1c1c1c;--gray-mid:#2e2e2e;--gray-light:#555;--gray-text:#999;--border:rgba(255,255,255,0.08);--cyan:#4ecdc4}html{scroll-behavior:smooth}body{background:var(--black);color:var(--white);font-family:'Barlow',sans-serif;font-weight:300;line-height:1.7;overflow-x:hidden}nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:64px;border-bottom:1px solid var(--border);background:rgba(10,10,10,0.88);backdrop-filter:blur(12px)}.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--white);text-decoration:none}.nav-logo span{color:var(--red)}.nav-back{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);text-decoration:none;transition:color .2s}.nav-back:hover{color:var(--white)}.chap-hero{padding:120px 48px 64px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}.chap-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 60% at 70% 30%,rgba(200,48,42,0.1) 0%,transparent 70%)}.chap-hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:60px 60px;mask-image:linear-gradient(180deg,transparent 0%,black 30%,black 70%,transparent 100%)}.chap-eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:16px;display:flex;align-items:center;gap:12px;position:relative}.chap-eyebrow::before{content:'';display:block;width:28px;height:1px;background:var(--red)}.chap-num{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,10vw,120px);line-height:.85;letter-spacing:2px;color:rgba(255,255,255,0.04);position:absolute;right:48px;top:80px;pointer-events:none}.chap-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,6vw,72px);letter-spacing:2px;line-height:.95;margin-bottom:12px;position:relative}.chap-subtitle{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:300;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text);margin-bottom:32px;position:relative}.chap-meta{display:flex;gap:32px;position:relative;flex-wrap:wrap}.chap-meta-item{display:flex;flex-direction:column;gap:2px}.chap-meta-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text)}.chap-meta-val{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:500;letter-spacing:1px;color:var(--white)}.content{max-width:860px;margin:0 auto;padding:64px 48px}.section-tag{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:24px;display:flex;align-items:center;gap:10px}.section-tag::before{content:'';display:block;width:20px;height:1px;background:var(--red)}.content h2{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;margin-bottom:20px;line-height:1.1}.content p{font-size:15px;color:var(--gray-text);line-height:1.9;margin-bottom:20px}.content strong{color:var(--white);font-weight:500}.separator{border:none;border-top:1px solid var(--border);margin:56px 0}.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin:32px 0}.stat-box{background:var(--gray);padding:20px}.stat-num{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;line-height:1}.stat-num span{color:var(--red)}.stat-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);margin-top:4px}.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin:32px 0}.insight-card{background:var(--gray);padding:24px;border-left:3px solid var(--red-dim)}.insight-card h4{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;margin-bottom:8px}.insight-card p{font-size:13px;color:var(--gray-text);line-height:1.6;margin:0}.diagram-container{background:var(--gray);border:1px solid var(--border);padding:32px;margin:32px 0;position:relative;overflow:hidden}.diagram-title{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text);margin-bottom:20px}.diagram-svg{width:100%;height:auto;display:block}.chap-nav{border-top:1px solid var(--border);padding:48px;display:flex;justify-content:space-between;align-items:center}.chap-nav-cta{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--white);text-decoration:none;padding:14px 28px;border:1px solid rgba(255,255,255,0.2);transition:all .25s;display:inline-block}.chap-nav-cta:hover{background:var(--red);border-color:var(--red)}.chap-nav-cta.disabled{color:var(--gray-light);border-color:var(--border);cursor:default;pointer-events:none}footer{border-top:1px solid var(--border);padding:24px 48px;display:flex;justify-content:space-between;align-items:center}.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;color:var(--gray-text)}.footer-logo span{color:var(--red)}.footer-text{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;color:var(--gray-light);text-transform:uppercase}@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.chap-eyebrow{animation:fadeUp .6s ease both}.chap-title{animation:fadeUp .6s .1s ease both}@media(max-width:768px){nav{padding:0 24px}.chap-hero{padding:100px 24px 48px}.content{padding:48px 24px}.stat-row,.insight-grid{grid-template-columns:1fr}.chap-nav{flex-direction:column;gap:16px;padding:32px 24px}footer{padding:20px 24px;flex-direction:column;gap:8px;text-align:center}}</style></head><body>
+<nav><a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a><a href="index.html" class="nav-back">← Retour aux chapitres</a></nav>
+<section class="chap-hero"><div class="chap-hero-grid"></div><div class="chap-num">8.4</div>
+<div class="chap-eyebrow">Partie VIII — Solo Queue &amp; impact individuel</div>
+<h1 class="chap-title">Adaptation au<br>Random</h1><p class="chap-subtitle">Jouer avec l'inconnu</p>
+<div class="chap-meta">
+<div class="chap-meta-item"><span class="chap-meta-label">Discipline</span><span class="chap-meta-val">Théorie des jeux · Psychologie sociale</span></div>
+<div class="chap-meta-item"><span class="chap-meta-label">Mécanique</span><span class="chap-meta-val">Lecture d'équipe · Flexibilité · Rôle adaptatif</span></div>
+<div class="chap-meta-item"><span class="chap-meta-label">Niveau</span><span class="chap-meta-val">Tous niveaux</span></div>
+</div></section>
+<div class="content">
+<div class="section-tag">Introduction</div>
+<h2>Tes teammates ne sont pas un obstacle — ils sont une variable</h2>
+<p>La plainte la plus fréquente en solo queue : "mes teammates sont mauvais". C'est une erreur de cadrage. En solo queue, tes teammates sont une <strong>variable aléatoire</strong> — pas différent de la météo ou du spawn des ennemis. Tu ne contrôles pas la variable, mais tu contrôles ta <strong>réaction à la variable</strong>.</p>
+<p>Les joueurs qui montent régulièrement en solo queue ne sont pas ceux qui ont les meilleurs teammates — ce sont ceux qui <strong>s'adaptent le plus vite</strong> à n'importe quel contexte d'équipe. Cette adaptation se fait en 30 secondes : la phase de préparation te donne toute l'information nécessaire.</p>
+
+<div class="stat-row">
+<div class="stat-box"><div class="stat-num">30<span>s</span></div><div class="stat-label">Pour lire ton équipe</div></div>
+<div class="stat-box"><div class="stat-num">5<span>signaux</span></div><div class="stat-label">Comportementaux à lire</div></div>
+<div class="stat-box"><div class="stat-num">50<span>%</span></div><div class="stat-label">Win rate = tu montes</div></div>
+<div class="stat-box"><div class="stat-num">∞</div><div class="stat-label">Tu contrôles ton jeu, pas le leur</div></div>
+</div>
+
+<hr class="separator">
+<div class="section-tag">Section 1</div>
+<h2>Lire ton équipe en 30 secondes</h2>
+<p>Pendant la phase de pick et les premières secondes de la prep phase, 5 signaux te disent tout ce que tu as besoin de savoir :</p>
+<div class="insight-grid">
+<div class="insight-card">
+<h4>1. Les picks opérateurs</h4>
+<p>4 fraggers et 0 hard breach ? Tu sais que tu devras ouvrir le mur toi-même. 2 hard breach et un Thatcher ? L'utilité est couverte, tu peux jouer égoïste. Le pick phase est un plan de jeu implicite — lis-le.</p>
+</div>
+<div class="insight-card">
+<h4>2. La direction des drones</h4>
+<p>En prep phase, observe où partent les drones de tes teammates. Ça te dit où ils comptent attaquer. Si 3 drones vont au même endroit, cette zone sera leur point d'entrée. Ne duplique pas — couvre l'autre côté.</p>
+</div>
+<div class="insight-card">
+<h4>3. La vitesse de pick</h4>
+<p>Un joueur qui pick instantanément un opérateur spécifique a un plan. Un joueur qui attend 10s et prend le dernier opérateur disponible improvise. Adapte tes attentes en conséquence.</p>
+</div>
+<div class="insight-card">
+<h4>4. La communication</h4>
+<p>Si des teammates parlent au micro dans les premières secondes, ils sont engagés. Si c'est silence radio, assume que tu ne recevras aucun callout et joue en conséquence — drone tout toi-même, ne compte sur aucune couverture.</p>
+</div>
+</div>
+
+<hr class="separator">
+<div class="section-tag">Section 2</div>
+<h2>Les 3 modes d'adaptation</h2>
+<div class="insight-grid">
+<div class="insight-card">
+<h4>Mode Complémentaire</h4>
+<p>Ton équipe a un plan visible (même non communiqué). Tu t'insères dans les trous : si personne ne couvre le flanc, tu le fais. Si personne ne drone, tu drônes. Tu maximises la valeur de l'équipe en comblant les manques. C'est le mode par défaut.</p>
+</div>
+<div class="insight-card">
+<h4>Mode Autonome</h4>
+<p>Ton équipe n'a aucun plan visible — c'est le chaos. Tu joues ta propre game, indépendamment. Tu choisis un objectif personnel (ouvrir le mur, prendre le contrôle d'une zone, obtenir un entry kill) et tu l'exécutes sans attendre de support. Les opérateurs auto-suffisants brillent ici.</p>
+</div>
+</div>
+<div class="insight-grid" style="margin-top:2px;">
+<div class="insight-card">
+<h4>Mode Carry</h4>
+<p>Tu es le meilleur joueur de ton équipe (ça arrive dans ~20% des games statistiquement). Joue entry fragger ou lurker — maximise ton impact individuel. Le carry n'est pas égoïste : en solo queue, si tu es la meilleure chance de gagner le round, te sacrifier pour un teammate moins fiable est une mauvaise allocation de ressources.</p>
+</div>
+<div class="insight-card">
+<h4>La règle du 50%+1</h4>
+<p>Tu n'as pas besoin de gagner chaque round ni chaque game. En ranked, un win rate de 51% te fait monter à long terme. L'objectif n'est pas de sauver chaque game — c'est de maximiser ta contribution marginale dans chaque round. Si tu augmentes les chances de victoire de ton équipe de même 5%, tu monteras.</p>
+</div>
+</div>
+
+<p><strong>Sources :</strong> EGamingHQ (2026). R6 Siege Ranks — analyse solo queue et variance. — Quora/Reddit community wisdom — stratégies d'adaptation compilées et vérifiées. — Game theory — Nash equilibrium appliqué au jeu d'équipe asymétrique.</p>
+</div>
+<div class="chap-nav">
+<a href="8-3-style-de-jeu.html" class="chap-nav-cta">← Chapitre précédent</a>
+<a href="8-5-impact-individuel.html" class="chap-nav-cta">Chapitre suivant →</a>
+</div>
+<footer><span class="footer-logo">NEI<span>I</span>STRA</span><span class="footer-text">R6 Process — Partie VIII · Chapitre 8.4</span></footer>
+</body></html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>8.1 Plans de Jeu — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--black:#0a0a0a;--white:#f5f2ed;--red:#c8302a;--red-dim:#8a1f1a;--gray:#1c1c1c;--gray-mid:#2e2e2e;--gray-light:#555;--gray-text:#999;--border:rgba(255,255,255,0.08);--cyan:#4ecdc4}html{scroll-behavior:smooth}body{background:var(--black);color:var(--white);font-family:'Barlow',sans-serif;font-weight:300;line-height:1.7;overflow-x:hidden}nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:64px;border-bottom:1px solid var(--border);background:rgba(10,10,10,0.88);backdrop-filter:blur(12px)}.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--white);text-decoration:none}.nav-logo span{color:var(--red)}.nav-back{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);text-decoration:none;transition:color .2s}.nav-back:hover{color:var(--white)}.chap-hero{padding:120px 48px 64px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}.chap-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 60% at 70% 30%,rgba(200,48,42,0.1) 0%,transparent 70%)}.chap-hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:60px 60px;mask-image:linear-gradient(180deg,transparent 0%,black 30%,black 70%,transparent 100%)}.chap-eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:16px;display:flex;align-items:center;gap:12px;position:relative}.chap-eyebrow::before{content:'';display:block;width:28px;height:1px;background:var(--red)}.chap-num{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,10vw,120px);line-height:.85;letter-spacing:2px;color:rgba(255,255,255,0.04);position:absolute;right:48px;top:80px;pointer-events:none}.chap-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,6vw,72px);letter-spacing:2px;line-height:.95;margin-bottom:12px;position:relative}.chap-subtitle{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:300;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text);margin-bottom:32px;position:relative}.chap-meta{display:flex;gap:32px;position:relative;flex-wrap:wrap}.chap-meta-item{display:flex;flex-direction:column;gap:2px}.chap-meta-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text)}.chap-meta-val{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:500;letter-spacing:1px;color:var(--white)}.content{max-width:860px;margin:0 auto;padding:64px 48px}.section-tag{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:24px;display:flex;align-items:center;gap:10px}.section-tag::before{content:'';display:block;width:20px;height:1px;background:var(--red)}.content h2{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;margin-bottom:20px;line-height:1.1}.content p{font-size:15px;color:var(--gray-text);line-height:1.9;margin-bottom:20px}.content strong{color:var(--white);font-weight:500}.separator{border:none;border-top:1px solid var(--border);margin:56px 0}.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin:32px 0}.stat-box{background:var(--gray);padding:20px}.stat-num{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;line-height:1}.stat-num span{color:var(--red)}.stat-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);margin-top:4px}.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin:32px 0}.insight-card{background:var(--gray);padding:24px;border-left:3px solid var(--red-dim)}.insight-card h4{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;margin-bottom:8px}.insight-card p{font-size:13px;color:var(--gray-text);line-height:1.6;margin:0}.diagram-container{background:var(--gray);border:1px solid var(--border);padding:32px;margin:32px 0;position:relative;overflow:hidden}.diagram-title{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text);margin-bottom:20px}.diagram-svg{width:100%;height:auto;display:block}.chap-nav{border-top:1px solid var(--border);padding:48px;display:flex;justify-content:space-between;align-items:center}.chap-nav-cta{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--white);text-decoration:none;padding:14px 28px;border:1px solid rgba(255,255,255,0.2);transition:all .25s;display:inline-block}.chap-nav-cta:hover{background:var(--red);border-color:var(--red)}.chap-nav-cta.disabled{color:var(--gray-light);border-color:var(--border);cursor:default;pointer-events:none}footer{border-top:1px solid var(--border);padding:24px 48px;display:flex;justify-content:space-between;align-items:center}.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;color:var(--gray-text)}.footer-logo span{color:var(--red)}.footer-text{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;color:var(--gray-light);text-transform:uppercase}@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.chap-eyebrow{animation:fadeUp .6s ease both}.chap-title{animation:fadeUp .6s .1s ease both}@media(max-width:768px){nav{padding:0 24px}.chap-hero{padding:100px 24px 48px}.content{padding:48px 24px}.stat-row,.insight-grid{grid-template-columns:1fr}.chap-nav{flex-direction:column;gap:16px;padding:32px 24px}footer{padding:20px 24px;flex-direction:column;gap:8px;text-align:center}}</style>
+</head>
+<body>
+<nav><a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a><a href="index.html" class="nav-back">← Retour aux chapitres</a></nav>
+<section class="chap-hero">
+<div class="chap-hero-grid"></div><div class="chap-num">8.1</div>
+<div class="chap-eyebrow">Partie VIII — Solo Queue &amp; impact individuel</div>
+<h1 class="chap-title">Plans de Jeu</h1>
+<p class="chap-subtitle">Attaque structurée en solo</p>
+<div class="chap-meta">
+<div class="chap-meta-item"><span class="chap-meta-label">Discipline</span><span class="chap-meta-val">Théorie des jeux &middot; Décision conditionnelle</span></div>
+<div class="chap-meta-item"><span class="chap-meta-label">Mécanique</span><span class="chap-meta-val">Pick phase &middot; Adaptabilité &middot; Rôle solo</span></div>
+<div class="chap-meta-item"><span class="chap-meta-label">Niveau</span><span class="chap-meta-val">Intermédiaire</span></div>
+</div>
+</section>
+
+<div class="content">
+<div class="section-tag">Introduction</div>
+<h2>Un plan solo n'est pas une strat allégée</h2>
+<p>En stack organisé, un plan d'attaque repose sur 5 rôles coordonnés, un timing partagé, et des callouts en temps réel. En solo queue, rien de tout cela n'existe. Tes teammates sont imprévisibles, la communication est partielle, et aucune strat YouTube ne survivra au contact avec 4 randoms.</p>
+<p>Un <strong>plan de jeu solo</strong> n'est pas une version simplifiée d'une strat d'équipe — c'est un <strong>arbre de décisions conditionnelles</strong>. "Si quelqu'un prend hard breach, je joue support. Si personne ne prend hard breach, je le prends moi-même. Si le mur principal est ouvert, je push par X. Sinon, je rotate vers Y." C'est une logique if/else adaptative, pas un script linéaire.</p>
+
+<div class="stat-row">
+<div class="stat-box"><div class="stat-num">3<span>rôles</span></div><div class="stat-label">Que tu peux remplir seul</div></div>
+<div class="stat-box"><div class="stat-num">If<span>/</span>Else</div><div class="stat-label">Structure d'un plan solo</div></div>
+<div class="stat-box"><div class="stat-num">30<span>s</span></div><div class="stat-label">Phase de préparation = lecture</div></div>
+<div class="stat-box"><div class="stat-num">2<span>-3</span></div><div class="stat-label">Opérateurs maîtrisés par côté</div></div>
+</div>
+
+<hr class="separator">
+
+<div class="section-tag">Section 1</div>
+<h2>Les 3 rôles que tu peux remplir seul</h2>
+<p>En solo queue, certains rôles dépendent de la coopération (le plant coordonné, le drone d'entry pour un autre joueur) et d'autres sont <strong>auto-suffisants</strong>. Les données de Year 11 Season 1 (mars 2026) confirment que les opérateurs qui performent le mieux en solo queue sont ceux qui créent leur propre valeur :</p>
+
+<div class="insight-grid">
+<div class="insight-card">
+<h4>1. L'entry auto-suffisant</h4>
+<p>Ash, Iana, Zofia : flash + fragging power + soft destruction. Tu n'as besoin de personne pour ouvrir un angle, flasher, et entrer. Iana est particulièrement forte en solo — son hologramme remplace le drone d'un teammate absent. L'entry solo ne dépend que de sa propre information.</p>
+</div>
+<div class="insight-card">
+<h4>2. Le hard breach indépendant</h4>
+<p>Maverick est le roi du solo queue depuis sa sortie : son chalumeau ne peut pas être countered par Bandit, Kaid ou Mute. Ace fonctionne aussi car ses SELMA sont semi-autonomes. Thermite, en revanche, dépend d'un Thatcher ou Kali pour être efficace — mauvais choix en solo si Thatcher est ban.</p>
+</div>
+<div class="insight-card">
+<h4>3. Le flex support</h4>
+<p>Sledge, Zero, Flores : ils apportent de l'utilité (destruction soft, intel, denial d'utilité) tout en restant létaux en duel. Le flex support est le rôle le plus polyvalent en solo queue — tu t'adaptes à ce que l'équipe manque sans sacrifier ta capacité à avoir un impact individuel.</p>
+</div>
+<div class="insight-card">
+<h4>En défense : l'ancre autonome</h4>
+<p>Smoke, Lesion, Thorn : ils ralentissent le push de manière passive (mines, barbelés toxiques) sans communication nécessaire. Les pièges de Lesion sont des "callouts silencieux" — quand un ennemi marche dedans, toute l'équipe le voit sur l'interface, même sans micro.</p>
+</div>
+</div>
+
+<hr class="separator">
+
+<div class="section-tag">Section 2</div>
+<h2>L'arbre de décision en attaque</h2>
+<div class="diagram-container">
+<div class="diagram-title">Arbre de décision — Attaque solo queue (exemple site Bombe)</div>
+<svg class="diagram-svg" viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg">
+<rect x="280" y="10" width="200" height="40" rx="3" fill="none" stroke="rgba(200,48,42,0.5)" stroke-width="1"/>
+<text x="380" y="35" text-anchor="middle" fill="#c8302a" font-size="12" font-weight="600" font-family="Barlow Condensed">PHASE DE PICK (10s)</text>
+<line x1="380" y1="50" x2="380" y2="70" stroke="#555" stroke-width="1"/>
+<text x="380" y="85" text-anchor="middle" fill="#999" font-size="11" font-family="Barlow Condensed">Quelqu'un a pris hard breach ?</text>
+<line x1="280" y1="90" x2="200" y2="110" stroke="#555" stroke-width="1"/>
+<line x1="480" y1="90" x2="560" y2="110" stroke="#555" stroke-width="1"/>
+<text x="220" y="105" fill="#4ecdc4" font-size="10" font-family="Barlow Condensed">OUI</text>
+<text x="520" y="105" fill="#c8302a" font-size="10" font-family="Barlow Condensed">NON</text>
+<rect x="80" y="112" width="200" height="35" rx="3" fill="#1c1c1c" stroke="rgba(78,205,196,0.3)" stroke-width="1"/>
+<text x="180" y="134" text-anchor="middle" fill="#f5f2ed" font-size="11" font-family="Barlow Condensed">→ Prends entry ou flex support</text>
+<rect x="480" y="112" width="200" height="35" rx="3" fill="#1c1c1c" stroke="rgba(200,48,42,0.3)" stroke-width="1"/>
+<text x="580" y="134" text-anchor="middle" fill="#f5f2ed" font-size="11" font-family="Barlow Condensed">→ Prends Maverick ou Ace</text>
+<line x1="380" y1="155" x2="380" y2="175" stroke="#555" stroke-width="1"/>
+<text x="380" y="190" text-anchor="middle" fill="#999" font-size="11" font-family="Barlow Condensed">Prep phase : où vont les teammates ?</text>
+<line x1="280" y1="195" x2="180" y2="215" stroke="#555" stroke-width="1"/>
+<line x1="480" y1="195" x2="580" y2="215" stroke="#555" stroke-width="1"/>
+<text x="200" y="210" fill="#4ecdc4" font-size="10" font-family="Barlow Condensed">Groupés</text>
+<text x="540" y="210" fill="#c8302a" font-size="10" font-family="Barlow Condensed">Dispersés</text>
+<rect x="60" y="218" width="220" height="35" rx="3" fill="#1c1c1c" stroke="rgba(78,205,196,0.2)" stroke-width="1"/>
+<text x="170" y="240" text-anchor="middle" fill="#999" font-size="11" font-family="Barlow Condensed">→ Joue le flanc opposé (lurk)</text>
+<rect x="480" y="218" width="220" height="35" rx="3" fill="#1c1c1c" stroke="rgba(200,48,42,0.2)" stroke-width="1"/>
+<text x="590" y="240" text-anchor="middle" fill="#999" font-size="11" font-family="Barlow Condensed">→ Joue l'objectif principal seul</text>
+<rect x="180" y="265" width="400" height="30" rx="3" fill="rgba(200,48,42,0.06)" stroke="rgba(200,48,42,0.2)" stroke-width="1"/>
+<text x="380" y="285" text-anchor="middle" fill="#f5f2ed" font-size="11" font-family="Barlow Condensed">RÈGLE D'OR : Ne duplique jamais ce que tes teammates font déjà</text>
+</svg>
+</div>
+
+<p>La règle centrale du plan solo est la <strong>complémentarité réactive</strong>. Tu ne peux pas contrôler ce que font tes teammates, mais tu peux toujours choisir de faire ce qu'ils ne font pas. Si 3 joueurs rushen le même côté, ta valeur maximale est sur le flanc opposé. Si personne ne prend d'utilité, tu la prends. L'adaptabilité est la compétence fondamentale du solo queue.</p>
+
+<p><strong>Sources :</strong> Athena (2026). Solo Queue Operator Tier List Y11S1 — classement des opérateurs auto-suffisants. — R6Tracker / EsportTales (2026). Rank distribution data — corrélation entre adaptabilité et progression. — GamSgo (2026). Y11S1 Operator Tier List — données win rate par opérateur en solo vs stack.</p>
+</div>
+<div class="chap-nav">
+<a href="../partie-7/7-6-speed-accuracy.html" class="chap-nav-cta">← Partie VII</a>
+<a href="8-2-chemins-de-jeu.html" class="chap-nav-cta">Chapitre suivant →</a>
+</div>
+<footer><span class="footer-logo">NEI<span>I</span>STRA</span><span class="footer-text">R6 Process — Partie VIII · Chapitre 8.1</span></footer>
+</body></html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>8.3 Style de Jeu — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--black:#0a0a0a;--white:#f5f2ed;--red:#c8302a;--red-dim:#8a1f1a;--gray:#1c1c1c;--gray-mid:#2e2e2e;--gray-light:#555;--gray-text:#999;--border:rgba(255,255,255,0.08);--cyan:#4ecdc4}html{scroll-behavior:smooth}body{background:var(--black);color:var(--white);font-family:'Barlow',sans-serif;font-weight:300;line-height:1.7;overflow-x:hidden}nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:64px;border-bottom:1px solid var(--border);background:rgba(10,10,10,0.88);backdrop-filter:blur(12px)}.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--white);text-decoration:none}.nav-logo span{color:var(--red)}.nav-back{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);text-decoration:none;transition:color .2s}.nav-back:hover{color:var(--white)}.chap-hero{padding:120px 48px 64px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}.chap-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 60% at 70% 30%,rgba(200,48,42,0.1) 0%,transparent 70%)}.chap-hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:60px 60px;mask-image:linear-gradient(180deg,transparent 0%,black 30%,black 70%,transparent 100%)}.chap-eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:16px;display:flex;align-items:center;gap:12px;position:relative}.chap-eyebrow::before{content:'';display:block;width:28px;height:1px;background:var(--red)}.chap-num{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,10vw,120px);line-height:.85;letter-spacing:2px;color:rgba(255,255,255,0.04);position:absolute;right:48px;top:80px;pointer-events:none}.chap-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,6vw,72px);letter-spacing:2px;line-height:.95;margin-bottom:12px;position:relative}.chap-subtitle{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:300;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text);margin-bottom:32px;position:relative}.chap-meta{display:flex;gap:32px;position:relative;flex-wrap:wrap}.chap-meta-item{display:flex;flex-direction:column;gap:2px}.chap-meta-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text)}.chap-meta-val{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:500;letter-spacing:1px;color:var(--white)}.content{max-width:860px;margin:0 auto;padding:64px 48px}.section-tag{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:24px;display:flex;align-items:center;gap:10px}.section-tag::before{content:'';display:block;width:20px;height:1px;background:var(--red)}.content h2{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;margin-bottom:20px;line-height:1.1}.content p{font-size:15px;color:var(--gray-text);line-height:1.9;margin-bottom:20px}.content strong{color:var(--white);font-weight:500}.separator{border:none;border-top:1px solid var(--border);margin:56px 0}.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin:32px 0}.stat-box{background:var(--gray);padding:20px}.stat-num{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;line-height:1}.stat-num span{color:var(--red)}.stat-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);margin-top:4px}.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin:32px 0}.insight-card{background:var(--gray);padding:24px;border-left:3px solid var(--red-dim)}.insight-card h4{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;margin-bottom:8px}.insight-card p{font-size:13px;color:var(--gray-text);line-height:1.6;margin:0}.diagram-container{background:var(--gray);border:1px solid var(--border);padding:32px;margin:32px 0;position:relative;overflow:hidden}.diagram-title{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text);margin-bottom:20px}.diagram-svg{width:100%;height:auto;display:block}.chap-nav{border-top:1px solid var(--border);padding:48px;display:flex;justify-content:space-between;align-items:center}.chap-nav-cta{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--white);text-decoration:none;padding:14px 28px;border:1px solid rgba(255,255,255,0.2);transition:all .25s;display:inline-block}.chap-nav-cta:hover{background:var(--red);border-color:var(--red)}.chap-nav-cta.disabled{color:var(--gray-light);border-color:var(--border);cursor:default;pointer-events:none}footer{border-top:1px solid var(--border);padding:24px 48px;display:flex;justify-content:space-between;align-items:center}.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;color:var(--gray-text)}.footer-logo span{color:var(--red)}.footer-text{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;color:var(--gray-light);text-transform:uppercase}@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.chap-eyebrow{animation:fadeUp .6s ease both}.chap-title{animation:fadeUp .6s .1s ease both}@media(max-width:768px){nav{padding:0 24px}.chap-hero{padding:100px 24px 48px}.content{padding:48px 24px}.stat-row,.insight-grid{grid-template-columns:1fr}.chap-nav{flex-direction:column;gap:16px;padding:32px 24px}footer{padding:20px 24px;flex-direction:column;gap:8px;text-align:center}}</style></head><body>
+<nav><a href="../index.html" class="nav-logo">NEI<span>I</span>STRA</a><a href="index.html" class="nav-back">← Retour aux chapitres</a></nav>
+<section class="chap-hero"><div class="chap-hero-grid"></div><div class="chap-num">8.3</div>
+<div class="chap-eyebrow">Partie VIII — Solo Queue &amp; impact individuel</div>
+<h1 class="chap-title">Style de Jeu</h1><p class="chap-subtitle">Identifier &amp; exploiter le tien</p>
+<div class="chap-meta">
+<div class="chap-meta-item"><span class="chap-meta-label">Discipline</span><span class="chap-meta-val">Psychologie du joueur · Statistiques</span></div>
+<div class="chap-meta-item"><span class="chap-meta-label">Mécanique</span><span class="chap-meta-val">Archétype · Sélection d'opérateur · Consistance</span></div>
+<div class="chap-meta-item"><span class="chap-meta-label">Niveau</span><span class="chap-meta-val">Tous niveaux</span></div>
+</div></section>
+<div class="content">
+<div class="section-tag">Introduction</div>
+<h2>Tu as déjà un style — le comprendre change tout</h2>
+<p>Chaque joueur développe naturellement un <strong>style de jeu dominant</strong> : la manière dont il aborde les rounds, les duels, et les situations de pression. Ce style émerge de la combinaison entre tempérament, mécanique, et expérience — il est rarement conscient. Le problème : la plupart des joueurs essaient d'imiter un style qui n'est pas le leur (souvent celui d'un streamer), ce qui <strong>détruit leur régularité</strong>.</p>
+<p>En solo queue, jouer dans son style naturel est encore plus important qu'en stack. Sans communication pour compenser, tes décisions doivent être <strong>instinctives et fiables</strong>. Forcer un style contre-nature crée de l'hésitation — et l'hésitation tue dans Siege.</p>
+
+<div class="stat-row">
+<div class="stat-box"><div class="stat-num">4<span>types</span></div><div class="stat-label">Archétypes de joueur</div></div>
+<div class="stat-box"><div class="stat-num">K/D</div><div class="stat-label">≠ seul indicateur</div></div>
+<div class="stat-box"><div class="stat-num">200<span>+</span></div><div class="stat-label">Parties pour identifier ton style</div></div>
+<div class="stat-box"><div class="stat-num">2<span>-3</span></div><div class="stat-label">Opérateurs par archétype</div></div>
+</div>
+
+<hr class="separator">
+<div class="section-tag">Section 1</div>
+<h2>Les 4 archétypes en solo queue</h2>
+<div class="insight-grid">
+<div class="insight-card">
+<h4>Le Fragger</h4>
+<p>Stats dominantes : K/D élevé, entry kills fréquents, KOST moyen. Il cherche le duel, joue agressif, et compte sur sa mécanique pour créer des ouvertures. En solo queue, c'est le style le plus immédiatement impactant — mais aussi le plus volatile. Opérateurs : Ash, Jäger, Vigil, Iana.</p>
+</div>
+<div class="insight-card">
+<h4>Le Support passif</h4>
+<p>Stats dominantes : assists élevés, survie élevée, KOST très élevé. Il crée de la valeur par l'utilité — ouverture de murs, destruction de gadgets, pose de défenses. Moins spectaculaire mais plus consistant. En solo queue, ce style dépend partiellement de teammates qui exploitent ta préparation. Opérateurs : Thermite, Smoke, Mute.</p>
+</div>
+<div class="insight-card">
+<h4>Le Lurker</h4>
+<p>Stats dominantes : clutch rounds élevés, kills tardifs dans le round, bon ratio survie. Il attend que la situation se clarifie puis frappe. En solo queue, c'est un style puissant car il ne dépend de personne — mais il peut frustrer les teammates qui meurent en 4v5 pendant que tu lurkes. Opérateurs : Zero, Nøkk, Caveira, Oryx.</p>
+</div>
+<div class="insight-card">
+<h4>Le Flex</h4>
+<p>Stats dominantes : metrics stables, peu d'extrêmes, adaptabilité round-to-round. Il change de rôle selon ce qui manque. C'est l'archétype optimal en solo queue car il maximise la complémentarité — mais il demande la maîtrise de plus d'opérateurs. Opérateurs : Sledge, Zofia, Lesion, Smoke.</p>
+</div>
+</div>
+
+<hr class="separator">
+<div class="section-tag">Section 2</div>
+<h2>Identifier ton style par les stats</h2>
+<p>R6Tracker et d'autres outils fournissent des métriques qui révèlent ton style naturel. Voici les indicateurs clés :</p>
+<p><strong>KOST (Kill, Objective, Survive, Trade)</strong> : le pourcentage de rounds où tu as contribué positivement. Un KOST > 70% indique un joueur fiable. Les fraggers ont souvent un KOST inférieur aux supports car ils prennent plus de risques et meurent plus souvent sans trade.</p>
+<p><strong>Entry kill ratio</strong> : si tu obtiens le premier kill du round > 20% du temps, tu es naturellement un fragger. Si c'est < 10%, tu es un support ou un lurker.</p>
+<p><strong>Survie rate</strong> : les lurkers et supports survivent au-delà de la première minute dans > 80% des rounds. Les fraggers sont souvent en dessous de 60%.</p>
+<p>L'important n'est pas de changer ces stats mais de les <strong>comprendre et optimiser dans leur direction naturelle</strong>. Un lurker qui essaie de devenir entry fragger va perdre sa consistance sans gagner en impact. Un fragger qui joue passif perd sa valeur d'ouverture.</p>
+
+<p><strong>Sources :</strong> SiegeGG (2026). Best operators for solo queue — analyse par rôle. — GamSgo (2026). Y11S1 Tier list — style tags par opérateur. — R6Tracker — métriques KOST et entry ratio par rang.</p>
+</div>
+<div class="chap-nav">
+<a href="8-2-chemins-de-jeu.html" class="chap-nav-cta">← Chapitre précédent</a>
+<a href="8-4-adaptation-random.html" class="chap-nav-cta">Chapitre suivant →</a>
+</div>
+<footer><span class="footer-logo">NEI<span>I</span>STRA</span><span class="footer-text">R6 Process — Partie VIII · Chapitre 8.3</span></footer>
+</body></html>
