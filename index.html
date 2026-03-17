@@ -340,6 +340,51 @@
   .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 3px; color: var(--gray-text); }
   .footer-logo span { color: var(--red); }
   .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+  /* Bonus section */
+  .bonus-divider {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 40px 0 24px;
+  }
+  .bonus-divider::before,
+  .bonus-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--red-dim), transparent);
+  }
+  .bonus-badge {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 6px;
+    color: var(--red);
+    padding: 8px 24px;
+    border: 1px solid rgba(200,48,42,0.3);
+    background: rgba(200,48,42,0.06);
+    white-space: nowrap;
+  }
+  .part-card.bonus-card {
+    border: 1px solid rgba(200,48,42,0.12);
+    background: linear-gradient(135deg, var(--gray) 0%, rgba(200,48,42,0.04) 100%);
+  }
+  .part-card.bonus-card:hover {
+    background: linear-gradient(135deg, var(--gray-mid) 0%, rgba(200,48,42,0.08) 100%);
+  }
+  .bonus-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--red);
+    background: rgba(200,48,42,0.12);
+    border: 1px solid rgba(200,48,42,0.25);
+    padding: 2px 8px;
+    border-radius: 2px;
+    margin-left: 10px;
+    vertical-align: middle;
+  }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
   .hero-tag  { animation: fadeUp 0.7s ease both; }
   .hero-title { animation: fadeUp 0.7s 0.1s ease both; }
@@ -365,6 +410,7 @@
   <ul class="nav-links">
     <li><a href="#parties">Chapitres</a></li>
     <li><a href="sensibilite.html">Sensibilité</a></li>
+    <li><a href="#bonus">Bonus</a></li>
     <li><a href="#featured">Commencer</a></li>
     <li><a href="https://github.com/EtienneLeBail/neiistra.github.io" target="_blank">GitHub</a></li>
   </ul>
@@ -379,11 +425,11 @@
   <div class="hero-meta">
     <div class="meta-item">
       <span class="meta-label">Parties</span>
-      <span class="meta-value"><span>6</span></span>
+      <span class="meta-value"><span>8</span></span>
     </div>
     <div class="meta-item">
       <span class="meta-label">Chapitres</span>
-      <span class="meta-value"><span>36</span></span>
+      <span class="meta-value"><span>48</span></span>
     </div>
     <div class="meta-item">
       <span class="meta-label">Discipline</span>
@@ -403,8 +449,8 @@
 
 <section class="parts-section" id="parties">
   <div class="section-header">
-    <h2 class="section-title">Les 6 parties</h2>
-    <span class="section-count">36 chapitres au total</span>
+    <h2 class="section-title">Les 8 parties</h2>
+    <span class="section-count">48 chapitres au total</span>
   </div>
   <div class="parts-grid">
 
@@ -496,6 +542,40 @@
         <div class="chapter-item"><span class="chapter-num">6.6</span>Métriques &amp; tracking<span class="chapter-status status-live">Disponible</span></div>
       </div>
       <span class="part-bg-num">VI</span>
+    </a>
+
+    <div class="bonus-divider" id="bonus">
+      <span class="bonus-badge">BONUS</span>
+    </div>
+
+    <a href="partie-7/index.html" class="part-card bonus-card">
+      <span class="part-number">Partie VII <span class="bonus-tag">Bonus</span></span>
+      <h3 class="part-title-card">Motricité &amp;<br>jeux interactifs</h3>
+      <p class="part-subtitle">Entraîner la main par la science du mouvement</p>
+      <div class="part-chapters">
+        <div class="chapter-item"><span class="chapter-num">7.1</span>Flicking — précision balistique du pointeur<span class="chapter-status status-wip">Bientôt</span></div>
+        <div class="chapter-item"><span class="chapter-num">7.2</span>Tracking — suivi de cible fluide<span class="chapter-status status-wip">Bientôt</span></div>
+        <div class="chapter-item"><span class="chapter-num">7.3</span>Target switching — transitions multi-cibles<span class="chapter-status status-wip">Bientôt</span></div>
+        <div class="chapter-item"><span class="chapter-num">7.4</span>Micro-ajustements — corrections fines<span class="chapter-status status-wip">Bientôt</span></div>
+        <div class="chapter-item"><span class="chapter-num">7.5</span>Coordination main-œil — réflexes composites<span class="chapter-status status-wip">Bientôt</span></div>
+        <div class="chapter-item"><span class="chapter-num">7.6</span>Speed vs accuracy — le trade-off fondamental<span class="chapter-status status-wip">Bientôt</span></div>
+      </div>
+      <span class="part-bg-num">VII</span>
+    </a>
+
+    <a href="partie-8/index.html" class="part-card bonus-card">
+      <span class="part-number">Partie VIII <span class="bonus-tag">Bonus</span></span>
+      <h3 class="part-title-card">Solo Queue<br>&amp; impact individuel</h3>
+      <p class="part-subtitle">Gagner en ranked sans équipe — plans, chemins, mindset</p>
+      <div class="part-chapters">
+        <div class="chapter-item"><span class="chapter-num">8.1</span>Plans de jeu — attaque structurée en solo<span class="chapter-status status-wip">Bientôt</span></div>
+        <div class="chapter-item"><span class="chapter-num">8.2</span>Chemins de jeu — rotations &amp; timing<span class="chapter-status status-wip">Bientôt</span></div>
+        <div class="chapter-item"><span class="chapter-num">8.3</span>Style de jeu — identifier &amp; exploiter le tien<span class="chapter-status status-wip">Bientôt</span></div>
+        <div class="chapter-item"><span class="chapter-num">8.4</span>Adaptation au random — jouer avec l'inconnu<span class="chapter-status status-wip">Bientôt</span></div>
+        <div class="chapter-item"><span class="chapter-num">8.5</span>Impact individuel — peser sur le round<span class="chapter-status status-wip">Bientôt</span></div>
+        <div class="chapter-item"><span class="chapter-num">8.6</span>Mindset solo Q — discipline &amp; régularité<span class="chapter-status status-wip">Bientôt</span></div>
+      </div>
+      <span class="part-bg-num">VIII</span>
     </a>
 
   </div>
