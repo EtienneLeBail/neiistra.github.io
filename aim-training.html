@@ -12,66 +12,62 @@
 html{scroll-behavior:smooth}body{background:var(--black);color:var(--white);font-family:'Barlow',sans-serif;font-weight:300;line-height:1.6;overflow-x:hidden}
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:64px;border-bottom:1px solid var(--border);background:rgba(10,10,10,0.88);backdrop-filter:blur(12px)}
 .nav-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--white);text-decoration:none}.nav-logo span{color:var(--red)}
-.nav-back{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);text-decoration:none;transition:color .2s}.nav-back:hover{color:var(--white)}
+.nav-links{display:flex;gap:24px;list-style:none}.nav-links a{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);text-decoration:none;transition:color .2s}.nav-links a:hover{color:var(--white)}.nav-links a.active{color:var(--red)}
 
-.hero{padding:120px 48px 64px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.hero{padding:120px 48px 48px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 70% 40%,rgba(200,48,42,0.1) 0%,transparent 70%)}
 .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:60px 60px;mask-image:linear-gradient(180deg,transparent 0%,black 30%,black 70%,transparent 100%)}
-.hero-tag{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:16px;display:flex;align-items:center;gap:12px;position:relative}
-.hero-tag::before{content:'';display:block;width:28px;height:1px;background:var(--red)}
-.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,8vw,96px);letter-spacing:2px;line-height:.95;margin-bottom:12px;position:relative}
-.hero-sub{font-family:'Barlow Condensed',sans-serif;font-size:16px;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text);position:relative;margin-bottom:20px}
-.hero-desc{font-size:15px;color:var(--gray-text);line-height:1.8;max-width:640px;position:relative}
+.hero-tag{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:16px;display:flex;align-items:center;gap:12px;position:relative}.hero-tag::before{content:'';display:block;width:28px;height:1px;background:var(--red)}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,8vw,80px);letter-spacing:2px;line-height:.95;margin-bottom:12px;position:relative}
+.hero-sub{font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:2px;color:var(--gray-text);position:relative;max-width:600px;line-height:1.6}
 
-.content{max-width:1100px;margin:0 auto;padding:48px}
+.content{max-width:1100px;margin:0 auto;padding:32px 48px 48px}
 
-/* Game selector tabs */
-.game-tabs{display:flex;gap:2px;margin-bottom:0;flex-wrap:wrap}
-.game-tab{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;padding:14px 24px;background:var(--gray);color:var(--gray-text);border:none;cursor:pointer;transition:all .2s;flex:1;min-width:120px;text-align:center}
-.game-tab:hover{color:var(--white);background:var(--gray-mid)}
-.game-tab.active{color:var(--white);background:var(--red)}
+/* CONFIG BAR */
+.config-bar{background:var(--gray);border:1px solid var(--border);border-radius:6px;padding:20px 24px;margin-bottom:24px;display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap}
+.config-field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:140px}
+.config-field label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text)}
+.config-field input{padding:10px 12px;background:var(--black);border:1px solid var(--border);color:var(--white);font-family:'Barlow Condensed',sans-serif;font-size:15px;border-radius:3px;-moz-appearance:textfield;width:100%}
+.config-field input::-webkit-inner-spin-button{-webkit-appearance:none}
+.config-field input:focus{outline:none;border-color:rgba(200,48,42,0.5)}
+.config-info{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;color:var(--gray-text);display:flex;align-items:center;gap:8px;padding-bottom:4px}
+.config-info .val{color:var(--cyan);font-weight:500}
+.config-badge{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--green);background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.25);padding:3px 8px;border-radius:2px;white-space:nowrap}
 
-/* Game container */
+/* TABS */
+.game-tabs{display:flex;gap:2px;flex-wrap:wrap}
+.game-tab{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;padding:14px 24px;background:var(--gray);color:var(--gray-text);border:none;cursor:pointer;transition:all .2s;flex:1;min-width:100px;text-align:center}
+.game-tab:hover{color:var(--white);background:var(--gray-mid)}.game-tab.active{color:var(--white);background:var(--red)}
+
 .game-container{background:var(--gray);border:1px solid var(--border);border-top:none;margin-bottom:32px}
-.game-panel{display:none}
-.game-panel.active{display:block}
-.game-header{padding:24px 28px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-.game-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px}
-.game-desc{font-size:13px;color:var(--gray-text);max-width:500px;line-height:1.5}
+.game-panel{display:none}.game-panel.active{display:block}
+.game-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.game-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px}
+.game-desc{font-size:12px;color:var(--gray-text);max-width:500px;line-height:1.5}
 .game-controls{display:flex;gap:8px;align-items:center}
 .gbtn{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:500;letter-spacing:2px;text-transform:uppercase;padding:8px 18px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:var(--white);cursor:pointer;transition:all .2s}
 .gbtn:hover,.gbtn.active{background:var(--red);border-color:var(--red)}
 
-.game-area{position:relative;width:100%;height:450px;background:#0e0e0e;cursor:crosshair;user-select:none;overflow:hidden}
-.game-canvas{width:100%;height:450px;display:block;background:#0e0e0e}
-.game-stats{padding:16px 28px;border-top:1px solid var(--border);display:flex;gap:24px;flex-wrap:wrap;justify-content:center}
-.gstat{text-align:center;min-width:80px}
-.gstat-num{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;line-height:1}
+/* GAME CANVAS */
+.game-canvas{width:100%;height:480px;display:block;background:#0e0e0e;cursor:crosshair;position:relative}
+
+.game-stats{padding:14px 24px;border-top:1px solid var(--border);display:flex;gap:24px;flex-wrap:wrap;justify-content:center}
+.gstat{text-align:center;min-width:70px}
+.gstat-num{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;line-height:1}
 .gstat-num.good{color:var(--cyan)}.gstat-num.bad{color:var(--red)}
 .gstat-label{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);margin-top:2px}
 
-/* Results overlay */
-.game-overlay{position:absolute;inset:0;background:rgba(10,10,10,0.85);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:5;pointer-events:none}
-.game-overlay h3{font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:4px;margin-bottom:8px}
-.game-overlay p{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--gray-text);letter-spacing:2px}
-.grade-s{color:var(--cyan)}.grade-a{color:var(--green)}.grade-b{color:var(--white)}.grade-c{color:var(--gray-text)}.grade-d{color:var(--red)}
-
-/* Targets */
-.target{position:absolute;border-radius:50%;transition:none}
-.target-inner{width:100%;height:100%;border-radius:50%;background:var(--red);box-shadow:0 0 20px rgba(200,48,42,0.4);display:flex;align-items:center;justify-content:center}
-.target-dot{width:3px;height:3px;background:var(--white);border-radius:50%}
-@keyframes hitFade{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(2.5)}}
-@keyframes hitPop{0%{transform:scale(1)}50%{transform:scale(1.3)}100%{transform:scale(0);opacity:0}}
+/* Lock prompt overlay */
+.lock-prompt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(10,10,10,0.9);z-index:20;cursor:pointer}
+.lock-prompt h3{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:3px;margin-bottom:8px}
+.lock-prompt p{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--gray-text);letter-spacing:1px;text-align:center;line-height:1.5}
+.lock-prompt .hint{font-size:11px;color:var(--gray-light);margin-top:12px}
+.lock-prompt.hidden{display:none}
 
 /* React circle for Go/No-Go */
-.react-wrap{display:flex;align-items:center;justify-content:center;height:100%}
-.react-circle{width:220px;height:220px;border-radius:50%;background:var(--gray-mid);border:2px solid var(--gray-light);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,border-color .15s;user-select:none}
-.react-label{font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:2px;color:var(--gray-text);text-transform:uppercase;pointer-events:none;text-align:center;line-height:1.4}
-
-/* Switch target */
-.sw-target{position:absolute;width:42px;height:42px;border-radius:50%;cursor:crosshair;display:flex;align-items:center;justify-content:center;border:2px solid var(--gray-light);background:var(--gray-mid);transition:none}
-.sw-target .num{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--white);pointer-events:none}
-.sw-target.next{border-color:var(--white);background:var(--red);box-shadow:0 0 15px rgba(245,242,237,0.2)}
+.react-wrap{display:flex;align-items:center;justify-content:center;width:100%;height:100%}
+.react-circle{width:200px;height:200px;border-radius:50%;background:var(--gray-mid);border:2px solid var(--gray-light);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,border-color .15s;user-select:none}
+.react-label{font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:2px;color:var(--gray-text);text-transform:uppercase;pointer-events:none;text-align:center;line-height:1.4}
 
 footer{border-top:1px solid var(--border);padding:24px 48px;display:flex;justify-content:space-between;align-items:center}
 .footer-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;color:var(--gray-text)}.footer-logo span{color:var(--red)}
@@ -79,13 +75,13 @@ footer{border-top:1px solid var(--border);padding:24px 48px;display:flex;justify
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .hero-tag{animation:fadeUp .6s ease both}.hero-title{animation:fadeUp .6s .1s ease both}
+@keyframes hitPop{0%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.6}100%{transform:scale(0);opacity:0}}
 
 @media(max-width:768px){
-  nav{padding:0 24px}.hero{padding:100px 24px 48px}.content{padding:24px}
-  .game-tab{font-size:11px;padding:10px 12px;min-width:80px;letter-spacing:1px}
-  .game-area,.game-canvas{height:320px}
-  .game-header{flex-direction:column;align-items:flex-start}
-  .game-stats{gap:16px}
+  nav{padding:0 24px}.hero{padding:100px 24px 32px}.content{padding:16px}
+  .config-bar{flex-direction:column;gap:12px}.config-field{min-width:100%}
+  .game-tab{font-size:11px;padding:10px 12px;min-width:70px;letter-spacing:1px}
+  .game-canvas{height:360px}
   footer{padding:20px 24px;flex-direction:column;gap:8px;text-align:center}
 }
 </style>
@@ -94,483 +90,696 @@ footer{border-top:1px solid var(--border);padding:24px 48px;display:flex;justify
 
 <nav>
   <a href="index.html" class="nav-logo">NEI<span>I</span>STRA</a>
-  <a href="index.html" class="nav-back">← Retour à l'accueil</a>
+  <ul class="nav-links">
+    <li><a href="sensibilite.html">Sensibilité</a></li>
+    <li><a href="benchmark.html">Benchmark</a></li>
+    <li><a href="aim-training.html" class="active">Aim Training</a></li>
+    <li><a href="callouts.html">Callouts</a></li>
+  </ul>
 </nav>
 
 <section class="hero">
   <div class="hero-grid"></div>
   <div class="hero-tag">Outil — R6 Process</div>
   <h1 class="hero-title">Aim Training</h1>
-  <p class="hero-sub">6 exercices · Mesure · Progression</p>
-  <p class="hero-desc">Entraîne chaque composante de ta motricité directement dans le navigateur. Chaque exercice isole une compétence spécifique — flick, tracking, switching, précision, réaction sélective, speed-accuracy. Pas besoin de logiciel externe.</p>
+  <p class="hero-sub">Entre ta sensibilité R6 ci-dessous — le crosshair bougera exactement comme dans Siege. Clique sur la zone de jeu pour capturer ta souris (Échap pour sortir).</p>
 </section>
 
 <div class="content">
 
+  <!-- SENSITIVITY CONFIG -->
+  <div class="config-bar">
+    <div class="config-field">
+      <label>DPI souris</label>
+      <input type="number" id="cfgDpi" value="800" min="100" max="32000" oninput="updateConfig()">
+    </div>
+    <div class="config-field">
+      <label>Sensibilité R6 (1–100)</label>
+      <input type="number" id="cfgSens" value="10" min="1" max="100" oninput="updateConfig()">
+    </div>
+    <div class="config-field">
+      <label>Multiplicateur (défaut 0.02)</label>
+      <input type="number" id="cfgMult" value="0.02" step="0.00001" min="0.00001" max="0.1" oninput="updateConfig()">
+    </div>
+    <div class="config-field">
+      <label>Optique (visée)</label>
+      <select id="cfgScope" onchange="updateConfig()" style="padding:10px 12px;background:var(--black);border:1px solid var(--border);color:var(--white);font-family:'Barlow Condensed',sans-serif;font-size:15px;border-radius:3px;cursor:pointer;width:100%">
+        <option value="0">Hip-fire (pas de visée)</option>
+        <option value="1">1× — Holo / Red dot</option>
+        <option value="1.5">1.5× — Scope</option>
+        <option value="2">2× — ACOG</option>
+        <option value="2.5">2.5× — Scope</option>
+        <option value="3">3× — Scope</option>
+        <option value="3.5">3.5× — Scope</option>
+        <option value="5">5× — Scope long</option>
+        <option value="12">12× — Kali CSRX</option>
+      </select>
+    </div>
+    <div class="config-field" id="adsSliderWrap" style="display:none">
+      <label>Slider ADS (1–300, défaut 50)</label>
+      <input type="number" id="cfgAdsSlider" value="50" min="1" max="300" oninput="updateConfig()">
+    </div>
+    <div class="config-info">
+      <span>cm/360° : <span class="val" id="cfgCm">—</span></span>
+      <span>eDPI : <span class="val" id="cfgEdpi">—</span></span>
+      <span class="config-badge" id="cfgModeBadge">HIP-FIRE</span>
+    </div>
+  </div>
+
   <!-- TABS -->
   <div class="game-tabs">
-    <button class="game-tab active" onclick="showGame('flick')">Flick</button>
-    <button class="game-tab" onclick="showGame('track')">Tracking</button>
-    <button class="game-tab" onclick="showGame('switch')">Switch</button>
-    <button class="game-tab" onclick="showGame('precision')">Précision</button>
-    <button class="game-tab" onclick="showGame('gonogo')">Go / No-Go</button>
-    <button class="game-tab" onclick="showGame('sat')">SAT Challenge</button>
+    <button class="game-tab active" onclick="showGame('flick',this)">Flick</button>
+    <button class="game-tab" onclick="showGame('track',this)">Tracking</button>
+    <button class="game-tab" onclick="showGame('switch',this)">Switch</button>
+    <button class="game-tab" onclick="showGame('precision',this)">Précision</button>
+    <button class="game-tab" onclick="showGame('gonogo',this)">Go / No-Go</button>
+    <button class="game-tab" onclick="showGame('sat',this)">SAT</button>
   </div>
 
   <div class="game-container">
-
-    <!-- ═══════ FLICK ═══════ -->
+    <!-- All game panels use canvas for pointer lock rendering -->
     <div class="game-panel active" id="panel-flick">
       <div class="game-header">
-        <div>
-          <div class="game-title">Flick Trainer</div>
-          <div class="game-desc">Clique sur 20 cibles le plus vite possible. Le flick est un mouvement balistique pré-programmé — ta précision dépend à 100% de la qualité du programme moteur initial.</div>
-        </div>
+        <div><div class="game-title">Flick Trainer</div><div class="game-desc">20 cibles. Mouvement balistique pré-programmé — ta mémoire musculaire R6 est directement sollicitée.</div></div>
         <div class="game-controls">
-          <button class="gbtn" onclick="startFlick('easy')">Facile</button>
-          <button class="gbtn active" onclick="startFlick('medium')" id="fb-med">Normal</button>
-          <button class="gbtn" onclick="startFlick('hard')">Difficile</button>
+          <button class="gbtn" onclick="flickDiff='easy';startFlick()">Facile</button>
+          <button class="gbtn active" id="fBtn" onclick="flickDiff='medium';startFlick()">Normal</button>
+          <button class="gbtn" onclick="flickDiff='hard';startFlick()">Difficile</button>
         </div>
       </div>
-      <div class="game-area" id="flickArea">
-        <div class="game-overlay" id="flickOverlay"><h3>Flick Trainer</h3><p>Sélectionne la difficulté pour commencer</p></div>
-      </div>
-      <div class="game-stats">
-        <div class="gstat"><div class="gstat-num" id="f-hits">—</div><div class="gstat-label">Hits</div></div>
-        <div class="gstat"><div class="gstat-num" id="f-miss">—</div><div class="gstat-label">Miss</div></div>
-        <div class="gstat"><div class="gstat-num" id="f-acc">—</div><div class="gstat-label">Précision</div></div>
-        <div class="gstat"><div class="gstat-num" id="f-avg">—</div><div class="gstat-label">Moy.</div></div>
-        <div class="gstat"><div class="gstat-num" id="f-best">—</div><div class="gstat-label">Best</div></div>
-      </div>
+      <div style="position:relative"><canvas class="game-canvas" id="cFlick"></canvas><div class="lock-prompt" id="lockFlick" onclick="lockCanvas('cFlick')"><h3>Flick Trainer</h3><p>Clique pour capturer la souris<br>Ta sensibilité R6 sera appliquée</p><p class="hint">Échap pour libérer le curseur</p></div></div>
+      <div class="game-stats"><div class="gstat"><div class="gstat-num" id="f-hits">—</div><div class="gstat-label">Hits</div></div><div class="gstat"><div class="gstat-num" id="f-miss">—</div><div class="gstat-label">Miss</div></div><div class="gstat"><div class="gstat-num" id="f-acc">—</div><div class="gstat-label">Précision</div></div><div class="gstat"><div class="gstat-num" id="f-avg">—</div><div class="gstat-label">Moy.</div></div><div class="gstat"><div class="gstat-num" id="f-best">—</div><div class="gstat-label">Best</div></div></div>
     </div>
 
-    <!-- ═══════ TRACKING ═══════ -->
     <div class="game-panel" id="panel-track">
       <div class="game-header">
-        <div>
-          <div class="game-title">Tracking Trainer</div>
-          <div class="game-desc">Maintiens ton curseur sur la cible mobile pendant 15 secondes. Le tracking repose sur ta boucle proprioceptive — œil, cervelet, main, en correction continue.</div>
-        </div>
+        <div><div class="game-title">Tracking Trainer</div><div class="game-desc">Maintiens le crosshair sur la cible 15s. Boucle proprioceptive en conditions réelles.</div></div>
         <div class="game-controls">
-          <button class="gbtn" onclick="startTrack('easy')">Facile</button>
-          <button class="gbtn active" onclick="startTrack('medium')">Normal</button>
-          <button class="gbtn" onclick="startTrack('hard')">Difficile</button>
+          <button class="gbtn" onclick="trackDiff='easy';startTrack()">Facile</button>
+          <button class="gbtn active" onclick="trackDiff='medium';startTrack()">Normal</button>
+          <button class="gbtn" onclick="trackDiff='hard';startTrack()">Difficile</button>
         </div>
       </div>
-      <canvas class="game-canvas" id="trackCanvas" width="1100" height="450"></canvas>
-      <div class="game-stats">
-        <div class="gstat"><div class="gstat-num" id="t-acc">—</div><div class="gstat-label">Précision</div></div>
-        <div class="gstat"><div class="gstat-num" id="t-time">15s</div><div class="gstat-label">Restant</div></div>
-        <div class="gstat"><div class="gstat-num" id="t-streak">—</div><div class="gstat-label">Best streak</div></div>
-        <div class="gstat"><div class="gstat-num" id="t-grade">—</div><div class="gstat-label">Grade</div></div>
-      </div>
+      <div style="position:relative"><canvas class="game-canvas" id="cTrack"></canvas><div class="lock-prompt" id="lockTrack" onclick="lockCanvas('cTrack')"><h3>Tracking Trainer</h3><p>Clique pour capturer la souris</p><p class="hint">Échap pour libérer</p></div></div>
+      <div class="game-stats"><div class="gstat"><div class="gstat-num" id="t-acc">—</div><div class="gstat-label">Précision</div></div><div class="gstat"><div class="gstat-num" id="t-time">15s</div><div class="gstat-label">Restant</div></div><div class="gstat"><div class="gstat-num" id="t-streak">—</div><div class="gstat-label">Streak</div></div><div class="gstat"><div class="gstat-num" id="t-grade">—</div><div class="gstat-label">Grade</div></div></div>
     </div>
 
-    <!-- ═══════ SWITCH ═══════ -->
     <div class="game-panel" id="panel-switch">
       <div class="game-header">
-        <div>
-          <div class="game-title">Switch Trainer</div>
-          <div class="game-desc">6 cibles numérotées apparaissent. Clique-les dans l'ordre. Le switch exige de terminer un programme moteur et d'en initier un nouveau — coût neuronal ~200ms.</div>
-        </div>
-        <div class="game-controls">
-          <button class="gbtn" onclick="startSwitch()">Démarrer</button>
-        </div>
+        <div><div class="game-title">Switch Trainer</div><div class="game-desc">6 cibles numérotées, dans l'ordre. Coût neuronal ~200ms par switch.</div></div>
+        <div class="game-controls"><button class="gbtn" onclick="startSwitch()">Démarrer</button></div>
       </div>
-      <div class="game-area" id="switchArea">
-        <div class="game-overlay" id="switchOverlay"><h3>Switch Trainer</h3><p>Clique Démarrer</p></div>
-      </div>
-      <div class="game-stats">
-        <div class="gstat"><div class="gstat-num" id="s-total">—</div><div class="gstat-label">Total</div></div>
-        <div class="gstat"><div class="gstat-num" id="s-avg">—</div><div class="gstat-label">Moy. switch</div></div>
-        <div class="gstat"><div class="gstat-num" id="s-best">—</div><div class="gstat-label">+ rapide</div></div>
-        <div class="gstat"><div class="gstat-num" id="s-worst">—</div><div class="gstat-label">+ lent</div></div>
-      </div>
+      <div style="position:relative"><canvas class="game-canvas" id="cSwitch"></canvas><div class="lock-prompt" id="lockSwitch" onclick="lockCanvas('cSwitch')"><h3>Switch Trainer</h3><p>Clique pour capturer la souris</p><p class="hint">Échap pour libérer</p></div></div>
+      <div class="game-stats"><div class="gstat"><div class="gstat-num" id="s-total">—</div><div class="gstat-label">Total</div></div><div class="gstat"><div class="gstat-num" id="s-avg">—</div><div class="gstat-label">Moy.</div></div><div class="gstat"><div class="gstat-num" id="s-best">—</div><div class="gstat-label">+ rapide</div></div><div class="gstat"><div class="gstat-num" id="s-worst">—</div><div class="gstat-label">+ lent</div></div></div>
     </div>
 
-    <!-- ═══════ PRECISION ═══════ -->
     <div class="game-panel" id="panel-precision">
       <div class="game-header">
-        <div>
-          <div class="game-title">Precision Trainer</div>
-          <div class="game-desc">Cibles miniatures (8–16px) — la taille d'une tête R6 à distance. Entraîne les unités motrices à seuil bas de tes doigts et de ton poignet.</div>
-        </div>
-        <div class="game-controls">
-          <button class="gbtn" onclick="startPrecision()">Démarrer (15 cibles)</button>
-        </div>
+        <div><div class="game-title">Precision Trainer</div><div class="game-desc">Cibles 8–16px. Taille d'une tête R6 à distance. Unités motrices à seuil bas.</div></div>
+        <div class="game-controls"><button class="gbtn" onclick="startPrecision()">Démarrer (15)</button></div>
       </div>
-      <div class="game-area" id="precArea">
-        <div class="game-overlay" id="precOverlay"><h3>Precision Trainer</h3><p>Clique Démarrer</p></div>
-      </div>
-      <div class="game-stats">
-        <div class="gstat"><div class="gstat-num" id="p-hits">—</div><div class="gstat-label">Hits</div></div>
-        <div class="gstat"><div class="gstat-num" id="p-miss">—</div><div class="gstat-label">Miss</div></div>
-        <div class="gstat"><div class="gstat-num" id="p-acc">—</div><div class="gstat-label">Précision</div></div>
-        <div class="gstat"><div class="gstat-num" id="p-avg">—</div><div class="gstat-label">Moy.</div></div>
-      </div>
+      <div style="position:relative"><canvas class="game-canvas" id="cPrec"></canvas><div class="lock-prompt" id="lockPrec" onclick="lockCanvas('cPrec')"><h3>Precision Trainer</h3><p>Clique pour capturer la souris</p><p class="hint">Échap pour libérer</p></div></div>
+      <div class="game-stats"><div class="gstat"><div class="gstat-num" id="p-hits">—</div><div class="gstat-label">Hits</div></div><div class="gstat"><div class="gstat-num" id="p-miss">—</div><div class="gstat-label">Miss</div></div><div class="gstat"><div class="gstat-num" id="p-acc">—</div><div class="gstat-label">Précision</div></div><div class="gstat"><div class="gstat-num" id="p-avg">—</div><div class="gstat-label">Moy.</div></div></div>
     </div>
 
-    <!-- ═══════ GO/NO-GO ═══════ -->
     <div class="game-panel" id="panel-gonogo">
       <div class="game-header">
-        <div>
-          <div class="game-title">Go / No-Go</div>
-          <div class="game-desc">Vert = ennemi, clique. Bleu = allié, ne clique pas. Mesure ta réaction sélective — la capacité à inhiber un tir quand l'identification dit "non". Fondamental avec le friendly fire de R6.</div>
-        </div>
-        <div class="game-controls">
-          <button class="gbtn" onclick="startGNG()">Démarrer (20 rounds)</button>
-        </div>
+        <div><div class="game-title">Go / No-Go</div><div class="game-desc">Vert = ennemi (clique). Bleu = allié (ne clique pas). Friendly fire R6.</div></div>
+        <div class="game-controls"><button class="gbtn" onclick="startGNG()">Démarrer (20)</button></div>
       </div>
-      <div class="game-area" id="gngArea">
-        <div class="react-wrap">
-          <div class="react-circle" id="gngCircle" onclick="gngClick()">
-            <span class="react-label" id="gngLabel">Clique Démarrer</span>
-          </div>
-        </div>
-      </div>
-      <div class="game-stats">
-        <div class="gstat"><div class="gstat-num" id="g-correct">—</div><div class="gstat-label">Correct</div></div>
-        <div class="gstat"><div class="gstat-num" id="g-false">—</div><div class="gstat-label">Team kills</div></div>
-        <div class="gstat"><div class="gstat-num" id="g-missed">—</div><div class="gstat-label">Ratés</div></div>
-        <div class="gstat"><div class="gstat-num" id="g-avg">—</div><div class="gstat-label">Moy. Go</div></div>
-      </div>
+      <div style="position:relative"><canvas class="game-canvas" id="cGNG" style="cursor:pointer"></canvas><div class="lock-prompt hidden" id="lockGNG"></div></div>
+      <div class="game-stats"><div class="gstat"><div class="gstat-num" id="g-correct">—</div><div class="gstat-label">Correct</div></div><div class="gstat"><div class="gstat-num" id="g-false">—</div><div class="gstat-label">TK</div></div><div class="gstat"><div class="gstat-num" id="g-missed">—</div><div class="gstat-label">Ratés</div></div><div class="gstat"><div class="gstat-num" id="g-avg">—</div><div class="gstat-label">Moy.</div></div></div>
     </div>
 
-    <!-- ═══════ SAT CHALLENGE ═══════ -->
     <div class="game-panel" id="panel-sat">
       <div class="game-header">
-        <div>
-          <div class="game-title">SAT Challenge</div>
-          <div class="game-desc">Speed-Accuracy Trade-off. Les cibles rétrécissent et disparaissent de plus en plus vite. Score = Hits × (1000 / temps_moyen). Pousse les deux limites simultanément.</div>
-        </div>
-        <div class="game-controls">
-          <button class="gbtn" onclick="startSAT()">Démarrer (20 cibles)</button>
-        </div>
+        <div><div class="game-title">SAT Challenge</div><div class="game-desc">Cibles qui rétrécissent et expirent. Score = Hits × (1000 / temps).</div></div>
+        <div class="game-controls"><button class="gbtn" onclick="startSAT()">Démarrer (20)</button></div>
       </div>
-      <div class="game-area" id="satArea">
-        <div class="game-overlay" id="satOverlay"><h3>SAT Challenge</h3><p>Clique Démarrer</p></div>
-      </div>
-      <div class="game-stats">
-        <div class="gstat"><div class="gstat-num" id="sa-hits">—</div><div class="gstat-label">Hits</div></div>
-        <div class="gstat"><div class="gstat-num" id="sa-miss">—</div><div class="gstat-label">Miss</div></div>
-        <div class="gstat"><div class="gstat-num" id="sa-expired">—</div><div class="gstat-label">Expirées</div></div>
-        <div class="gstat"><div class="gstat-num" id="sa-avg">—</div><div class="gstat-label">Moy.</div></div>
-        <div class="gstat"><div class="gstat-num" id="sa-score">—</div><div class="gstat-label">Score SAT</div></div>
-      </div>
+      <div style="position:relative"><canvas class="game-canvas" id="cSAT"></canvas><div class="lock-prompt" id="lockSAT" onclick="lockCanvas('cSAT')"><h3>SAT Challenge</h3><p>Clique pour capturer la souris</p><p class="hint">Échap pour libérer</p></div></div>
+      <div class="game-stats"><div class="gstat"><div class="gstat-num" id="sa-hits">—</div><div class="gstat-label">Hits</div></div><div class="gstat"><div class="gstat-num" id="sa-miss">—</div><div class="gstat-label">Miss</div></div><div class="gstat"><div class="gstat-num" id="sa-expired">—</div><div class="gstat-label">Expirées</div></div><div class="gstat"><div class="gstat-num" id="sa-avg">—</div><div class="gstat-label">Moy.</div></div><div class="gstat"><div class="gstat-num" id="sa-score">—</div><div class="gstat-label">Score</div></div></div>
     </div>
-
   </div>
 </div>
 
 <footer>
   <span class="footer-logo">NEI<span>I</span>STRA</span>
-  <span class="footer-text">R6 Process — Aim Training</span>
+  <span class="footer-text">R6 Process — Aim Training · Pointer Lock API · Sensibilité R6 native</span>
 </footer>
 
 <script>
 // ═══════════════════════════════════════════════
-// TAB SYSTEM
+// CORE: Sensitivity engine + Pointer Lock
 // ═══════════════════════════════════════════════
-function showGame(id) {
+let sensScale = 0.2; // default: sens 10 × mult 0.02
+let crosshairs = {}; // per-canvas crosshair state {x, y, locked}
+let activeCanvas = null;
+
+function updateConfig() {
+  const dpi = parseFloat(document.getElementById('cfgDpi').value) || 800;
+  const sens = parseFloat(document.getElementById('cfgSens').value) || 10;
+  const mult = parseFloat(document.getElementById('cfgMult').value) || 0.02;
+  const scopeZoom = parseFloat(document.getElementById('cfgScope').value);
+  const adsSlider = parseFloat(document.getElementById('cfgAdsSlider').value) || 50;
+
+  // Show/hide ADS slider
+  document.getElementById('adsSliderWrap').style.display = scopeZoom > 0 ? '' : 'none';
+
+  // Base hipfire sensScale
+  const baseSensScale = sens * mult;
+
+  // ADS multiplier calculation (Uniform mode — visuomotor gain model)
+  // At ADS slider 50, same physical mouse distance = same screen distance
+  // ADS slider < 50 = slower, > 50 = faster
+  // The multiplier scales the sensitivity relative to the zoom level
+  let adsMult = 1.0;
+  if (scopeZoom > 0) {
+    // Uniform mode: at slider 50, sens is divided by zoom to maintain visuomotor gain
+    // At slider 50: effective multiplier = 1/zoom
+    // Slider scales linearly: slider 0 → 0, slider 50 → 1/zoom, slider 100 → 2/zoom
+    const sliderFactor = adsSlider / 50; // 1.0 at default
+    adsMult = sliderFactor / scopeZoom;
+  }
+
+  sensScale = baseSensScale * adsMult;
+
+  // cm/360° display (for effective sensitivity)
+  const effectiveSens = sens * adsMult;
+  const cm360 = (360 * 2.54) / (dpi * effectiveSens * mult * 0.33);
+  document.getElementById('cfgCm').textContent = cm360.toFixed(1) + ' cm';
+  document.getElementById('cfgEdpi').textContent = Math.round(dpi * sens * adsMult).toLocaleString();
+
+  // Update badge
+  const badge = document.getElementById('cfgModeBadge');
+  if (scopeZoom === 0) {
+    badge.textContent = 'HIP-FIRE';
+    badge.style.color = 'var(--green)';
+    badge.style.borderColor = 'rgba(46,204,113,0.25)';
+    badge.style.background = 'rgba(46,204,113,0.1)';
+  } else {
+    badge.textContent = 'ADS ' + scopeZoom + '×';
+    badge.style.color = 'var(--cyan)';
+    badge.style.borderColor = 'rgba(78,205,196,0.25)';
+    badge.style.background = 'rgba(78,205,196,0.1)';
+  }
+}
+
+function initCanvas(id) {
+  const c = document.getElementById(id);
+  const rect = c.getBoundingClientRect();
+  c.width = rect.width;
+  c.height = rect.height;
+  crosshairs[id] = { x: c.width / 2, y: c.height / 2, locked: false };
+  return c;
+}
+
+function lockCanvas(id) {
+  const c = document.getElementById(id);
+  c.requestPointerLock();
+}
+
+document.addEventListener('pointerlockchange', () => {
+  const el = document.pointerLockElement;
+  Object.keys(crosshairs).forEach(id => {
+    const c = document.getElementById(id);
+    crosshairs[id].locked = (el === c);
+    const prompt = document.getElementById('lock' + id.replace('c', ''));
+    if (prompt) prompt.classList.toggle('hidden', el === c);
+  });
+  if (el) activeCanvas = el.id;
+});
+
+document.addEventListener('mousemove', e => {
+  if (document.pointerLockElement) {
+    // Pointer locked: use raw movement with R6 sensitivity
+    const id = document.pointerLockElement.id;
+    const ch = crosshairs[id];
+    if (!ch) return;
+    const c = document.getElementById(id);
+    ch.x = Math.max(0, Math.min(c.width, ch.x + e.movementX * sensScale));
+    ch.y = Math.max(0, Math.min(c.height, ch.y + e.movementY * sensScale));
+  } else {
+    // Not locked: track regular mouse position on all canvases (fallback)
+    Object.keys(crosshairs).forEach(id => {
+      const c = document.getElementById(id);
+      const rect = c.getBoundingClientRect();
+      if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+        crosshairs[id].x = (e.clientX - rect.left) * (c.width / rect.width);
+        crosshairs[id].y = (e.clientY - rect.top) * (c.height / rect.height);
+      }
+    });
+  }
+});
+
+document.addEventListener('mousedown', e => {
+  if (document.pointerLockElement) {
+    const id = document.pointerLockElement.id;
+    if (id === 'cFlick') flickClick();
+    else if (id === 'cSwitch') switchClick();
+    else if (id === 'cPrec') precClick();
+    else if (id === 'cSAT') satClick();
+  } else {
+    // Fallback: allow clicking directly on canvas without pointer lock
+    const target = e.target;
+    if (target.id === 'cFlick') flickClick();
+    else if (target.id === 'cSwitch') switchClick();
+    else if (target.id === 'cPrec') precClick();
+    else if (target.id === 'cSAT') satClick();
+  }
+});
+
+function drawCrosshair(ctx, ch, size) {
+  size = size || 14;
+  // Outer glow
+  ctx.shadowColor = 'rgba(255,255,255,0.4)';
+  ctx.shadowBlur = 6;
+  // Lines
+  ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(ch.x - size, ch.y); ctx.lineTo(ch.x - 4, ch.y); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(ch.x + 4, ch.y); ctx.lineTo(ch.x + size, ch.y); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(ch.x, ch.y - size); ctx.lineTo(ch.x, ch.y - 4); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(ch.x, ch.y + 4); ctx.lineTo(ch.x, ch.y + size); ctx.stroke();
+  // Center dot
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(ch.x, ch.y, 2, 0, Math.PI * 2); ctx.fill();
+  // Red outline dot
+  ctx.strokeStyle = 'rgba(200,48,42,0.8)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.arc(ch.x, ch.y, 2, 0, Math.PI * 2); ctx.stroke();
+  ctx.shadowBlur = 0;
+}
+
+function drawGrid(ctx, w, h) {
+  ctx.strokeStyle = 'rgba(255,255,255,0.03)'; ctx.lineWidth = 1;
+  for (let i = 0; i < w; i += 60) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, h); ctx.stroke(); }
+  for (let i = 0; i < h; i += 60) { ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(w, i); ctx.stroke(); }
+}
+
+function dist(x1, y1, x2, y2) { return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2); }
+
+function showGame(id, btn) {
   document.querySelectorAll('.game-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.game-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('panel-' + id).classList.add('active');
-  event.target.classList.add('active');
+  btn.classList.add('active');
+  if (document.pointerLockElement) document.exitPointerLock();
 }
 
 // ═══════════════════════════════════════════════
 // 1. FLICK TRAINER
 // ═══════════════════════════════════════════════
-const flickArea = document.getElementById('flickArea');
-let fDiff='medium', fHits=0, fMiss=0, fTimes=[], fCount=0, fMax=20, fTarget=null, fLastTime=0, fActive=false;
-const fSizes = {easy:48, medium:32, hard:18};
+let flickDiff = 'medium', fHits = 0, fMiss = 0, fTimes = [], fCount = 0, fMax = 20, fTarget = null, fLast = 0, fActive = false, fAnim;
+const fSizes = { easy: 48, medium: 32, hard: 18 };
 
-function startFlick(diff) {
-  fDiff=diff; fHits=0; fMiss=0; fTimes=[]; fCount=0; fActive=true;
-  document.querySelectorAll('#panel-flick .gbtn').forEach(b=>b.classList.remove('active'));
-  event.target.classList.add('active');
-  document.getElementById('flickOverlay').style.display='none';
-  flickArea.querySelectorAll('.target,.hit-m,.miss-m').forEach(e=>e.remove());
-  spawnFlick();
+function startFlick() {
+  const c = initCanvas('cFlick');
+  fHits = 0; fMiss = 0; fTimes = []; fCount = 0; fActive = true; fTarget = null;
+  document.getElementById('lockFlick').classList.add('hidden');
+  if (!crosshairs['cFlick'].locked) lockCanvas('cFlick');
+  spawnFlickTarget(c);
+  if (fAnim) cancelAnimationFrame(fAnim);
+  flickLoop();
+}
+
+function spawnFlickTarget(c) {
+  if (fCount >= fMax) { endFlick(); return; }
+  const s = fSizes[flickDiff];
+  const margin = s + 20;
+  fTarget = { x: margin + Math.random() * (c.width - margin * 2), y: margin + Math.random() * (c.height - margin * 2), r: s / 2 };
+  fLast = performance.now(); fCount++;
+}
+
+function flickClick() {
+  if (!fActive || !fTarget) return;
+  const ch = crosshairs['cFlick'];
+  if (dist(ch.x, ch.y, fTarget.x, fTarget.y) < fTarget.r) {
+    fHits++; fTimes.push(performance.now() - fLast);
+    spawnFlickTarget(document.getElementById('cFlick'));
+  } else { fMiss++; }
   updateFlickStats();
 }
-function spawnFlick() {
-  if(fCount>=fMax){endFlick();return;}
-  if(fTarget)fTarget.remove();
-  const s=fSizes[fDiff],w=flickArea.offsetWidth,h=flickArea.offsetHeight;
-  const x=s+Math.random()*(w-s*2),y=s+Math.random()*(h-s*2);
-  const t=document.createElement('div');t.className='target';
-  t.style.cssText=`width:${s}px;height:${s}px;left:${x-s/2}px;top:${y-s/2}px;`;
-  t.innerHTML='<div class="target-inner"><div class="target-dot"></div></div>';
-  t.addEventListener('mousedown',e=>{e.stopPropagation();onFlickHit(t);});
-  flickArea.appendChild(t);fTarget=t;fLastTime=performance.now();fCount++;
+
+function flickLoop() {
+  const c = document.getElementById('cFlick'), ctx = c.getContext('2d'), ch = crosshairs['cFlick'];
+  ctx.clearRect(0, 0, c.width, c.height); drawGrid(ctx, c.width, c.height);
+  if (fTarget) {
+    ctx.beginPath(); ctx.arc(fTarget.x, fTarget.y, fTarget.r, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(200,48,42,0.85)'; ctx.fill();
+    ctx.beginPath(); ctx.arc(fTarget.x, fTarget.y, 2, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff'; ctx.fill();
+  }
+  drawCrosshair(ctx, ch);
+  if (fActive) fAnim = requestAnimationFrame(flickLoop);
 }
-function onFlickHit(t){
-  if(!fActive)return;
-  fHits++;fTimes.push(performance.now()-fLastTime);
-  t.style.background='var(--cyan)';t.style.animation='hitPop .3s ease forwards';
-  fTarget=null;updateFlickStats();setTimeout(spawnFlick,200);
-}
-flickArea.addEventListener('mousedown',e=>{
-  if(!fActive||e.target.closest('.target'))return;
-  fMiss++;updateFlickStats();
-});
-function endFlick(){
-  fActive=false;if(fTarget){fTarget.remove();fTarget=null;}
-  const avg=fTimes.length?Math.round(fTimes.reduce((a,b)=>a+b,0)/fTimes.length):0;
-  const acc=(fHits+fMiss)?Math.round(fHits/(fHits+fMiss)*100):0;
-  let g='D',gc='grade-d';
-  if(avg<300&&acc>90){g='S';gc='grade-s';}else if(avg<400&&acc>80){g='A';gc='grade-a';}
-  else if(avg<500&&acc>70){g='B';gc='grade-b';}else if(avg<600&&acc>60){g='C';gc='grade-c';}
-  const ov=document.getElementById('flickOverlay');ov.style.display='flex';
-  ov.innerHTML=`<h3 class="${gc}">${g}</h3><p>${avg}ms moy · ${acc}% précision · Relance pour réessayer</p>`;
+
+function endFlick() {
+  fActive = false; fTarget = null;
+  const c = document.getElementById('cFlick'), ctx = c.getContext('2d');
+  const avg = fTimes.length ? Math.round(fTimes.reduce((a, b) => a + b, 0) / fTimes.length) : 0;
+  const acc = (fHits + fMiss) ? Math.round(fHits / (fHits + fMiss) * 100) : 0;
+  let g = 'D'; if (avg < 300 && acc > 90) g = 'S'; else if (avg < 400 && acc > 80) g = 'A'; else if (avg < 500 && acc > 70) g = 'B'; else if (avg < 600) g = 'C';
+  ctx.fillStyle = 'rgba(10,10,10,0.85)'; ctx.fillRect(0, 0, c.width, c.height);
+  ctx.fillStyle = '#f5f2ed'; ctx.font = '600 48px "Bebas Neue",sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('GRADE: ' + g, c.width / 2, c.height / 2 - 10);
+  ctx.font = '300 14px "Barlow Condensed",sans-serif'; ctx.fillStyle = '#999';
+  ctx.fillText(avg + 'ms · ' + acc + '% · Relance depuis les boutons', c.width / 2, c.height / 2 + 30);
   updateFlickStats();
 }
-function updateFlickStats(){
-  const avg=fTimes.length?Math.round(fTimes.reduce((a,b)=>a+b,0)/fTimes.length):'—';
-  const best=fTimes.length?Math.round(Math.min(...fTimes)):'—';
-  const acc=(fHits+fMiss)?Math.round(fHits/(fHits+fMiss)*100)+'%':'—';
-  document.getElementById('f-hits').textContent=fHits||'—';
-  document.getElementById('f-miss').textContent=fMiss||'—';
-  document.getElementById('f-acc').textContent=acc;
-  document.getElementById('f-avg').textContent=avg!=='—'?avg+'ms':'—';
-  document.getElementById('f-best').textContent=best!=='—'?best+'ms':'—';
+
+function updateFlickStats() {
+  const avg = fTimes.length ? Math.round(fTimes.reduce((a, b) => a + b, 0) / fTimes.length) : '—';
+  const best = fTimes.length ? Math.round(Math.min(...fTimes)) : '—';
+  const acc = (fHits + fMiss) ? Math.round(fHits / (fHits + fMiss) * 100) + '%' : '—';
+  document.getElementById('f-hits').textContent = fHits || '—';
+  document.getElementById('f-miss').textContent = fMiss || '—';
+  document.getElementById('f-acc').textContent = acc;
+  document.getElementById('f-avg').textContent = avg !== '—' ? avg + 'ms' : '—';
+  document.getElementById('f-best').textContent = best !== '—' ? best + 'ms' : '—';
 }
 
 // ═══════════════════════════════════════════════
 // 2. TRACKING TRAINER
 // ═══════════════════════════════════════════════
-const tCanvas=document.getElementById('trackCanvas'),tCtx=tCanvas.getContext('2d');
-let tAnim,tActive=false,tBall={x:400,y:200,r:24,vx:3,vy:2},tMouse={x:0,y:0};
-let tOnTarget=0,tTotal=0,tBestStreak=0,tCurStreak=0,tDuration=15000,tStart=0,tSpeed=1;
+let trackDiff = 'medium', tBall, tOnTarget = 0, tTotal = 0, tBestStreak = 0, tCurStreak = 0, tDuration = 15000, tStart = 0, tActive = false, tAnim, tSpeed = 1;
 
-tCanvas.addEventListener('mousemove',e=>{
-  const r=tCanvas.getBoundingClientRect();
-  tMouse.x=(e.clientX-r.left)*(tCanvas.width/r.width);
-  tMouse.y=(e.clientY-r.top)*(tCanvas.height/r.height);
-});
+function startTrack() {
+  const c = initCanvas('cTrack');
+  tSpeed = trackDiff === 'easy' ? 0.6 : trackDiff === 'hard' ? 1.6 : 1;
+  const r = trackDiff === 'easy' ? 30 : trackDiff === 'hard' ? 16 : 24;
+  tBall = { x: c.width / 2, y: c.height / 2, r, vx: 3 * tSpeed, vy: 2 * tSpeed };
+  tOnTarget = 0; tTotal = 0; tBestStreak = 0; tCurStreak = 0; tActive = true;
+  tStart = performance.now();
+  document.getElementById('lockTrack').classList.add('hidden');
+  if (!crosshairs['cTrack'].locked) lockCanvas('cTrack');
+  if (tAnim) cancelAnimationFrame(tAnim);
+  trackLoop();
+}
 
-function startTrack(diff){
-  document.querySelectorAll('#panel-track .gbtn').forEach(b=>b.classList.remove('active'));
-  event.target.classList.add('active');
-  tSpeed=diff==='easy'?.6:diff==='hard'?1.6:1;
-  const r=diff==='easy'?30:diff==='hard'?16:24;
-  tBall={x:tCanvas.width/2,y:tCanvas.height/2,r,vx:3*tSpeed,vy:2*tSpeed};
-  tOnTarget=0;tTotal=0;tBestStreak=0;tCurStreak=0;tStart=performance.now();tActive=true;
-  if(tAnim)cancelAnimationFrame(tAnim);trackLoop();
+function trackLoop() {
+  const el = performance.now() - tStart;
+  if (el >= tDuration) { tActive = false; showTrackResult(); return; }
+  const c = document.getElementById('cTrack'), ctx = c.getContext('2d'), ch = crosshairs['cTrack'];
+  ctx.clearRect(0, 0, c.width, c.height); drawGrid(ctx, c.width, c.height);
+  const accel = 1 + (el / tDuration) * 0.8;
+  if (Math.random() < 0.02 * tSpeed) tBall.vx = -tBall.vx * (0.8 + Math.random() * 0.4);
+  if (Math.random() < 0.02 * tSpeed) tBall.vy = -tBall.vy * (0.8 + Math.random() * 0.4);
+  tBall.x += tBall.vx * accel; tBall.y += tBall.vy * accel;
+  if (tBall.x - tBall.r < 0 || tBall.x + tBall.r > c.width) tBall.vx *= -1;
+  if (tBall.y - tBall.r < 0 || tBall.y + tBall.r > c.height) tBall.vy *= -1;
+  tBall.x = Math.max(tBall.r, Math.min(c.width - tBall.r, tBall.x));
+  tBall.y = Math.max(tBall.r, Math.min(c.height - tBall.r, tBall.y));
+  const isOn = dist(ch.x, ch.y, tBall.x, tBall.y) < tBall.r;
+  tTotal++; if (isOn) { tOnTarget++; tCurStreak++; if (tCurStreak > tBestStreak) tBestStreak = tCurStreak; } else { tCurStreak = 0; }
+  ctx.beginPath(); ctx.arc(tBall.x, tBall.y, tBall.r, 0, Math.PI * 2);
+  ctx.fillStyle = isOn ? 'rgba(78,205,196,0.9)' : 'rgba(200,48,42,0.9)'; ctx.fill();
+  ctx.beginPath(); ctx.arc(tBall.x, tBall.y, 3, 0, Math.PI * 2); ctx.fillStyle = '#f5f2ed'; ctx.fill();
+  drawCrosshair(ctx, ch);
+  const acc = tTotal ? Math.round(tOnTarget / tTotal * 100) : 0;
+  document.getElementById('t-acc').textContent = acc + '%';
+  document.getElementById('t-time').textContent = Math.max(0, Math.ceil((tDuration - el) / 1000)) + 's';
+  document.getElementById('t-streak').textContent = tBestStreak;
+  ctx.fillStyle = 'rgba(200,48,42,0.3)'; ctx.fillRect(0, c.height - 3, c.width * (el / tDuration), 3);
+  tAnim = requestAnimationFrame(trackLoop);
 }
-function trackLoop(){
-  const el=performance.now()-tStart;
-  if(el>=tDuration){tActive=false;showTrackResult();return;}
-  tCtx.clearRect(0,0,tCanvas.width,tCanvas.height);
-  // Grid
-  tCtx.strokeStyle='rgba(255,255,255,0.03)';tCtx.lineWidth=1;
-  for(let i=0;i<tCanvas.width;i+=60){tCtx.beginPath();tCtx.moveTo(i,0);tCtx.lineTo(i,tCanvas.height);tCtx.stroke();}
-  for(let i=0;i<tCanvas.height;i+=60){tCtx.beginPath();tCtx.moveTo(0,i);tCtx.lineTo(tCanvas.width,i);tCtx.stroke();}
-  const accel=1+el/tDuration*0.8;
-  if(Math.random()<0.02*tSpeed)tBall.vx=-tBall.vx*(0.8+Math.random()*0.4);
-  if(Math.random()<0.02*tSpeed)tBall.vy=-tBall.vy*(0.8+Math.random()*0.4);
-  tBall.x+=tBall.vx*accel;tBall.y+=tBall.vy*accel;
-  if(tBall.x-tBall.r<0||tBall.x+tBall.r>tCanvas.width)tBall.vx*=-1;
-  if(tBall.y-tBall.r<0||tBall.y+tBall.r>tCanvas.height)tBall.vy*=-1;
-  tBall.x=Math.max(tBall.r,Math.min(tCanvas.width-tBall.r,tBall.x));
-  tBall.y=Math.max(tBall.r,Math.min(tCanvas.height-tBall.r,tBall.y));
-  const dx=tMouse.x-tBall.x,dy=tMouse.y-tBall.y,dist=Math.sqrt(dx*dx+dy*dy);
-  const isOn=dist<tBall.r;tTotal++;
-  if(isOn){tOnTarget++;tCurStreak++;if(tCurStreak>tBestStreak)tBestStreak=tCurStreak;}else{tCurStreak=0;}
-  tCtx.beginPath();tCtx.arc(tBall.x,tBall.y,tBall.r,0,Math.PI*2);
-  tCtx.fillStyle=isOn?'rgba(78,205,196,0.9)':'rgba(200,48,42,0.9)';tCtx.fill();
-  tCtx.beginPath();tCtx.arc(tBall.x,tBall.y,3,0,Math.PI*2);tCtx.fillStyle='#f5f2ed';tCtx.fill();
-  tCtx.strokeStyle='rgba(255,255,255,0.5)';tCtx.lineWidth=1;
-  tCtx.beginPath();tCtx.moveTo(tMouse.x-10,tMouse.y);tCtx.lineTo(tMouse.x+10,tMouse.y);tCtx.stroke();
-  tCtx.beginPath();tCtx.moveTo(tMouse.x,tMouse.y-10);tCtx.lineTo(tMouse.x,tMouse.y+10);tCtx.stroke();
-  const acc=tTotal?Math.round(tOnTarget/tTotal*100):0;
-  const rem=Math.max(0,Math.ceil((tDuration-el)/1000));
-  document.getElementById('t-acc').textContent=acc+'%';
-  document.getElementById('t-time').textContent=rem+'s';
-  document.getElementById('t-streak').textContent=tBestStreak;
-  tCtx.fillStyle='rgba(200,48,42,0.3)';tCtx.fillRect(0,tCanvas.height-3,tCanvas.width*(el/tDuration),3);
-  tAnim=requestAnimationFrame(trackLoop);
-}
-function showTrackResult(){
-  const acc=tTotal?Math.round(tOnTarget/tTotal*100):0;
-  let g='D';if(acc>85)g='S';else if(acc>70)g='A';else if(acc>55)g='B';else if(acc>40)g='C';
-  document.getElementById('t-grade').textContent=g;
-  tCtx.fillStyle='rgba(10,10,10,0.85)';tCtx.fillRect(0,0,tCanvas.width,tCanvas.height);
-  tCtx.fillStyle='#f5f2ed';tCtx.font='600 48px "Bebas Neue",sans-serif';tCtx.textAlign='center';
-  tCtx.fillText('GRADE: '+g,tCanvas.width/2,tCanvas.height/2-10);
-  tCtx.font='300 14px "Barlow Condensed",sans-serif';tCtx.fillStyle='#999';
-  tCtx.fillText(acc+'% · '+tBestStreak+' streak · Relance pour réessayer',tCanvas.width/2,tCanvas.height/2+30);
+
+function showTrackResult() {
+  const c = document.getElementById('cTrack'), ctx = c.getContext('2d');
+  const acc = tTotal ? Math.round(tOnTarget / tTotal * 100) : 0;
+  let g = 'D'; if (acc > 85) g = 'S'; else if (acc > 70) g = 'A'; else if (acc > 55) g = 'B'; else if (acc > 40) g = 'C';
+  document.getElementById('t-grade').textContent = g;
+  ctx.fillStyle = 'rgba(10,10,10,0.85)'; ctx.fillRect(0, 0, c.width, c.height);
+  ctx.fillStyle = '#f5f2ed'; ctx.font = '600 48px "Bebas Neue",sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('GRADE: ' + g, c.width / 2, c.height / 2 - 10);
+  ctx.font = '300 14px "Barlow Condensed",sans-serif'; ctx.fillStyle = '#999';
+  ctx.fillText(acc + '% · streak ' + tBestStreak + ' · Relance depuis les boutons', c.width / 2, c.height / 2 + 30);
 }
 
 // ═══════════════════════════════════════════════
 // 3. SWITCH TRAINER
 // ═══════════════════════════════════════════════
-const switchArea=document.getElementById('switchArea');
-let swTargets=[],swIdx=0,swTimes=[],swLast=0,swStart=0;
-function startSwitch(){
-  switchArea.querySelectorAll('.sw-target').forEach(e=>e.remove());
-  document.getElementById('switchOverlay').style.display='none';
-  swTargets=[];swIdx=0;swTimes=[];
-  const count=6,w=switchArea.offsetWidth,h=switchArea.offsetHeight,positions=[];
-  for(let i=0;i<count;i++){
-    let x,y,valid;
-    do{x=40+Math.random()*(w-80);y=40+Math.random()*(h-80);
-    valid=positions.every(p=>Math.hypot(p.x-x,p.y-y)>90);}while(!valid);
-    positions.push({x,y});
-    const el=document.createElement('div');el.className='sw-target'+(i===0?' next':'');
-    el.style.cssText=`left:${x-21}px;top:${y-21}px;${i===0?'background:var(--red);border-color:var(--red);':''}`;
-    el.innerHTML=`<span class="num">${i+1}</span>`;el.dataset.idx=i;
-    el.addEventListener('mousedown',onSwClick);
-    switchArea.appendChild(el);swTargets.push(el);
+let swTargets = [], swIdx = 0, swTimes = [], swLast = 0, swStart = 0, swActive = false, swAnim;
+
+function startSwitch() {
+  const c = initCanvas('cSwitch');
+  swTargets = []; swIdx = 0; swTimes = []; swActive = true;
+  const positions = [];
+  for (let i = 0; i < 6; i++) {
+    let x, y, ok;
+    do { x = 50 + Math.random() * (c.width - 100); y = 50 + Math.random() * (c.height - 100); ok = positions.every(p => dist(p.x, p.y, x, y) > 90); } while (!ok);
+    positions.push({ x, y });
+    swTargets.push({ x, y, r: 21, num: i + 1, hit: false });
   }
-  swStart=performance.now();swLast=swStart;
-  ['s-total','s-avg','s-best','s-worst'].forEach(id=>document.getElementById(id).textContent='—');
+  swStart = performance.now(); swLast = swStart;
+  document.getElementById('lockSwitch').classList.add('hidden');
+  if (!crosshairs['cSwitch'].locked) lockCanvas('cSwitch');
+  ['s-total', 's-avg', 's-best', 's-worst'].forEach(id => document.getElementById(id).textContent = '—');
+  if (swAnim) cancelAnimationFrame(swAnim);
+  switchLoop();
 }
-function onSwClick(e){
-  const idx=parseInt(e.currentTarget.dataset.idx);if(idx!==swIdx)return;
-  const now=performance.now();if(swIdx>0)swTimes.push(now-swLast);swLast=now;
-  e.currentTarget.style.background='var(--cyan)';e.currentTarget.style.borderColor='var(--cyan)';
-  e.currentTarget.style.animation='hitPop .3s ease forwards';e.currentTarget.style.pointerEvents='none';
-  swIdx++;
-  if(swIdx<swTargets.length){swTargets[swIdx].classList.add('next');swTargets[swIdx].style.background='var(--red)';swTargets[swIdx].style.borderColor='var(--red)';}
-  else{document.getElementById('s-total').textContent=Math.round(now-swStart)+'ms';}
-  if(swTimes.length){
-    const avg=Math.round(swTimes.reduce((a,b)=>a+b,0)/swTimes.length);
-    document.getElementById('s-avg').textContent=avg+'ms';
-    document.getElementById('s-best').textContent=Math.round(Math.min(...swTimes))+'ms';
-    document.getElementById('s-worst').textContent=Math.round(Math.max(...swTimes))+'ms';
+
+function switchClick() {
+  if (!swActive || swIdx >= swTargets.length) return;
+  const ch = crosshairs['cSwitch'], t = swTargets[swIdx];
+  if (dist(ch.x, ch.y, t.x, t.y) < t.r + 5) {
+    const now = performance.now();
+    if (swIdx > 0) swTimes.push(now - swLast);
+    swLast = now; t.hit = true; swIdx++;
+    if (swIdx >= swTargets.length) {
+      document.getElementById('s-total').textContent = Math.round(now - swStart) + 'ms';
+      swActive = false;
+    }
+    if (swTimes.length) {
+      document.getElementById('s-avg').textContent = Math.round(swTimes.reduce((a, b) => a + b, 0) / swTimes.length) + 'ms';
+      document.getElementById('s-best').textContent = Math.round(Math.min(...swTimes)) + 'ms';
+      document.getElementById('s-worst').textContent = Math.round(Math.max(...swTimes)) + 'ms';
+    }
   }
+}
+
+function switchLoop() {
+  const c = document.getElementById('cSwitch'), ctx = c.getContext('2d'), ch = crosshairs['cSwitch'];
+  ctx.clearRect(0, 0, c.width, c.height); drawGrid(ctx, c.width, c.height);
+  swTargets.forEach((t, i) => {
+    ctx.beginPath(); ctx.arc(t.x, t.y, t.r, 0, Math.PI * 2);
+    if (t.hit) { ctx.fillStyle = 'rgba(78,205,196,0.4)'; }
+    else if (i === swIdx) { ctx.fillStyle = 'rgba(200,48,42,0.85)'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke(); }
+    else { ctx.fillStyle = 'rgba(46,46,46,0.8)'; ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 1; ctx.stroke(); }
+    ctx.fill();
+    ctx.fillStyle = t.hit ? 'rgba(255,255,255,0.3)' : '#fff';
+    ctx.font = '600 18px "Bebas Neue",sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(t.num, t.x, t.y);
+  });
+  drawCrosshair(ctx, ch);
+  swAnim = requestAnimationFrame(switchLoop);
 }
 
 // ═══════════════════════════════════════════════
 // 4. PRECISION TRAINER
 // ═══════════════════════════════════════════════
-const precArea=document.getElementById('precArea');
-let pHits=0,pMiss=0,pTimes=[],pCount=0,pMax=15,pTarget=null,pLast=0,pActive=false;
-const pSizes=[8,10,12,14,16,10,8,12,8,10,14,8,10,8,12];
-function startPrecision(){
-  pHits=0;pMiss=0;pTimes=[];pCount=0;pActive=true;
-  document.getElementById('precOverlay').style.display='none';
-  precArea.querySelectorAll('.prec-t').forEach(e=>e.remove());
-  spawnPrec();updatePrec();
+let pHits = 0, pMiss = 0, pTimes = [], pCount = 0, pMax = 15, pTarget = null, pLast = 0, pActive = false, pAnim;
+const pSizes = [8, 10, 12, 14, 16, 10, 8, 12, 8, 10, 14, 8, 10, 8, 12];
+
+function startPrecision() {
+  const c = initCanvas('cPrec');
+  pHits = 0; pMiss = 0; pTimes = []; pCount = 0; pActive = true; pTarget = null;
+  document.getElementById('lockPrec').classList.add('hidden');
+  if (!crosshairs['cPrec'].locked) lockCanvas('cPrec');
+  spawnPrecTarget(c);
+  if (pAnim) cancelAnimationFrame(pAnim);
+  precLoop();
 }
-function spawnPrec(){
-  if(pCount>=pMax){endPrec();return;}if(pTarget)pTarget.remove();
-  const s=pSizes[pCount],w=precArea.offsetWidth,h=precArea.offsetHeight;
-  const x=30+Math.random()*(w-60),y=30+Math.random()*(h-60);
-  const el=document.createElement('div');el.className='prec-t';
-  el.style.cssText=`position:absolute;width:${s}px;height:${s}px;left:${x-s/2}px;top:${y-s/2}px;border-radius:50%;border:1px solid var(--red);background:rgba(200,48,42,0.8);cursor:crosshair;display:flex;align-items:center;justify-content:center;`;
-  el.innerHTML='<div style="width:2px;height:2px;background:var(--white);border-radius:50%"></div>';
-  el.addEventListener('mousedown',e=>{e.stopPropagation();pHits++;pTimes.push(performance.now()-pLast);el.style.background='var(--cyan)';el.style.animation='hitPop .3s ease forwards';pTarget=null;updatePrec();setTimeout(spawnPrec,250);});
-  precArea.appendChild(el);pTarget=el;pLast=performance.now();pCount++;
+
+function spawnPrecTarget(c) {
+  if (pCount >= pMax) { endPrecision(); return; }
+  const s = pSizes[pCount];
+  pTarget = { x: 30 + Math.random() * (c.width - 60), y: 30 + Math.random() * (c.height - 60), r: s / 2 };
+  pLast = performance.now(); pCount++;
 }
-precArea.addEventListener('mousedown',e=>{if(!pActive||e.target.closest('.prec-t'))return;pMiss++;updatePrec();});
-function endPrec(){
-  pActive=false;const ov=document.getElementById('precOverlay');ov.style.display='flex';
-  const avg=pTimes.length?Math.round(pTimes.reduce((a,b)=>a+b,0)/pTimes.length):0;
-  const acc=(pHits+pMiss)?Math.round(pHits/(pHits+pMiss)*100):0;
-  ov.innerHTML=`<h3>${acc}% · ${avg}ms</h3><p>Relance pour réessayer</p>`;updatePrec();
+
+function precClick() {
+  if (!pActive) return;
+  const ch = crosshairs['cPrec'];
+  if (pTarget && dist(ch.x, ch.y, pTarget.x, pTarget.y) < pTarget.r + 2) {
+    pHits++; pTimes.push(performance.now() - pLast);
+    spawnPrecTarget(document.getElementById('cPrec'));
+  } else { pMiss++; }
+  updatePrecStats();
 }
-function updatePrec(){
-  const total=pHits+pMiss;
-  document.getElementById('p-hits').textContent=pHits||'—';
-  document.getElementById('p-miss').textContent=pMiss||'—';
-  document.getElementById('p-acc').textContent=total?(Math.round(pHits/total*100)+'%'):'—';
-  document.getElementById('p-avg').textContent=pTimes.length?(Math.round(pTimes.reduce((a,b)=>a+b,0)/pTimes.length)+'ms'):'—';
+
+function precLoop() {
+  const c = document.getElementById('cPrec'), ctx = c.getContext('2d'), ch = crosshairs['cPrec'];
+  ctx.clearRect(0, 0, c.width, c.height); drawGrid(ctx, c.width, c.height);
+  if (pTarget) {
+    ctx.beginPath(); ctx.arc(pTarget.x, pTarget.y, pTarget.r, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(200,48,42,0.8)'; ctx.fill();
+    ctx.strokeStyle = 'rgba(200,48,42,0.5)'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.beginPath(); ctx.arc(pTarget.x, pTarget.y, 1.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff'; ctx.fill();
+  }
+  drawCrosshair(ctx, ch);
+  if (pActive) pAnim = requestAnimationFrame(precLoop);
+}
+
+function endPrecision() {
+  pActive = false; pTarget = null;
+  const c = document.getElementById('cPrec'), ctx = c.getContext('2d');
+  ctx.fillStyle = 'rgba(10,10,10,0.85)'; ctx.fillRect(0, 0, c.width, c.height);
+  const avg = pTimes.length ? Math.round(pTimes.reduce((a, b) => a + b, 0) / pTimes.length) : 0;
+  const acc = (pHits + pMiss) ? Math.round(pHits / (pHits + pMiss) * 100) : 0;
+  ctx.fillStyle = '#f5f2ed'; ctx.font = '600 40px "Bebas Neue",sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText(acc + '% · ' + avg + 'ms', c.width / 2, c.height / 2);
+  ctx.font = '300 14px "Barlow Condensed",sans-serif'; ctx.fillStyle = '#999';
+  ctx.fillText('Relance depuis le bouton', c.width / 2, c.height / 2 + 30);
+  updatePrecStats();
+}
+
+function updatePrecStats() {
+  const total = pHits + pMiss;
+  document.getElementById('p-hits').textContent = pHits || '—';
+  document.getElementById('p-miss').textContent = pMiss || '—';
+  document.getElementById('p-acc').textContent = total ? Math.round(pHits / total * 100) + '%' : '—';
+  document.getElementById('p-avg').textContent = pTimes.length ? Math.round(pTimes.reduce((a, b) => a + b, 0) / pTimes.length) + 'ms' : '—';
 }
 
 // ═══════════════════════════════════════════════
-// 5. GO / NO-GO
+// 5. GO / NO-GO (no pointer lock needed)
 // ═══════════════════════════════════════════════
-const gCircle=document.getElementById('gngCircle'),gLabel=document.getElementById('gngLabel');
-let gActive=false,gRound=0,gMax=20,gTimer=null,gState='idle';
-let gCorrect=0,gFalse=0,gMissed=0,goTimes=[],gShowTime=0;
-const gColors=Array.from({length:20},(_,i)=>i%4===3||i%7===2?'nogo':'go');
+let gActive = false, gRound = 0, gMax = 20, gState = 'idle', gCorrect = 0, gFalse = 0, gMissed = 0, goTimes = [], gShowTime = 0, gTimer;
+const gColors = Array.from({ length: 20 }, (_, i) => i % 4 === 3 || i % 7 === 2 ? 'nogo' : 'go');
 
-function startGNG(){
-  gActive=true;gRound=0;gCorrect=0;gFalse=0;gMissed=0;goTimes=[];
-  for(let i=gColors.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[gColors[i],gColors[j]]=[gColors[j],gColors[i]];}
+function startGNG() {
+  const c = document.getElementById('cGNG'); c.width = c.getBoundingClientRect().width; c.height = c.getBoundingClientRect().height;
+  gActive = true; gRound = 0; gCorrect = 0; gFalse = 0; gMissed = 0; goTimes = [];
+  for (let i = gColors.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[gColors[i], gColors[j]] = [gColors[j], gColors[i]]; }
   nextGNG();
 }
-function nextGNG(){
-  if(gRound>=gMax){endGNG();return;}
-  gState='waiting';gCircle.style.background='var(--gray-mid)';gCircle.style.borderColor='var(--gray-light)';
-  gLabel.textContent='Attends...';gLabel.style.color='var(--gray-text)';
-  gTimer=setTimeout(()=>{
-    const type=gColors[gRound];
-    if(type==='go'){gCircle.style.background='rgba(46,204,113,0.3)';gCircle.style.borderColor='#2ecc71';gLabel.textContent='ENNEMI — TIRE !';gLabel.style.color='#2ecc71';}
-    else{gCircle.style.background='rgba(52,152,219,0.3)';gCircle.style.borderColor='#3498db';gLabel.textContent='ALLIÉ — NE TIRE PAS';gLabel.style.color='#3498db';}
-    gState=type;gShowTime=performance.now();
-    setTimeout(()=>{if(gState===type){if(type==='go')gMissed++;else gCorrect++;gRound++;updateGNG();nextGNG();}},1500);
-  },800+Math.random()*1500);
+
+function nextGNG() {
+  if (gRound >= gMax) { endGNG(); return; }
+  gState = 'waiting'; drawGNGCircle('#2e2e2e', '#555', 'ATTENDS...');
+  gTimer = setTimeout(() => {
+    const type = gColors[gRound];
+    if (type === 'go') drawGNGCircle('rgba(46,204,113,0.3)', '#2ecc71', 'ENNEMI — TIRE !');
+    else drawGNGCircle('rgba(52,152,219,0.3)', '#3498db', 'ALLIÉ — NE TIRE PAS');
+    gState = type; gShowTime = performance.now();
+    setTimeout(() => { if (gState === type) { if (type === 'go') gMissed++; else gCorrect++; gRound++; updateGNGStats(); nextGNG(); } }, 1500);
+  }, 800 + Math.random() * 1500);
 }
-function gngClick(){
-  if(!gActive)return;if(gState==='waiting')return;
-  if(gState==='go'){gCorrect++;goTimes.push(performance.now()-gShowTime);gCircle.style.background='rgba(46,204,113,0.6)';}
-  else if(gState==='nogo'){gFalse++;gCircle.style.background='rgba(200,48,42,0.6)';gCircle.style.borderColor='var(--red)';gLabel.textContent='TEAM KILL !';gLabel.style.color='var(--red)';}
-  gState='done';gRound++;updateGNG();setTimeout(nextGNG,500);
+
+document.getElementById('cGNG').addEventListener('click', () => {
+  if (!gActive || gState === 'waiting') return;
+  if (gState === 'go') { gCorrect++; goTimes.push(performance.now() - gShowTime); drawGNGCircle('rgba(46,204,113,0.6)', '#2ecc71', 'HIT !'); }
+  else if (gState === 'nogo') { gFalse++; drawGNGCircle('rgba(200,48,42,0.6)', '#c8302a', 'TEAM KILL !'); }
+  gState = 'done'; gRound++; updateGNGStats(); setTimeout(nextGNG, 500);
+});
+
+function drawGNGCircle(bg, border, text) {
+  const c = document.getElementById('cGNG'), ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, c.width, c.height); drawGrid(ctx, c.width, c.height);
+  const cx = c.width / 2, cy = c.height / 2, r = 100;
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fillStyle = bg; ctx.fill(); ctx.strokeStyle = border; ctx.lineWidth = 2; ctx.stroke();
+  ctx.fillStyle = border; ctx.font = '500 14px "Barlow Condensed",sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(text, cx, cy);
 }
-function endGNG(){
-  gActive=false;gState='idle';gCircle.style.background='var(--gray-mid)';gCircle.style.borderColor='var(--gray-light)';
-  const avg=goTimes.length?Math.round(goTimes.reduce((a,b)=>a+b,0)/goTimes.length):0;
-  gLabel.innerHTML=`Terminé<br><span style="font-size:12px;color:var(--gray-text)">${gCorrect} OK · ${gFalse} TK · ${gMissed} ratés · ${avg}ms</span>`;
-  gLabel.style.color='var(--white)';
+
+function endGNG() {
+  gActive = false; gState = 'idle';
+  const avg = goTimes.length ? Math.round(goTimes.reduce((a, b) => a + b, 0) / goTimes.length) : 0;
+  drawGNGCircle('#2e2e2e', '#555', gCorrect + ' OK · ' + gFalse + ' TK · ' + gMissed + ' ratés · ' + avg + 'ms');
 }
-function updateGNG(){
-  document.getElementById('g-correct').textContent=gCorrect||'—';
-  document.getElementById('g-false').textContent=gFalse||'—';
-  document.getElementById('g-missed').textContent=gMissed||'—';
-  document.getElementById('g-avg').textContent=goTimes.length?(Math.round(goTimes.reduce((a,b)=>a+b,0)/goTimes.length)+'ms'):'—';
+
+function updateGNGStats() {
+  document.getElementById('g-correct').textContent = gCorrect || '—';
+  document.getElementById('g-false').textContent = gFalse || '—';
+  document.getElementById('g-missed').textContent = gMissed || '—';
+  document.getElementById('g-avg').textContent = goTimes.length ? Math.round(goTimes.reduce((a, b) => a + b, 0) / goTimes.length) + 'ms' : '—';
 }
 
 // ═══════════════════════════════════════════════
 // 6. SAT CHALLENGE
 // ═══════════════════════════════════════════════
-const satArea=document.getElementById('satArea');
-let saHits=0,saMiss=0,saExpired=0,saTimes=[],saCount=0,saMax=20,saTarget=null,saLast=0,saActive=false,saTimer=null;
-const saSizes=[28,24,20,16,14,24,20,16,14,12,20,16,14,12,10,16,14,12,10,8];
+let saHits = 0, saMiss = 0, saExpired = 0, saTimes = [], saCount = 0, saMax = 20, saTarget = null, saLast = 0, saActive = false, saTimer, saAnim;
+const saSizes = [28, 24, 20, 16, 14, 24, 20, 16, 14, 12, 20, 16, 14, 12, 10, 16, 14, 12, 10, 8];
 
-function startSAT(){
-  saHits=0;saMiss=0;saExpired=0;saTimes=[];saCount=0;saActive=true;
-  document.getElementById('satOverlay').style.display='none';
-  satArea.querySelectorAll('.sat-t').forEach(e=>e.remove());
-  spawnSAT();updateSAT();
+function startSAT() {
+  const c = initCanvas('cSAT');
+  saHits = 0; saMiss = 0; saExpired = 0; saTimes = []; saCount = 0; saActive = true; saTarget = null;
+  document.getElementById('lockSAT').classList.add('hidden');
+  if (!crosshairs['cSAT'].locked) lockCanvas('cSAT');
+  spawnSATTarget(c);
+  if (saAnim) cancelAnimationFrame(saAnim);
+  satLoop();
 }
-function spawnSAT(){
-  if(saCount>=saMax){endSAT();return;}if(saTarget)saTarget.remove();
-  const s=saSizes[saCount],w=satArea.offsetWidth,h=satArea.offsetHeight;
-  const x=30+Math.random()*(w-60),y=30+Math.random()*(h-60);
-  const el=document.createElement('div');el.className='sat-t';
-  el.style.cssText=`position:absolute;width:${s}px;height:${s}px;left:${x-s/2}px;top:${y-s/2}px;border-radius:50%;background:var(--red);box-shadow:0 0 15px rgba(200,48,42,0.4);cursor:crosshair;display:flex;align-items:center;justify-content:center;`;
-  el.innerHTML='<div style="width:3px;height:3px;background:var(--white);border-radius:50%"></div>';
-  el.addEventListener('mousedown',e=>{e.stopPropagation();onSATHit(el);});
-  satArea.appendChild(el);saTarget=el;saLast=performance.now();saCount++;
-  const limit=Math.max(600,1500-saCount*45);
-  saTimer=setTimeout(()=>{if(saTarget===el){saExpired++;el.remove();saTarget=null;updateSAT();setTimeout(spawnSAT,200);}},limit);
+
+function spawnSATTarget(c) {
+  if (saCount >= saMax) { endSAT(); return; }
+  const s = saSizes[saCount];
+  saTarget = { x: 30 + Math.random() * (c.width - 60), y: 30 + Math.random() * (c.height - 60), r: s / 2, born: performance.now() };
+  saLast = performance.now(); saCount++;
+  const limit = Math.max(600, 1500 - saCount * 45);
+  clearTimeout(saTimer);
+  saTimer = setTimeout(() => { if (saTarget) { saExpired++; saTarget = null; updateSATStats(); spawnSATTarget(document.getElementById('cSAT')); } }, limit);
 }
-function onSATHit(el){
-  if(!saActive)return;clearTimeout(saTimer);
-  saHits++;saTimes.push(performance.now()-saLast);
-  el.style.background='var(--cyan)';el.style.animation='hitFade .3s ease forwards';
-  saTarget=null;updateSAT();setTimeout(spawnSAT,200);
+
+function satClick() {
+  if (!saActive) return;
+  const ch = crosshairs['cSAT'];
+  if (saTarget && dist(ch.x, ch.y, saTarget.x, saTarget.y) < saTarget.r + 3) {
+    clearTimeout(saTimer); saHits++; saTimes.push(performance.now() - saLast);
+    saTarget = null; updateSATStats();
+    setTimeout(() => spawnSATTarget(document.getElementById('cSAT')), 200);
+  } else { saMiss++; updateSATStats(); }
 }
-satArea.addEventListener('mousedown',e=>{if(!saActive||e.target!==satArea)return;saMiss++;updateSAT();});
-function endSAT(){
-  saActive=false;const ov=document.getElementById('satOverlay');ov.style.display='flex';
-  const avg=saTimes.length?Math.round(saTimes.reduce((a,b)=>a+b,0)/saTimes.length):0;
-  const score=saTimes.length?Math.round(saHits*(1000/Math.max(avg,1))*10):0;
-  ov.innerHTML=`<h3>Score: ${score}</h3><p>${saHits} hits · ${avg}ms moy · Relance pour réessayer</p>`;updateSAT();
+
+function satLoop() {
+  const c = document.getElementById('cSAT'), ctx = c.getContext('2d'), ch = crosshairs['cSAT'];
+  ctx.clearRect(0, 0, c.width, c.height); drawGrid(ctx, c.width, c.height);
+  if (saTarget) {
+    ctx.beginPath(); ctx.arc(saTarget.x, saTarget.y, saTarget.r, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(200,48,42,0.85)'; ctx.fill();
+    ctx.beginPath(); ctx.arc(saTarget.x, saTarget.y, 2, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill();
+  }
+  drawCrosshair(ctx, ch);
+  if (saActive) saAnim = requestAnimationFrame(satLoop);
 }
-function updateSAT(){
-  const avg=saTimes.length?Math.round(saTimes.reduce((a,b)=>a+b,0)/saTimes.length):0;
-  const score=saTimes.length?Math.round(saHits*(1000/Math.max(avg,1))*10):0;
-  document.getElementById('sa-hits').textContent=saHits||'—';
-  document.getElementById('sa-miss').textContent=saMiss||'—';
-  document.getElementById('sa-expired').textContent=saExpired||'—';
-  document.getElementById('sa-avg').textContent=avg?avg+'ms':'—';
-  document.getElementById('sa-score').textContent=score||'—';
+
+function endSAT() {
+  saActive = false; saTarget = null; clearTimeout(saTimer);
+  const c = document.getElementById('cSAT'), ctx = c.getContext('2d');
+  const avg = saTimes.length ? Math.round(saTimes.reduce((a, b) => a + b, 0) / saTimes.length) : 0;
+  const score = saTimes.length ? Math.round(saHits * (1000 / Math.max(avg, 1)) * 10) : 0;
+  ctx.fillStyle = 'rgba(10,10,10,0.85)'; ctx.fillRect(0, 0, c.width, c.height);
+  ctx.fillStyle = '#f5f2ed'; ctx.font = '600 48px "Bebas Neue",sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('SCORE: ' + score, c.width / 2, c.height / 2 - 10);
+  ctx.font = '300 14px "Barlow Condensed",sans-serif'; ctx.fillStyle = '#999';
+  ctx.fillText(saHits + ' hits · ' + avg + 'ms · Relance depuis le bouton', c.width / 2, c.height / 2 + 30);
+  updateSATStats();
 }
+
+function updateSATStats() {
+  const avg = saTimes.length ? Math.round(saTimes.reduce((a, b) => a + b, 0) / saTimes.length) : 0;
+  const score = saTimes.length ? Math.round(saHits * (1000 / Math.max(avg, 1)) * 10) : 0;
+  document.getElementById('sa-hits').textContent = saHits || '—';
+  document.getElementById('sa-miss').textContent = saMiss || '—';
+  document.getElementById('sa-expired').textContent = saExpired || '—';
+  document.getElementById('sa-avg').textContent = avg ? avg + 'ms' : '—';
+  document.getElementById('sa-score').textContent = score || '—';
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+updateConfig();
+// Pre-init all canvases
+['cFlick', 'cTrack', 'cSwitch', 'cPrec', 'cGNG', 'cSAT'].forEach(id => {
+  const c = document.getElementById(id);
+  const rect = c.getBoundingClientRect();
+  c.width = rect.width; c.height = rect.height;
+  crosshairs[id] = { x: c.width / 2, y: c.height / 2, locked: false };
+  const ctx = c.getContext('2d');
+  drawGrid(ctx, c.width, c.height);
+});
 </script>
 </body>
 </html>
