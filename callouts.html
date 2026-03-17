@@ -46,6 +46,9 @@ footer{border-top:1px solid var(--border);padding:24px 48px;display:flex;justify
     <input type="number" id="penSize" class="size-input" min="1" max="20" value="3" placeholder="Taille">
   </div>
   <div class="toolbar-group">
+    <button class="toolbar-btn" id="moveTextBtn" title="Déplacer le texte">⤡</button>
+  </div>
+  <div class="toolbar-group">
     <button class="toolbar-btn" id="textBtn" title="Ajouter du texte">T</button>
   </div>
   <div class="toolbar-group">
@@ -100,7 +103,7 @@ const MAPS=[
 ];
 let currentMap=null,currentFloor=0,zoomLevel=1;
 let isDrawing=false,isPanning=false,panStartX=0,panStartY=0;
-let drawingMode=false,textMode=false,panMode=true;
+let drawingMode=false,textMode=false,moveTextMode=false,panMode=true;
 let drawHistory=[],redoHistory=[];
 let textItems=[];
 let currentTextItem=null;
@@ -117,13 +120,15 @@ function updateToolButtons(){
 const panBtn=document.getElementById('panBtn');
 const penBtn=document.getElementById('penBtn');
 const textBtn=document.getElementById('textBtn');
+const moveTextBtn=document.getElementById('moveTextBtn');
 
 panBtn.classList.toggle('active',panMode);
 penBtn.classList.toggle('active',drawingMode);
 textBtn.classList.toggle('active',textMode);
+moveTextBtn.classList.toggle('active',moveTextMode);
 
 drawingCanvas.classList.toggle('active',drawingMode);
-textCanvas.classList.toggle('active',textMode);
+textCanvas.classList.toggle('active',textMode||moveTextMode);
 
 const blueprintWrap=document.getElementById('blueprintWrap');
 if(panMode){
@@ -132,6 +137,8 @@ blueprintWrap.style.cursor='grab';
 blueprintWrap.style.cursor='crosshair';
 }else if(textMode){
 blueprintWrap.style.cursor='text';
+}else if(moveTextMode){
+blueprintWrap.style.cursor='move';
 }else{
 blueprintWrap.style.cursor='default';
 }
@@ -217,10 +224,23 @@ textMode=!textMode;
 if(textMode){
 panMode=false;
 drawingMode=false;
-selectTextMode=false;
+moveTextMode=false;
 updateToolButtons();
 }else{
 updateToolButtons();
+}
+});
+
+document.getElementById('moveTextBtn').addEventListener('click',function(){
+moveTextMode=!moveTextMode;
+if(moveTextMode){
+panMode=false;
+drawingMode=false;
+textMode=false;
+updateToolButtons();
+}else{
+updateToolButtons();
+cancelTextEdit();
 }
 });
 
@@ -392,12 +412,30 @@ return;
 }
 });
 
+// Détection de clic sur texte en mode move pour le sélectionner
+textCanvas.addEventListener('mousedown',e=>{
+if(!moveTextMode)return;
+const rect=textCanvas.getBoundingClientRect();
+const x=(e.clientX-rect.left)*textCanvas.width/rect.width;
+const y=(e.clientY-rect.top)*textCanvas.height/rect.height;
+
+for(let item of textItems){
+const textWidth=textCtx.measureText(item.text).width;
+if(x>=item.x&&x<=item.x+textWidth&&y>=item.y-item.size&&y<=item.y){
+selectedTextItem=item;
+currentTextItem=item;
+editTextItem(item);
+return;
+}
+}
+});
+
 // Pan avec la main
 const blueprintWrap=document.getElementById('blueprintWrap');
 let isMovingText=false,moveStartX=0,moveStartY=0;
 
 blueprintWrap.addEventListener('mousedown',e=>{
-if(panMode && !drawingMode && !textMode){
+if(panMode && !drawingMode && !textMode && !moveTextMode){
 isPanning=true;
 panStartX=e.clientX+blueprintWrap.scrollLeft;
 panStartY=e.clientY+blueprintWrap.scrollTop;
@@ -419,7 +457,7 @@ const rect=textCanvas.getBoundingClientRect();
 const x=(e.clientX-rect.left)*textCanvas.width/rect.width;
 const y=(e.clientY-rect.top)*textCanvas.height/rect.height;
 openTextEditor(x,y);
-}else if(selectedTextItem){
+}else if(moveTextMode && selectedTextItem){
 isMovingText=true;
 moveStartX=e.clientX;
 moveStartY=e.clientY;
