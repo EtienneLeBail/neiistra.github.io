@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sensibilité — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999; --border: rgba(255,255,255,0.08); }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-links { display: flex; align-items: center; gap: 32px; }
+  .nav-link { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-link:hover { color: var(--white); }
+  .nav-link.active { color: var(--red); }
+
+  .page-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .page-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%); }
+  .page-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; position: relative; }
+  .page-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .page-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(48px,8vw,96px); letter-spacing: 2px; line-height: 0.95; margin-bottom: 16px; position: relative; }
+  .page-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); position: relative; }
+
+  .content { max-width: 960px; margin: 0 auto; padding: 64px 48px; }
+
+  .tool-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .tool-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  h2 { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 2px; color: var(--white); margin-bottom: 8px; line-height: 1; }
+  .tool-desc { font-size: 14px; color: var(--gray-text); margin-bottom: 24px; line-height: 1.7; }
+  .tool-desc strong { color: var(--white); font-weight: 500; }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 56px 0; }
+
+  .tool-box { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin-bottom: 0; }
+
+  /* Input groups */
+  .input-row { display: grid; gap: 12px; margin-bottom: 16px; }
+  .input-row-2 { grid-template-columns: 1fr 1fr; }
+  .input-row-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .input-row-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .field input, .field select {
+    padding: 11px 14px;
+    background: var(--gray-mid);
+    border: 1px solid var(--border);
+    color: var(--white);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    border-radius: 4px;
+    transition: border-color 0.2s;
+    -moz-appearance: textfield;
+  }
+  .field input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .field input:focus, .field select:focus { outline: none; border-color: rgba(200,48,42,0.5); }
+  .field select { cursor: pointer; }
+
+  .result-box { background: rgba(200,48,42,0.08); border: 1px solid rgba(200,48,42,0.25); border-radius: 6px; padding: 20px 24px; margin-top: 16px; }
+  .result-row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 6px; }
+  .result-row:last-child { margin-bottom: 0; }
+  .result-label { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 1px; color: var(--gray-text); }
+  .result-value { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 1px; color: var(--white); }
+  .result-value span { font-size: 14px; color: var(--gray-text); font-family: 'Barlow Condensed', sans-serif; letter-spacing: 1px; margin-left: 4px; }
+  .result-note { font-size: 12px; color: var(--gray-light); margin-top: 8px; line-height: 1.6; }
+
+  /* ADS multiplier grid */
+  .ads-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 16px; }
+  .ads-cell { background: rgba(0,0,0,0.3); padding: 14px 16px; }
+  .ads-cell-header { background: rgba(255,255,255,0.04); padding: 10px 16px; }
+  .ads-cell-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-bottom: 4px; }
+  .ads-cell-value { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--white); }
+  .ads-cell-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; color: var(--gray-text); margin-top: 2px; }
+
+  /* Pro table */
+  .pro-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+  .pro-table th { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); padding: 10px 16px; text-align: left; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02); }
+  .pro-table td { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; color: var(--gray-text); padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
+  .pro-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .pro-table td:first-child { color: var(--white); font-weight: 500; }
+  .pro-table td.highlight { color: var(--red); font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 1px; }
+  .pro-table td.good { color: #1D9E75; }
+
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; margin-top: 48px; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);} }
+  .page-eyebrow { animation: fadeUp .5s ease both; }
+  .page-title { animation: fadeUp .5s .08s ease both; }
+  .page-subtitle { animation: fadeUp .5s .16s ease both; }
+
+  @media(max-width:768px) {
+    nav { padding: 0 24px; }
+    .nav-links { gap: 16px; }
+    .page-hero { padding: 100px 24px 48px; }
+    .content { padding: 40px 24px; }
+    .input-row-2, .input-row-3, .input-row-4 { grid-template-columns: 1fr 1fr; }
+    .ads-grid { grid-template-columns: 1fr 1fr; }
+    .pro-table { font-size: 12px; }
+    .pro-table th, .pro-table td { padding: 8px 10px; }
+    footer { padding: 20px 24px; flex-direction: column; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">Chapitres</a>
+    <a href="sensibilite.html" class="nav-link active">Sensibilité</a>
+  </div>
+</nav>
+
+<section class="page-hero">
+  <div class="page-eyebrow">Outil — R6 Process</div>
+  <h1 class="page-title">Sensibilité</h1>
+  <p class="page-subtitle">Calculateurs · Convertisseurs · Références pro</p>
+</section>
+
+<div class="content">
+
+  <!-- OUTIL 1 : eDPI & cm/360 -->
+  <div class="tool-label">Outil 1</div>
+  <h2>Calculateur eDPI &amp; cm/360°</h2>
+  <p class="tool-desc">L\'<strong>eDPI</strong> (effective DPI) est le seul chiffre qui compte pour comparer deux sensibilités — c\'est DPI × Sensibilité in-game. Le <strong>cm/360°</strong> est la distance physique que ta souris doit parcourir pour faire un tour complet.</p>
+
+  <div class="tool-box">
+    <div class="input-row input-row-3">
+      <div class="field">
+        <label>DPI souris</label>
+        <input type="number" id="e1-dpi" value="800" min="100" max="32000" oninput="calcEdpi()">
+      </div>
+      <div class="field">
+        <label>Sensibilité R6 (1–100)</label>
+        <input type="number" id="e1-sens" value="15" min="1" max="100" oninput="calcEdpi()">
+      </div>
+      <div class="field">
+        <label>Yaw R6 (défaut 0.0066)</label>
+        <input type="number" id="e1-yaw" value="0.0066" step="0.0001" min="0.001" max="0.02" oninput="calcEdpi()">
+      </div>
+    </div>
+    <div class="result-box" id="edpi-result"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- OUTIL 2 : Convertisseur cm/360 → Sensibilité R6 -->
+  <div class="tool-label">Outil 2</div>
+  <h2>Trouver sa sensibilité depuis un cm/360°</h2>
+  <p class="tool-desc">Tu connais ton cm/360° idéal (depuis un autre jeu ou une recommandation) et tu veux savoir quelle sensibilité mettre dans R6 avec ton DPI actuel.</p>
+
+  <div class="tool-box">
+    <div class="input-row input-row-3">
+      <div class="field">
+        <label>DPI souris</label>
+        <input type="number" id="e2-dpi" value="800" min="100" max="32000" oninput="calcFromCm()">
+      </div>
+      <div class="field">
+        <label>cm/360° cible</label>
+        <input type="number" id="e2-cm" value="40" min="5" max="200" step="0.1" oninput="calcFromCm()">
+      </div>
+      <div class="field">
+        <label>Yaw R6 (défaut 0.0066)</label>
+        <input type="number" id="e2-yaw" value="0.0066" step="0.0001" min="0.001" max="0.02" oninput="calcFromCm()">
+      </div>
+    </div>
+    <div class="result-box" id="cm-result"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- OUTIL 3 : Convertisseur inter-jeux -->
+  <div class="tool-label">Outil 3</div>
+  <h2>Convertisseur de sensibilité entre jeux</h2>
+  <p class="tool-desc">Convertit ta sensibilité depuis CS2, Valorant, Apex Legends ou Overwatch 2 vers R6 Siege, en conservant le même <strong>cm/360°</strong>.</p>
+
+  <div class="tool-box">
+    <div class="input-row input-row-4">
+      <div class="field">
+        <label>Jeu source</label>
+        <select id="e3-game" onchange="calcConvert()">
+          <option value="cs2">CS2</option>
+          <option value="valorant">Valorant</option>
+          <option value="apex">Apex Legends</option>
+          <option value="ow2">Overwatch 2</option>
+          <option value="r6" selected>R6 Siege</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Sensibilité source</label>
+        <input type="number" id="e3-sens" value="1.5" min="0.01" max="100" step="0.01" oninput="calcConvert()">
+      </div>
+      <div class="field">
+        <label>DPI souris</label>
+        <input type="number" id="e3-dpi" value="800" min="100" max="32000" oninput="calcConvert()">
+      </div>
+      <div class="field">
+        <label>Jeu cible</label>
+        <select id="e3-target" onchange="calcConvert()">
+          <option value="r6" selected>R6 Siege</option>
+          <option value="cs2">CS2</option>
+          <option value="valorant">Valorant</option>
+          <option value="apex">Apex Legends</option>
+          <option value="ow2">Overwatch 2</option>
+        </select>
+      </div>
+    </div>
+    <div class="result-box" id="convert-result"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- OUTIL 4 : ADS Multipliers -->
+  <div class="tool-label">Outil 4</div>
+  <h2>Multiplicateurs ADS dans R6</h2>
+  <p class="tool-desc">R6 applique un multiplicateur à ta sensibilité hip-fire quand tu vises (ADS). Deux modes existent : <strong>Uniform</strong> (recommandé — conserve le cm/360° pour tous les zooms) et <strong>Legacy</strong>. Entre ta sensibilité hip-fire et vois les valeurs ADS résultantes.</p>
+
+  <div class="tool-box">
+    <div class="input-row input-row-3">
+      <div class="field">
+        <label>DPI souris</label>
+        <input type="number" id="e4-dpi" value="800" min="100" max="32000" oninput="calcADS()">
+      </div>
+      <div class="field">
+        <label>Sensibilité hip-fire (1–100)</label>
+        <input type="number" id="e4-sens" value="15" min="1" max="100" oninput="calcADS()">
+      </div>
+      <div class="field">
+        <label>Mode ADS</label>
+        <select id="e4-mode" onchange="calcADS()">
+          <option value="uniform" selected>Uniform (recommandé)</option>
+          <option value="legacy">Legacy</option>
+        </select>
+      </div>
+    </div>
+    <div class="ads-grid" id="ads-result"></div>
+    <p style="font-size:12px;color:var(--gray-light);margin-top:12px;line-height:1.6;">
+      En mode <strong style="color:var(--white)">Uniform</strong>, le cm/360° est conservé pour tous les niveaux de zoom — c\'est le mode recommandé pour la cohérence musculaire. En mode <strong style="color:var(--white)">Legacy</strong>, la sensibilité en degrés/pixel reste constante, ce qui ralentit le cm/360° effectif à mesure que le zoom augmente.
+    </p>
+  </div>
+
+
+
+</div>
+
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Outil Sensibilité</span>
+</footer>
+
+<script>
+// ─── Constants ────────────────────────────────────────────────────────────────
+const R6_YAW_DEFAULT = 0.0066;
+
+// Game yaw values (degrees per unit of in-game sens × pixel moved)
+// These are used to compute cm/360 = 360 / (DPI * sens * yaw_deg_per_count * (1/2.54))
+// For each game: cm/360 = (360 * 2.54) / (DPI * sens * yaw)
+const GAME_YAW = {
+  cs2:      0.022,   // CS2/CSGO: 0.022 deg/unit
+  valorant: 0.07,    // Valorant: 0.07 deg/unit
+  apex:     0.022,   // Apex uses same as CS (360Hz baseline)
+  ow2:      0.0066,  // OW2 approx
+  r6:       0.0066,  // R6 default yaw
+};
+
+function cm360(dpi, sens, yaw) {
+  // cm/360 = 360 / (dpi * sens * yaw / 2.54)
+  return (360 * 2.54) / (dpi * sens * yaw);
+}
+
+function sensFromCm360(dpi, targetCm, yaw) {
+  return (360 * 2.54) / (dpi * targetCm * yaw);
+}
+
+// ─── Tool 1: eDPI & cm/360 ────────────────────────────────────────────────────
+function calcEdpi() {
+  const dpi  = parseFloat(document.getElementById('e1-dpi').value)  || 0;
+  const sens = parseFloat(document.getElementById('e1-sens').value) || 0;
+  const yaw  = parseFloat(document.getElementById('e1-yaw').value)  || R6_YAW_DEFAULT;
+  if (!dpi || !sens) return;
+
+  const edpi = dpi * sens;
+  const cm   = cm360(dpi, sens, yaw);
+  const zone = edpi < 400 ? 'Très bas — manque de fluidité pour les pivots R6'
+             : edpi < 800 ? 'Bas — précision élevée, pivots lents'
+             : edpi < 1400 ? 'Plage optimale pour R6 — bon compromis'
+             : edpi < 2000 ? 'Élevé — réactif mais moins précis sur les angles'
+             : 'Très élevé — difficile à contrôler';
+  const zoneColor = (edpi >= 800 && edpi <= 1400) ? '#1D9E75' : (edpi < 400 || edpi > 2000) ? '#c8302a' : '#EF9F27';
+
+  document.getElementById('edpi-result').innerHTML = `
+    <div class="result-row">
+      <span class="result-label">eDPI (DPI × Sensibilité)</span>
+      <span class="result-value">${edpi.toLocaleString()}<span>eDPI</span></span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">cm/360° (hip-fire)</span>
+      <span class="result-value">${cm.toFixed(1)}<span>cm</span></span>
+    </div>
+    <p class="result-note" style="color:${zoneColor}">${zone}</p>`;
+}
+
+// ─── Tool 2: cm/360 → Sensibilité ─────────────────────────────────────────────
+function calcFromCm() {
+  const dpi = parseFloat(document.getElementById('e2-dpi').value) || 0;
+  const cm  = parseFloat(document.getElementById('e2-cm').value)  || 0;
+  const yaw = parseFloat(document.getElementById('e2-yaw').value) || R6_YAW_DEFAULT;
+  if (!dpi || !cm) return;
+
+  const sens = sensFromCm360(dpi, cm, yaw);
+  const edpi = dpi * sens;
+  const sensRounded = Math.round(sens * 10) / 10;
+
+  document.getElementById('cm-result').innerHTML = `
+    <div class="result-row">
+      <span class="result-label">Sensibilité R6 à utiliser</span>
+      <span class="result-value">${sensRounded.toFixed(1)}<span>/ 100</span></span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">eDPI résultant</span>
+      <span class="result-value">${Math.round(edpi).toLocaleString()}<span>eDPI</span></span>
+    </div>
+    <p class="result-note">R6 n'accepte que des valeurs entières (1–100) — arrondi à <strong style="color:var(--white)">${Math.round(sens)}</strong> pour la précision maximale.</p>`;
+}
+
+// ─── Tool 3: Cross-game converter ─────────────────────────────────────────────
+function calcConvert() {
+  const srcGame  = document.getElementById('e3-game').value;
+  const srcSens  = parseFloat(document.getElementById('e3-sens').value) || 0;
+  const dpi      = parseFloat(document.getElementById('e3-dpi').value)  || 0;
+  const tgtGame  = document.getElementById('e3-target').value;
+  if (!srcSens || !dpi) return;
+
+  const srcYaw = GAME_YAW[srcGame];
+  const tgtYaw = GAME_YAW[tgtGame];
+  const cm = cm360(dpi, srcSens, srcYaw);
+  const tgtSens = sensFromCm360(dpi, cm, tgtYaw);
+
+  const gameNames = { cs2:'CS2', valorant:'Valorant', apex:'Apex Legends', ow2:'Overwatch 2', r6:'R6 Siege' };
+
+  document.getElementById('convert-result').innerHTML = `
+    <div class="result-row">
+      <span class="result-label">Sensibilité ${gameNames[tgtGame]}</span>
+      <span class="result-value">${tgtSens.toFixed(tgtGame==='r6'?1:3)}<span>${tgtGame==='r6'?'/ 100':''}</span></span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">cm/360° conservé</span>
+      <span class="result-value">${cm.toFixed(1)}<span>cm</span></span>
+    </div>
+    <p class="result-note">
+      ${tgtGame==='r6' ? 'R6 arrondit à l\'entier le plus proche — utilise <strong style="color:var(--white)">'+Math.round(tgtSens)+'</strong>. La légère différence de cm/360° est négligeable (&lt;1%).' : 'Conversion exacte — même cm/360° dans les deux jeux.'}
+    </p>`;
+}
+
+// ─── Tool 4: ADS multipliers ──────────────────────────────────────────────────
+const ADS_SCOPES = [
+  { label:'Hip-fire',    mult_uniform:1.000, mult_legacy:1.000, fov_mult:1.00 },
+  { label:'1× (red dot)',mult_uniform:1.000, mult_legacy:0.800, fov_mult:0.80 },
+  { label:'1.5× (acog)', mult_uniform:0.667, mult_legacy:0.533, fov_mult:0.67 },
+  { label:'2.5× (ACOG)', mult_uniform:0.400, mult_legacy:0.320, fov_mult:0.40 },
+  { label:'3×',          mult_uniform:0.333, mult_legacy:0.267, fov_mult:0.33 },
+  { label:'5× (scope)',  mult_uniform:0.200, mult_legacy:0.160, fov_mult:0.20 },
+];
+
+function calcADS() {
+  const dpi  = parseFloat(document.getElementById('e4-dpi').value)  || 800;
+  const sens = parseFloat(document.getElementById('e4-sens').value) || 15;
+  const mode = document.getElementById('e4-mode').value;
+  const hipCm = cm360(dpi, sens, R6_YAW_DEFAULT);
+
+  const container = document.getElementById('ads-result');
+  container.innerHTML = ADS_SCOPES.map(s => {
+    const mult = mode === 'uniform' ? s.mult_uniform : s.mult_legacy;
+    const adsSens = sens * mult;
+    const adsCm = mode === 'uniform' ? hipCm : cm360(dpi, adsSens, R6_YAW_DEFAULT);
+    const isHip = s.label === 'Hip-fire';
+    return `
+      <div class="${isHip ? 'ads-cell-header' : 'ads-cell'}">
+        <div class="ads-cell-label">${s.label}</div>
+        <div class="ads-cell-value">${adsSens.toFixed(1)}</div>
+        <div class="ads-cell-sub">${adsCm.toFixed(1)} cm/360°</div>
+      </div>`;
+  }).join('');
+}
+
+
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  calcEdpi();
+  calcFromCm();
+  calcConvert();
+  calcADS();
+});
+</script>
+</body>
+</html>
