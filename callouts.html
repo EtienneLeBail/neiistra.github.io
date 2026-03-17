@@ -21,7 +21,7 @@
 .text-editor-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px)}.text-editor-modal.open{display:flex}.text-editor-box{background:var(--gray);border:1px solid var(--red);border-radius:4px;padding:24px;max-width:400px;width:90%;box-shadow:0 10px 40px rgba(200,48,42,0.3)}.text-editor-box h3{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;margin-bottom:16px;color:var(--white)}.text-editor-box textarea{width:100%;height:100px;padding:12px;background:var(--black);border:1px solid var(--border);color:var(--white);font-family:'Barlow',sans-serif;resize:vertical;margin-bottom:12px;border-radius:3px}.text-editor-box input{width:100%;padding:8px 12px;background:var(--black);border:1px solid var(--border);color:var(--white);font-family:'Barlow Condensed',sans-serif;margin-bottom:12px;border-radius:3px}.text-editor-buttons{display:flex;gap:8px}.text-editor-buttons button{flex:1;padding:10px;border:1px solid var(--border);cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:500;letter-spacing:1px;border-radius:3px;transition:all .2s}.text-editor-buttons .save{background:var(--red);color:var(--white);border-color:var(--red)}.text-editor-buttons .save:hover{background:var(--red-dim)}.text-editor-buttons .cancel{background:var(--gray-mid);color:var(--white);border-color:var(--border)}.text-editor-buttons .cancel:hover{background:var(--gray)}.text-editor-buttons .delete{background:transparent;color:var(--gray-text);border-color:var(--border)}.text-editor-buttons .delete:hover{color:var(--red);border-color:var(--red)}
 
 /* Input de texte inline sur la map */
-#inlineTextInput{position:absolute;top:0;left:0;background:transparent;border:2px solid black;border-radius:2px;padding:4px 6px;font-family:'Barlow',sans-serif;font-size:14px;color:var(--white);z-index:50;display:none;min-width:100px;outline:none;box-shadow:inset 0 0 0 1px var(--red)}
+#inlineTextInput{position:absolute;top:0;left:0;background:transparent;border:2px solid black;border-radius:2px;padding:4px 6px;font-family:'Barlow',sans-serif;font-size:14px;color:var(--white);z-index:50;display:none;min-width:100px;outline:none;box-shadow:inset 0 0 0 1px var(--red)}.text-input-wrapper{position:absolute;display:none;z-index:50}.text-input-wrapper.active{display:block}.text-resize-handle{position:absolute;bottom:-8px;right:-8px;width:16px;height:16px;background:var(--red);cursor:nwse-resize;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--white);user-select:none}
 
 footer{border-top:1px solid var(--border);padding:24px 48px;display:flex;justify-content:space-between;align-items:center}.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;color:var(--gray-text)}.footer-logo span{color:var(--red)}.footer-text{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;color:var(--gray-light);text-transform:uppercase}@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.hero-tag{animation:fadeUp .6s ease both}.hero-title{animation:fadeUp .6s .1s ease both}@media(max-width:768px){nav{padding:0 24px}.hero{padding:100px 24px 48px}.content{padding:16px}.map-tab{font-size:10px;padding:8px 10px;letter-spacing:1px}.floor-tab{font-size:10px;padding:8px 12px}.blueprint-wrap{min-height:300px}.map-info{gap:16px}.toolbar{padding:8px 12px}.toolbar-btn{width:32px;height:32px;font-size:14px}.size-input{width:40px}.toolbar-label{font-size:9px}footer{padding:20px 24px;flex-direction:column;gap:8px;text-align:center}}
 </style>
@@ -46,7 +46,10 @@ footer{border-top:1px solid var(--border);padding:24px 48px;display:flex;justify
     <input type="number" id="penSize" class="size-input" min="1" max="20" value="3" placeholder="Taille">
   </div>
   <div class="toolbar-group">
-    <button class="toolbar-btn" id="textBtn" title="Ajouter du texte">A</button>
+    <button class="toolbar-btn" id="selectTextBtn" title="Sélectionner et déplacer du texte">✎</button>
+  </div>
+  <div class="toolbar-group">
+    <button class="toolbar-btn" id="textBtn" title="Ajouter du texte">T</button>
   </div>
   <div class="toolbar-group">
     <button class="toolbar-btn" id="undoBtn" title="Annuler">↶</button>
@@ -74,7 +77,10 @@ footer{border-top:1px solid var(--border);padding:24px 48px;display:flex;justify
 </div>
 
 <!-- Input de texte inline sur la map -->
-<input type="text" id="inlineTextInput" placeholder="Écrivez ici...">
+<div class="text-input-wrapper" id="textInputWrapper">
+  <input type="text" id="inlineTextInput" placeholder="Écrivez ici...">
+  <div class="text-resize-handle" id="textResizeHandle">↗</div>
+</div>
 
 <footer><span class="footer-logo">NEI<span>I</span>STRA</span><span class="footer-text">R6 Process — Blueprints · Images © Ubisoft</span></footer>
 <script>
@@ -98,10 +104,13 @@ const MAPS=[
 ];
 let currentMap=null,currentFloor=0,zoomLevel=1;
 let isDrawing=false,isPanning=false,panStartX=0,panStartY=0;
-let drawingMode=false,textMode=false,panMode=true;
+let drawingMode=false,textMode=false,selectTextMode=false,panMode=true;
 let drawHistory=[],redoHistory=[];
 let textItems=[];
 let currentTextItem=null;
+let selectedTextItem=null;
+let isResizingText=false;
+let resizeStartX=0,resizeStartY=0,resizeStartSize=16;
 
 const drawingCanvas=document.getElementById('drawingCanvas');
 const textCanvas=document.getElementById('textCanvas');
@@ -112,13 +121,15 @@ function updateToolButtons(){
 const panBtn=document.getElementById('panBtn');
 const penBtn=document.getElementById('penBtn');
 const textBtn=document.getElementById('textBtn');
+const selectTextBtn=document.getElementById('selectTextBtn');
 
 panBtn.classList.toggle('active',panMode);
 penBtn.classList.toggle('active',drawingMode);
 textBtn.classList.toggle('active',textMode);
+selectTextBtn.classList.toggle('active',selectTextMode);
 
 drawingCanvas.classList.toggle('active',drawingMode);
-textCanvas.classList.toggle('active',textMode);
+textCanvas.classList.toggle('active',textMode||selectTextMode);
 
 const blueprintWrap=document.getElementById('blueprintWrap');
 if(panMode){
@@ -127,6 +138,8 @@ blueprintWrap.style.cursor='grab';
 blueprintWrap.style.cursor='crosshair';
 }else if(textMode){
 blueprintWrap.style.cursor='text';
+}else if(selectTextMode){
+blueprintWrap.style.cursor='pointer';
 }else{
 blueprintWrap.style.cursor='default';
 }
@@ -212,9 +225,23 @@ textMode=!textMode;
 if(textMode){
 panMode=false;
 drawingMode=false;
+selectTextMode=false;
 updateToolButtons();
 }else{
 updateToolButtons();
+}
+});
+
+document.getElementById('selectTextBtn').addEventListener('click',function(){
+selectTextMode=!selectTextMode;
+if(selectTextMode){
+panMode=false;
+drawingMode=false;
+textMode=false;
+updateToolButtons();
+}else{
+updateToolButtons();
+cancelTextEdit();
 }
 });
 
@@ -266,12 +293,27 @@ clearDrawing();textCtx.clearRect(0,0,textCanvas.width,textCanvas.height);
 
 // Input de texte inline
 function openTextEditor(x,y){
+const wrapper=document.getElementById('textInputWrapper');
 const inlineInput=document.getElementById('inlineTextInput');
-currentTextItem={x:Math.round(x),y:Math.round(y),text:'',color:'#c8302a',size:16};
+currentTextItem={x:Math.round(x),y:Math.round(y),text:'',color:document.getElementById('penColor').value,size:16};
 inlineInput.value='';
-inlineInput.style.left=x+'px';
-inlineInput.style.top=y+'px';
-inlineInput.style.display='block';
+inlineInput.style.color=document.getElementById('penColor').value;
+wrapper.style.left=x+'px';
+wrapper.style.top=y+'px';
+wrapper.classList.add('active');
+inlineInput.focus();
+}
+
+function editTextItem(item){
+const wrapper=document.getElementById('textInputWrapper');
+const inlineInput=document.getElementById('inlineTextInput');
+selectedTextItem=item;
+currentTextItem=item;
+inlineInput.value=item.text;
+inlineInput.style.color=item.color;
+wrapper.style.left=item.x+'px';
+wrapper.style.top=item.y+'px';
+wrapper.classList.add('active');
 inlineInput.focus();
 }
 
@@ -280,19 +322,28 @@ const inlineInput=document.getElementById('inlineTextInput');
 const text=inlineInput.value.trim();
 if(!text)return;
 currentTextItem.text=text;
-currentTextItem.color='#c8302a';
-currentTextItem.size=16;
+currentTextItem.color=inlineInput.style.color;
+if(!textItems.includes(currentTextItem)){
 textItems.push(currentTextItem);
+}
 addToHistory('text');
 redrawText();
 cancelText();
 }
 
 function cancelText(){
-const inlineInput=document.getElementById('inlineTextInput');
-inlineInput.style.display='none';
+const wrapper=document.getElementById('textInputWrapper');
+wrapper.classList.remove('active');
 currentTextItem=null;
+selectedTextItem=null;
 // Garder textMode actif pour continuer à ajouter du texte
+}
+
+function cancelTextEdit(){
+const wrapper=document.getElementById('textInputWrapper');
+wrapper.classList.remove('active');
+currentTextItem=null;
+selectedTextItem=null;
 }
 
 function deleteText(){
@@ -313,10 +364,52 @@ cancelText();
 }
 });
 
+// Resize handle du texte
+document.getElementById('textResizeHandle').addEventListener('mousedown',e=>{
+e.preventDefault();
+if(!currentTextItem)return;
+isResizingText=true;
+resizeStartX=e.clientX;
+resizeStartY=e.clientY;
+resizeStartSize=currentTextItem.size;
+});
+
+document.addEventListener('mousemove',e=>{
+if(isResizingText&&currentTextItem){
+const deltaX=e.clientX-resizeStartX;
+const newSize=Math.max(8,Math.min(48,resizeStartSize+deltaX/10));
+currentTextItem.size=newSize;
+document.getElementById('inlineTextInput').style.fontSize=newSize+'px';
+redrawText();
+}
+});
+
+document.addEventListener('mouseup',()=>{
+isResizingText=false;
+});
+
+// Détection de clic sur texte en mode sélection
+textCanvas.addEventListener('mousedown',e=>{
+if(!selectTextMode)return;
+const rect=textCanvas.getBoundingClientRect();
+const x=(e.clientX-rect.left)*textCanvas.width/rect.width;
+const y=(e.clientY-rect.top)*textCanvas.height/rect.height;
+
+for(let item of textItems){
+const textWidth=textCtx.measureText(item.text).width;
+if(x>=item.x&&x<=item.x+textWidth&&y>=item.y-item.size&&y<=item.y){
+editTextItem(item);
+return;
+}
+}
+});
+
 // Pan avec la main
 const blueprintWrap=document.getElementById('blueprintWrap');
+let isMovingText=false,moveStartX=0,moveStartY=0;
+
 blueprintWrap.addEventListener('mousedown',e=>{
-if(panMode && !drawingMode && !textMode){
+if(panMode && !drawingMode && !textMode && !selectTextMode){
 isPanning=true;
 panStartX=e.clientX+blueprintWrap.scrollLeft;
 panStartY=e.clientY+blueprintWrap.scrollTop;
@@ -333,11 +426,15 @@ ctx.strokeStyle=document.getElementById('penColor').value;
 ctx.lineWidth=parseInt(document.getElementById('penSize').value);
 ctx.lineCap='round';
 ctx.lineJoin='round';
-}else if(textMode){
+}else if(textMode && !currentTextItem){
 const rect=textCanvas.getBoundingClientRect();
 const x=(e.clientX-rect.left)*textCanvas.width/rect.width;
 const y=(e.clientY-rect.top)*textCanvas.height/rect.height;
 openTextEditor(x,y);
+}else if(selectTextMode&&selectedTextItem){
+isMovingText=true;
+moveStartX=e.clientX;
+moveStartY=e.clientY;
 }
 });
 
@@ -351,6 +448,17 @@ const x=(e.clientX-rect.left)*drawingCanvas.width/rect.width;
 const y=(e.clientY-rect.top)*drawingCanvas.height/rect.height;
 ctx.lineTo(x,y);
 ctx.stroke();
+}else if(isMovingText&&selectedTextItem){
+const deltaX=e.clientX-moveStartX;
+const deltaY=e.clientY-moveStartY;
+selectedTextItem.x+=deltaX;
+selectedTextItem.y+=deltaY;
+moveStartX=e.clientX;
+moveStartY=e.clientY;
+const wrapper=document.getElementById('textInputWrapper');
+wrapper.style.left=selectedTextItem.x+'px';
+wrapper.style.top=selectedTextItem.y+'px';
+redrawText();
 }
 });
 
@@ -358,6 +466,10 @@ document.addEventListener('mouseup',()=>{
 if(isDrawing && drawingMode){
 isDrawing=false;
 addToHistory('drawing');
+}
+if(isMovingText){
+isMovingText=false;
+addToHistory('text');
 }
 isPanning=false;
 blueprintWrap.classList.remove('panning');
@@ -405,6 +517,13 @@ e.preventDefault();
 
 blueprintWrap.addEventListener('touchmove',e=>{
 if(e.touches.length===1&&!panMode){
+e.preventDefault();
+}
+},{passive:false});
+
+// Empêcher le scroll vertical de la page sur le blueprint
+document.addEventListener('wheel',e=>{
+if(blueprintWrap.contains(e.target)||e.target.closest('#blueprintWrap')){
 e.preventDefault();
 }
 },{passive:false});
