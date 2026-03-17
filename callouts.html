@@ -399,6 +399,7 @@ isResizingText=false;
 
 // Détection de double-clic sur texte pour l'éditer
 textCanvas.addEventListener('dblclick',e=>{
+if(moveTextMode)return;
 const rect=textCanvas.getBoundingClientRect();
 const x=(e.clientX-rect.left)*textCanvas.width/rect.width;
 const y=(e.clientY-rect.top)*textCanvas.height/rect.height;
@@ -415,6 +416,7 @@ return;
 // Détection de clic sur texte en mode move pour le sélectionner
 textCanvas.addEventListener('mousedown',e=>{
 if(!moveTextMode)return;
+e.preventDefault();
 const rect=textCanvas.getBoundingClientRect();
 const x=(e.clientX-rect.left)*textCanvas.width/rect.width;
 const y=(e.clientY-rect.top)*textCanvas.height/rect.height;
@@ -425,6 +427,9 @@ if(x>=item.x&&x<=item.x+textWidth&&y>=item.y-item.size&&y<=item.y){
 selectedTextItem=item;
 currentTextItem=item;
 editTextItem(item);
+isMovingText=true;
+moveStartX=e.clientX;
+moveStartY=e.clientY;
 return;
 }
 }
@@ -452,11 +457,12 @@ ctx.strokeStyle=document.getElementById('penColor').value;
 ctx.lineWidth=parseInt(document.getElementById('penSize').value);
 ctx.lineCap='round';
 ctx.lineJoin='round';
-}else if(textMode && !currentTextItem){
+}else if(textMode){
 const rect=textCanvas.getBoundingClientRect();
 const x=(e.clientX-rect.left)*textCanvas.width/rect.width;
 const y=(e.clientY-rect.top)*textCanvas.height/rect.height;
 openTextEditor(x,y);
+e.preventDefault();
 }else if(moveTextMode && selectedTextItem){
 isMovingText=true;
 moveStartX=e.clientX;
