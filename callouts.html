@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blueprints & Callouts — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--black:#0a0a0a;--white:#f5f2ed;--red:#c8302a;--red-dim:#8a1f1a;--gray:#1c1c1c;--gray-mid:#2e2e2e;--gray-light:#555;--gray-text:#999;--border:rgba(255,255,255,0.08);--cyan:#4ecdc4}html{scroll-behavior:smooth}body{background:var(--black);color:var(--white);font-family:'Barlow',sans-serif;font-weight:300;line-height:1.6;overflow-x:hidden}nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:64px;border-bottom:1px solid var(--border);background:rgba(10,10,10,0.88);backdrop-filter:blur(12px)}.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--white);text-decoration:none}.nav-logo span{color:var(--red)}.nav-back{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);text-decoration:none;transition:color .2s}.nav-back:hover{color:var(--white)}.hero{padding:120px 48px 64px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 70% 40%,rgba(200,48,42,0.1) 0%,transparent 70%)}.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:60px 60px;mask-image:linear-gradient(180deg,transparent 0%,black 30%,black 70%,transparent 100%)}.hero-tag{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:16px;display:flex;align-items:center;gap:12px;position:relative}.hero-tag::before{content:'';display:block;width:28px;height:1px;background:var(--red)}.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,8vw,96px);letter-spacing:2px;line-height:.95;margin-bottom:12px;position:relative}.hero-sub{font-family:'Barlow Condensed',sans-serif;font-size:16px;letter-spacing:3px;text-transform:uppercase;color:var(--gray-text);position:relative;margin-bottom:16px}.hero-desc{font-size:15px;color:var(--gray-text);line-height:1.8;max-width:640px;position:relative}.content{max-width:1200px;margin:0 auto;padding:48px}.map-tabs{display:flex;gap:2px;margin-bottom:0;flex-wrap:wrap}.map-tab{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:500;letter-spacing:2px;text-transform:uppercase;padding:12px 16px;background:var(--gray);color:var(--gray-text);border:none;cursor:pointer;transition:all .2s;text-align:center;white-space:nowrap}.map-tab:hover{color:var(--white);background:var(--gray-mid)}.map-tab.active{color:var(--white);background:var(--red)}.floor-bar{display:flex;gap:2px;background:var(--black)}.floor-tab{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:500;letter-spacing:2px;text-transform:uppercase;padding:12px 20px;background:var(--gray-mid);color:var(--gray-text);border:none;cursor:pointer;transition:all .2s}.floor-tab:hover{color:var(--white)}.floor-tab.active{color:var(--white);background:rgba(200,48,42,0.2);border-bottom:2px solid var(--red)}.map-viewer{background:var(--gray);border:1px solid var(--border);border-top:none;margin-bottom:32px}.viewer-header{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.viewer-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px}.viewer-legend{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.legend-item{display:flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--gray-text)}.legend-bar{width:20px;height:4px;border-radius:2px}.blueprint-wrap{position:relative;width:100%;overflow:auto;background:#0a0a0a;display:flex;align-items:center;justify-content:center;min-height:500px}.blueprint-wrap img{max-width:100%;height:auto;display:block;user-select:none;-webkit-user-drag:none;transition:transform .2s}.blueprint-wrap.zoomed img{max-width:none}.zoom-controls{position:absolute;bottom:16px;right:16px;display:flex;gap:4px;z-index:10}.zoom-btn{font-family:'Bebas Neue',sans-serif;font-size:18px;width:36px;height:36px;background:rgba(10,10,10,0.8);border:1px solid var(--border);color:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;backdrop-filter:blur(4px)}.zoom-btn:hover{background:var(--red);border-color:var(--red)}.map-info{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:24px;flex-wrap:wrap;align-items:center}.info-item{display:flex;flex-direction:column;gap:2px}.info-label{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text)}.info-value{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:500;letter-spacing:1px;color:var(--white)}.shortcut-hint{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:1px;color:var(--gray-light);padding:8px 24px;border-top:1px solid var(--border);text-align:center}footer{border-top:1px solid var(--border);padding:24px 48px;display:flex;justify-content:space-between;align-items:center}.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;color:var(--gray-text)}.footer-logo span{color:var(--red)}.footer-text{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;color:var(--gray-light);text-transform:uppercase}@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.hero-tag{animation:fadeUp .6s ease both}.hero-title{animation:fadeUp .6s .1s ease both}@media(max-width:768px){nav{padding:0 24px}.hero{padding:100px 24px 48px}.content{padding:16px}.map-tab{font-size:10px;padding:8px 10px;letter-spacing:1px}.floor-tab{font-size:10px;padding:8px 12px}.blueprint-wrap{min-height:300px}.map-info{gap:16px}footer{padding:20px 24px;flex-direction:column;gap:8px;text-align:center}}
+</style>
+</head>
+<body>
+<nav><a href="index.html" class="nav-logo">NEI<span>I</span>STRA</a><a href="index.html" class="nav-back">← Retour à l'accueil</a></nav>
+<section class="hero"><div class="hero-grid"></div><div class="hero-tag">Outil — R6 Process</div><h1 class="hero-title">Blueprints<br>&amp; Callouts</h1><p class="hero-sub">Plans officiels Ubisoft · Navigation par étage</p><p class="hero-desc">Les blueprints officiels de chaque map avec les murs destructibles, les hatches, et les lignes de vue. Navigue entre les étages pour apprendre la disposition de chaque map du pool ranked Y11S1.</p></section>
+<div class="content">
+<div class="map-tabs" id="mapTabs"></div>
+<div class="map-viewer" id="mapViewer">
+<div class="viewer-header"><div class="viewer-title" id="viewerTitle">—</div><div class="viewer-legend"><div class="legend-item"><div class="legend-bar" style="background:#e8c93a"></div>Murs destructibles</div><div class="legend-item"><div class="legend-bar" style="background:#e8c93a;background-image:repeating-linear-gradient(45deg,transparent,transparent 2px,#0a0a0a 2px,#0a0a0a 4px)"></div>Hatches</div><div class="legend-item"><div class="legend-bar" style="background:#c8302a;border:1px dashed #c8302a"></div>Lignes de vue</div></div></div>
+<div class="floor-bar" id="floorBar"></div>
+<div class="blueprint-wrap" id="blueprintWrap"><img id="blueprintImg" src="" alt="Blueprint"><div class="zoom-controls"><button class="zoom-btn" onclick="zoomIn()">+</button><button class="zoom-btn" onclick="zoomOut()">−</button><button class="zoom-btn" onclick="zoomReset()">↺</button></div></div>
+<div class="map-info" id="mapInfo"></div>
+<div class="shortcut-hint">Raccourcis : ← → changer d'étage · + − zoomer · Molette pour zoomer</div>
+</div>
+</div>
+<footer><span class="footer-logo">NEI<span>I</span>STRA</span><span class="footer-text">R6 Process — Blueprints · Images © Ubisoft</span></footer>
+<script>
+const MAPS=[
+{id:'clubhouse',name:'Club House',floors:['Sous-sol','RdC','1er étage','Toit'],location:'Allemagne',sites:'SS: Église/Arsenal · RdC: Bar/Stock · 1er: Cash/Chambre'},
+{id:'consulate',name:'Consulat',floors:['Sous-sol','RdC','1er étage','Toit'],location:'Côte d\'Ivoire',sites:'SS: Garage/Café · RdC: Lobby/Tellers · 1er: Consul/Admin'},
+{id:'kafe',name:'Café Dostoyevsky',floors:['RdC','1er étage','2ème étage','Toit'],location:'Russie',sites:'RdC: Cuisine/Boulangerie · 1er: Train/Fireplace · 2ème: Cigar/Bar'},
+{id:'border',name:'Frontière',floors:['RdC','1er étage','Toit'],location:'Moyen-Orient',sites:'RdC: Customs/Ventilation · 1er: Armurerie/Archives'},
+{id:'oregon',name:'Oregon',floors:['Sous-sol','RdC','1er étage','2ème étage','Toit'],location:'États-Unis',sites:'SS: Buanderie/Réserve · RdC: Cuisine/Salle à manger · 1er: Dortoir'},
+{id:'chalet',name:'Chalet',floors:['Sous-sol','RdC','1er étage','Toit'],location:'Autriche',sites:'SS: Garage/Cave à vin · RdC: Bar/Gaming · 1er: Bureau/Trophée'},
+{id:'bank',name:'Banque',floors:['Sous-sol','RdC','1er étage','Toit'],location:'États-Unis',sites:'SS: Coffre/Serveur · RdC: Lobby ouvert/Tellers · 1er: Bureau PDG/Open area'},
+{id:'coastline',name:'Littoral',floors:['RdC','1er étage','Toit'],location:'Espagne',sites:'RdC: Cuisine/Service · 1er: Hookah/Billard · 1er: Penthouse/Théâtre'},
+{id:'villa',name:'Villa',floors:['Sous-sol','RdC','1er étage','Toit'],location:'Italie',sites:'SS: Cave/Forgeron · RdC: Salle à manger/Cuisine · 1er: Classique/Étude'},
+{id:'lair',name:'Repaire',floors:['Sous-sol','RdC','1er étage','Toit'],location:'Inconnu',sites:'3 sites bombe'},
+{id:'nighthavenlabs',name:'Nighthaven Labs',floors:['Sous-sol','RdC','1er étage','Toit'],location:'Grèce',sites:'3 sites bombe'},
+{id:'skyscraper',name:'Gratte-ciel',floors:['1er étage','2ème étage','Toit'],location:'Japon',sites:'1er: Cuisine/BBQ · 2ème: Bureau/Geisha'},
+{id:'themepark',name:'Parc d\'attractions',floors:['RdC','1er étage','Toit'],location:'Hong Kong',sites:'RdC: Lab/Initiation · 1er: Bureau/Dortoir'},
+{id:'fortress',name:'Forteresse',floors:['RdC','1er étage','Toit'],location:'Maroc',sites:'2 sites bombe'},
+{id:'kanal',name:'Canal',floors:['Sous-sol','RdC','1er étage','2ème étage','Toit'],location:'Allemagne',sites:'SS · RdC: Pont · 1er · 2ème'},
+{id:'outback',name:'Outback',floors:['RdC','1er étage','Toit'],location:'Australie',sites:'RdC: Garage/Nature · 1er: Bureau/Dortoir'},
+];
+let currentMap=null,currentFloor=0,zoomLevel=1;
+
+function buildTabs(){
+const el=document.getElementById('mapTabs');el.innerHTML='';
+MAPS.forEach((m,i)=>{const b=document.createElement('button');b.className='map-tab'+(i===0?' active':'');b.textContent=m.name;b.onclick=()=>{document.querySelectorAll('.map-tab').forEach(t=>t.classList.remove('active'));b.classList.add('active');loadMap(m);};el.appendChild(b);});
+if(MAPS.length)loadMap(MAPS[0]);
+}
+function loadMap(m){
+currentMap=m;currentFloor=0;zoomLevel=1;
+document.getElementById('viewerTitle').textContent=m.name;
+const fb=document.getElementById('floorBar');fb.innerHTML='';
+m.floors.forEach((f,i)=>{const b=document.createElement('button');b.className='floor-tab'+(i===0?' active':'');b.textContent=f;b.onclick=()=>{document.querySelectorAll('.floor-tab').forEach(t=>t.classList.remove('active'));b.classList.add('active');currentFloor=i;showBlueprint();};fb.appendChild(b);});
+document.getElementById('mapInfo').innerHTML=`<div class="info-item"><span class="info-label">Map</span><span class="info-value">${m.name}</span></div><div class="info-item"><span class="info-label">Lieu</span><span class="info-value">${m.location}</span></div><div class="info-item"><span class="info-label">Étages</span><span class="info-value">${m.floors.length}</span></div><div class="info-item"><span class="info-label">Sites bombe</span><span class="info-value" style="font-size:11px;max-width:400px">${m.sites}</span></div>`;
+showBlueprint();
+}
+function showBlueprint(){
+const img=document.getElementById('blueprintImg'),wrap=document.getElementById('blueprintWrap');
+img.src='maps/r6-maps-'+currentMap.id+'-blueprint-'+(currentFloor+1)+'.jpg';
+img.style.transform='scale(1)';zoomLevel=1;wrap.classList.remove('zoomed');wrap.scrollTo(0,0);
+}
+function zoomIn(){zoomLevel=Math.min(3,zoomLevel+0.3);applyZoom();}
+function zoomOut(){zoomLevel=Math.max(0.5,zoomLevel-0.3);applyZoom();}
+function zoomReset(){zoomLevel=1;applyZoom();document.getElementById('blueprintWrap').scrollTo(0,0);}
+function applyZoom(){const img=document.getElementById('blueprintImg'),wrap=document.getElementById('blueprintWrap');img.style.transform='scale('+zoomLevel+')';img.style.transformOrigin='center center';if(zoomLevel>1.1){wrap.classList.add('zoomed');img.style.maxWidth='none';}else{wrap.classList.remove('zoomed');img.style.maxWidth='100%';}}
+document.addEventListener('keydown',e=>{if(!currentMap)return;if(e.key==='ArrowRight'||e.key==='ArrowDown'){if(currentFloor<currentMap.floors.length-1){currentFloor++;document.querySelectorAll('.floor-tab').forEach((t,i)=>t.classList.toggle('active',i===currentFloor));showBlueprint();}}else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){if(currentFloor>0){currentFloor--;document.querySelectorAll('.floor-tab').forEach((t,i)=>t.classList.toggle('active',i===currentFloor));showBlueprint();}}else if(e.key==='+'||e.key==='=')zoomIn();else if(e.key==='-')zoomOut();});
+document.getElementById('blueprintWrap').addEventListener('wheel',e=>{e.preventDefault();if(e.deltaY<0)zoomIn();else zoomOut();},{passive:false});
+buildTabs();
+</script>
+</body>
+</html>
