@@ -12,45 +12,94 @@
   html { scroll-behavior: smooth; }
   body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
 
-  /* Navigation harmonisée */
   nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
   .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
   .nav-logo span { color: var(--red); }
-  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color .2s; }
-  .nav-back:hover { color: var(--white); }
+  .nav-links { display: flex; align-items: center; gap: 32px; }
+  .nav-link { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-link:hover { color: var(--white); }
+  .nav-link.active { color: var(--red); }
 
-  .hero { padding: 140px 48px 80px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
-  .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 60px 60px; mask-image: linear-gradient(180deg, transparent 0%, black 30%, black 70%, transparent 100%); }
-  .hero-tag { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; position: relative; }
-  .hero-tag::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
-  .hero-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(48px, 8vw, 96px); letter-spacing: 2px; line-height: 0.95; margin-bottom: 20px; position: relative; }
-  
-  .container { max-width: 1100px; margin: 0 auto; padding: 64px 24px; }
-  .calc-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 48px; align-items: start; }
-  .calc-card { background: var(--gray); border: 1px solid var(--border); padding: 40px; }
-  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--red); margin-bottom: 24px; display: block; }
-  
-  .input-group { margin-bottom: 24px; }
-  label { display: block; font-family: 'Barlow Condensed', sans-serif; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 8px; }
-  input, select { width: 100%; background: var(--black); border: 1px solid var(--border); color: var(--white); padding: 12px 16px; font-family: 'Barlow', sans-serif; font-size: 16px; transition: all 0.2s; }
-  input:focus, select:focus { outline: none; border-color: var(--red); }
+  .page-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .page-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%); }
+  .page-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; position: relative; }
+  .page-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .page-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(48px,8vw,96px); letter-spacing: 2px; line-height: 0.95; margin-bottom: 16px; position: relative; }
+  .page-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); position: relative; }
 
-  .ads-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .ads-cell { background: var(--black); border: 1px solid var(--border); padding: 16px; display: flex; flex-direction: column; gap: 4px; }
-  .ads-cell-header { grid-column: span 2; background: var(--gray-mid); border: 1px solid var(--border); padding: 12px 16px; }
-  .ads-cell-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--gray-text); }
-  .ads-cell-value { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 1px; color: var(--white); }
-  .ads-cell-cm { font-size: 12px; color: var(--red); font-weight: 500; }
+  .content { max-width: 960px; margin: 0 auto; padding: 64px 48px; }
+  .tool-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .tool-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+  h2 { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 2px; color: var(--white); margin-bottom: 8px; line-height: 1; }
+  .tool-desc { font-size: 14px; color: var(--gray-text); margin-bottom: 24px; line-height: 1.7; }
+  .tool-desc strong { color: var(--white); font-weight: 500; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 56px 0; }
+  .tool-box { background: var(--gray); border: 1px solid var(--border); border-radius: 8px; padding: 32px; }
 
-  footer { border-top: 1px solid var(--border); padding: 48px; display: flex; justify-content: space-between; align-items: center; }
-  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--gray-text); }
+  .input-row { display: grid; gap: 12px; margin-bottom: 16px; }
+  .input-row-2 { grid-template-columns: 1fr 1fr; }
+  .input-row-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .input-row-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
+  .field input, .field select {
+    padding: 11px 14px; background: var(--gray-mid); border: 1px solid var(--border);
+    color: var(--white); font-family: 'Barlow Condensed', sans-serif; font-size: 15px;
+    border-radius: 4px; transition: border-color 0.2s; -moz-appearance: textfield;
+  }
+  .field input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .field input:focus, .field select:focus { outline: none; border-color: rgba(200,48,42,0.5); }
+  .field select { cursor: pointer; }
+  .field-hint { font-size: 10px; color: var(--gray-light); margin-top: 2px; }
+
+  .result-box { background: rgba(200,48,42,0.08); border: 1px solid rgba(200,48,42,0.25); border-radius: 6px; padding: 20px 24px; margin-top: 16px; }
+  .result-row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 6px; }
+  .result-row:last-child { margin-bottom: 0; }
+  .result-label { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 1px; color: var(--gray-text); }
+  .result-value { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 1px; color: var(--white); }
+  .result-value span { font-size: 14px; color: var(--gray-text); font-family: 'Barlow Condensed', sans-serif; letter-spacing: 1px; margin-left: 4px; }
+  .result-note { font-size: 12px; color: var(--gray-light); margin-top: 8px; line-height: 1.6; }
+
+  /* Visual bar */
+  .sens-bar-wrap { margin-top: 14px; }
+  .sens-bar-label { display: flex; justify-content: space-between; font-family: 'Barlow Condensed', sans-serif; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-bottom: 4px; }
+  .sens-bar { position: relative; width: 100%; height: 8px; background: linear-gradient(90deg, var(--red) 0%, var(--orange) 20%, var(--green) 35%, var(--green) 65%, var(--orange) 80%, var(--red) 100%); border-radius: 4px; }
+  .sens-bar-marker { position: absolute; top: -4px; width: 3px; height: 16px; background: var(--white); border-radius: 2px; transform: translateX(-50%); box-shadow: 0 0 6px rgba(255,255,255,0.5); transition: left 0.4s ease; }
+  .sens-bar-range { display: flex; justify-content: space-between; margin-top: 4px; }
+  .sens-bar-range span { font-family: 'Barlow Condensed', sans-serif; font-size: 9px; color: var(--gray-light); letter-spacing: 1px; }
+  .pro-ref { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; color: var(--gray-text); margin-top: 8px; letter-spacing: 1px; }
+  .pro-ref strong { color: var(--white); font-weight: 500; }
+
+  /* ADS grid */
+  .ads-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 2px; margin-top: 16px; }
+  .ads-cell { background: rgba(0,0,0,0.3); padding: 14px 16px; }
+  .ads-cell-header { background: rgba(200,48,42,0.08); border: 1px solid rgba(200,48,42,0.15); padding: 14px 16px; }
+  .ads-cell-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-light); margin-bottom: 4px; }
+  .ads-cell-value { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--white); }
+  .ads-cell-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; color: var(--gray-text); margin-top: 2px; }
+
+  /* Advanced toggle */
+  .advanced-toggle { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 12px; transition: color 0.2s; user-select: none; }
+  .advanced-toggle:hover { color: var(--white); }
+  .advanced-row { display: none; }
+  .advanced-row.show { display: grid; }
+
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; margin-top: 48px; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
   .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
 
-  @media (max-width: 768px) {
-    nav { padding: 0 24px; }
-    .calc-grid { grid-template-columns: 1fr; gap: 32px; }
-    .hero { padding: 120px 24px 60px; }
-    footer { flex-direction: column; gap: 24px; text-align: center; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);} }
+  .page-eyebrow { animation: fadeUp .5s ease both; }
+  .page-title { animation: fadeUp .5s .08s ease both; }
+  .page-subtitle { animation: fadeUp .5s .16s ease both; }
+
+  @media(max-width:768px) {
+    nav { padding: 0 24px; } .nav-links { gap: 16px; }
+    .page-hero { padding: 100px 24px 48px; } .content { padding: 40px 24px; }
+    .input-row-2, .input-row-3, .input-row-4 { grid-template-columns: 1fr 1fr; }
+    .ads-grid { grid-template-columns: 1fr 1fr; }
+    footer { padding: 20px 24px; flex-direction: column; gap: 8px; }
   }
 </style>
 </head>
@@ -58,65 +107,319 @@
 
 <nav>
   <a href="index.html" class="nav-logo">NEI<span>I</span>STRA</a>
-  <a href="index.html" class="nav-back">← Retour à l'accueil</a>
+  <div class="nav-links">
+    <a href="sensibilite.html" class="nav-link active">Sensibilité</a>
+    <a href="benchmark.html" class="nav-link">Benchmark</a>
+    <a href="https://github.com/EtienneLeBail/neiistra.github.io" target="_blank" class="nav-link">GitHub</a>
+  </div>
 </nav>
 
-<section class="hero">
-  <div class="hero-grid"></div>
-  <div class="hero-tag">Outil de calcul</div>
-  <h1 class="hero-title">Convertisseur<br>Sensibilité ADS</h1>
+<section class="page-hero">
+  <div class="page-eyebrow">Outil — R6 Process</div>
+  <h1 class="page-title">Sensibilité</h1>
+  <p class="page-subtitle">Calculateurs · Convertisseurs · Références pro</p>
 </section>
 
-<div class="container">
-  <div class="calc-grid">
-    <div class="calc-card">
-      <span class="section-label">Paramètres Hipfire</span>
-      <div class="input-group">
-        <label>DPI Souris</label>
-        <input type="number" id="e4-dpi" value="800" oninput="calcADS()">
+<div class="content">
+
+  <!-- ═══════════════════ OUTIL 1 : eDPI & cm/360 ═══════════════════ -->
+  <div class="tool-label">Outil 1</div>
+  <h2>Calculateur eDPI &amp; cm/360°</h2>
+  <p class="tool-desc">L'<strong>eDPI</strong> (effective DPI) = DPI × Sensibilité in-game. C'est le seul chiffre qui permet de comparer deux setups. Le <strong>cm/360°</strong> est la distance physique que ta souris parcourt pour un tour complet — c'est la mesure universelle entre tous les jeux.</p>
+
+  <div class="tool-box">
+    <div class="input-row input-row-2">
+      <div class="field">
+        <label>DPI souris</label>
+        <input type="number" id="e1-dpi" value="800" min="100" max="32000" oninput="calcEdpi()">
+        <span class="field-hint">400 ou 800 recommandé pour R6</span>
       </div>
-      <div class="input-group">
-        <label>Sensibilité Horizontale / Verticale</label>
-        <input type="number" id="e4-sens" value="10" oninput="calcADS()">
+      <div class="field">
+        <label>Sensibilité R6 (1–100)</label>
+        <input type="number" id="e1-sens" value="10" min="1" max="100" oninput="calcEdpi()">
+        <span class="field-hint">Pros : entre 6 et 15 à 400–800 DPI</span>
       </div>
-      <div class="input-group">
-        <label>Mode de visée (ADS)</label>
-        <select id="e4-mode" onchange="calcADS()">
-          <option value="standard">Standard (Legacy)</option>
-          <option value="uniform">Uniforme (Shadow Legacy)</option>
+    </div>
+
+    <span class="advanced-toggle" onclick="toggleAdvanced('adv1')">▸ Avancé (multiplicateur custom)</span>
+    <div class="input-row input-row-2 advanced-row" id="adv1">
+      <div class="field">
+        <label>MouseSensitivityMultiplierUnit</label>
+        <input type="number" id="e1-mult" value="0.02" step="0.00001" min="0.00001" max="0.1" oninput="calcEdpi()">
+        <span class="field-hint">Défaut : 0.02 — Certains pros utilisent 0.00223 pour un réglage plus fin</span>
+      </div>
+    </div>
+
+    <div class="result-box" id="edpi-result"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════════ OUTIL 2 : cm/360 → Sens ═══════════════════ -->
+  <div class="tool-label">Outil 2</div>
+  <h2>Trouver sa sensibilité depuis un cm/360°</h2>
+  <p class="tool-desc">Tu connais ton cm/360° idéal (depuis un autre jeu ou une recommandation) et tu veux savoir quelle sensibilité mettre dans R6 avec ton DPI actuel.</p>
+
+  <div class="tool-box">
+    <div class="input-row input-row-2">
+      <div class="field">
+        <label>DPI souris</label>
+        <input type="number" id="e2-dpi" value="800" min="100" max="32000" oninput="calcFromCm()">
+      </div>
+      <div class="field">
+        <label>cm/360° cible</label>
+        <input type="number" id="e2-cm" value="35" min="5" max="200" step="0.1" oninput="calcFromCm()">
+        <span class="field-hint">Plage pro R6 : 25–45 cm/360°</span>
+      </div>
+    </div>
+    <div class="result-box" id="cm-result"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════════ OUTIL 3 : Convertisseur inter-jeux ═══════════════════ -->
+  <div class="tool-label">Outil 3</div>
+  <h2>Convertisseur entre jeux</h2>
+  <p class="tool-desc">Convertit ta sensibilité d'un jeu à l'autre en conservant le même <strong>cm/360°</strong> — ta mémoire musculaire reste intacte.</p>
+
+  <div class="tool-box">
+    <div class="input-row input-row-4">
+      <div class="field">
+        <label>Jeu source</label>
+        <select id="e3-game" onchange="calcConvert()">
+          <option value="cs2">CS2</option>
+          <option value="valorant">Valorant</option>
+          <option value="apex">Apex Legends</option>
+          <option value="ow2">Overwatch 2</option>
+          <option value="r6" selected>R6 Siege</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Sensibilité source</label>
+        <input type="number" id="e3-sens" value="10" min="0.01" max="300" step="0.01" oninput="calcConvert()">
+      </div>
+      <div class="field">
+        <label>DPI souris</label>
+        <input type="number" id="e3-dpi" value="800" min="100" max="32000" oninput="calcConvert()">
+      </div>
+      <div class="field">
+        <label>Jeu cible</label>
+        <select id="e3-target" onchange="calcConvert()">
+          <option value="cs2">CS2</option>
+          <option value="valorant">Valorant</option>
+          <option value="apex">Apex Legends</option>
+          <option value="ow2">Overwatch 2</option>
+          <option value="r6" selected>R6 Siege</option>
         </select>
       </div>
     </div>
-
-    <div class="calc-card">
-      <span class="section-label">Résultats par Optique</span>
-      <div class="ads-grid" id="ads-result">
-        </div>
-    </div>
+    <div class="result-box" id="convert-result"></div>
   </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════════ OUTIL 4 : ADS ═══════════════════ -->
+  <div class="tool-label">Outil 4</div>
+  <h2>Sensibilité ADS par optique</h2>
+  <p class="tool-desc">R6 applique un multiplicateur quand tu vises (ADS). En mode <strong>Uniform</strong> (recommandé), le cm/360° est conservé à tous les niveaux de zoom grâce au modèle de gain visuomoteur — ta mémoire musculaire reste cohérente. En mode <strong>Legacy</strong>, les degrés par pixel restent constants, ce qui ralentit le cm/360° aux zooms élevés.</p>
+
+  <div class="tool-box">
+    <div class="input-row input-row-3">
+      <div class="field">
+        <label>DPI souris</label>
+        <input type="number" id="e4-dpi" value="800" min="100" max="32000" oninput="calcADS()">
+      </div>
+      <div class="field">
+        <label>Sensibilité hip-fire (1–100)</label>
+        <input type="number" id="e4-sens" value="10" min="1" max="100" oninput="calcADS()">
+      </div>
+      <div class="field">
+        <label>Mode ADS</label>
+        <select id="e4-mode" onchange="calcADS()">
+          <option value="uniform" selected>Uniform (recommandé)</option>
+          <option value="legacy">Legacy</option>
+        </select>
+      </div>
+    </div>
+    <div class="ads-grid" id="ads-result"></div>
+    <p style="font-size:11px;color:var(--gray-light);margin-top:14px;line-height:1.6;">
+      En <strong style="color:var(--white)">Uniform</strong> (slider ADS à 50), le gain visuomoteur est conservé : un même mouvement physique de souris couvre la même distance sur ton écran, quel que soit le zoom. C'est le mode utilisé par la quasi-totalité des pros depuis Y5S3. Le slider ADS (1–300, défaut 50) permet d'ajuster : en dessous de 50 = plus lent en ADS, au-dessus = plus rapide.
+    </p>
+  </div>
+
 </div>
 
 <footer>
-  <div class="footer-logo">NEI<span>I</span>STRA</div>
-  <div style="font-family:'Barlow Condensed'; font-size:12px; color:var(--gray-light); letter-spacing:2px; text-transform:uppercase;">R6 Process — Outil de Sensibilité</div>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Outil Sensibilité</span>
 </footer>
 
 <script>
+// ─── Constants ──────────────────────────────────────────────────
 const DEFAULT_MULT = 0.02;
 
-function r6Yaw(m) { return m; }
-function cm360(dpi, sens, m) {
-  if (!dpi || !sens) return 0;
-  return (360 * 2.54) / (dpi * sens * m);
+// Game yaw values: degrees per count per unit of in-game sensitivity
+// Formula: cm/360 = (360 × 2.54) / (DPI × sens × yaw)
+const GAME_YAW = {
+  cs2:      0.022,
+  valorant: 0.07,
+  apex:     0.022,
+  ow2:      0.0066,
+  r6:       null, // computed from multiplier
+};
+
+function r6Yaw(mult) {
+  // R6 combined yaw = multiplier × 0.33 (base yaw constant)
+  // Calibrated: at 400 DPI, sens 10, mult 0.02 → ~34.6 cm/360
+  return mult * 0.33;
 }
 
+function cm360(dpi, sens, yaw) {
+  if (!dpi || !sens || !yaw) return 0;
+  return (360 * 2.54) / (dpi * sens * yaw);
+}
+
+function sensFromCm360(dpi, targetCm, yaw) {
+  if (!dpi || !targetCm || !yaw) return 0;
+  return (360 * 2.54) / (dpi * targetCm * yaw);
+}
+
+function toggleAdvanced(id) {
+  const el = document.getElementById(id);
+  const toggle = el.previousElementSibling;
+  const show = !el.classList.contains('show');
+  el.classList.toggle('show');
+  toggle.textContent = (show ? '▾' : '▸') + toggle.textContent.slice(1);
+}
+
+// ─── Tool 1: eDPI & cm/360 ─────────────────────────────────────
+function calcEdpi() {
+  const dpi  = parseFloat(document.getElementById('e1-dpi').value)  || 0;
+  const sens = parseFloat(document.getElementById('e1-sens').value) || 0;
+  const mult = parseFloat(document.getElementById('e1-mult').value) || DEFAULT_MULT;
+  if (!dpi || !sens) return;
+
+  const yaw  = r6Yaw(mult);
+  const edpi = dpi * sens;
+  const cm   = cm360(dpi, sens, yaw);
+  const inch = cm / 2.54;
+
+  // Zone assessment based on cm/360 (universal measure)
+  let zone, zoneColor;
+  if (cm < 15) { zone = 'Très rapide — difficile à contrôler, micro-ajustements imprécis'; zoneColor = 'var(--red)'; }
+  else if (cm < 25) { zone = 'Rapide — réactif mais demande un excellent contrôle moteur'; zoneColor = 'var(--orange)'; }
+  else if (cm < 50) { zone = 'Plage compétitive — bon compromis vitesse/précision'; zoneColor = 'var(--green)'; }
+  else if (cm < 70) { zone = 'Lent — très précis mais rotations limitées'; zoneColor = 'var(--orange)'; }
+  else { zone = 'Très lent — besoin d\'un grand mousepad, pivots difficiles'; zoneColor = 'var(--red)'; }
+
+  // Bar position: map cm/360 (5-80) to 0-100%
+  const barPos = Math.max(0, Math.min(100, ((cm - 5) / 75) * 100));
+
+  document.getElementById('edpi-result').innerHTML = `
+    <div class="result-row">
+      <span class="result-label">eDPI (DPI × Sensibilité)</span>
+      <span class="result-value">${edpi.toLocaleString()}<span>eDPI</span></span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">cm/360° (hip-fire)</span>
+      <span class="result-value">${cm.toFixed(1)}<span>cm</span></span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">in/360° (hip-fire)</span>
+      <span class="result-value">${inch.toFixed(1)}<span>in</span></span>
+    </div>
+    <div class="sens-bar-wrap">
+      <div class="sens-bar-label"><span>Rapide</span><span>Zone pro</span><span>Lent</span></div>
+      <div class="sens-bar"><div class="sens-bar-marker" style="left:${barPos}%"></div></div>
+      <div class="sens-bar-range"><span>5 cm</span><span>25</span><span>45</span><span>80 cm</span></div>
+    </div>
+    <p class="result-note" style="color:${zoneColor}">${zone}</p>
+    <p class="pro-ref">Référence pro : la majorité des joueurs R6 compétitifs jouent entre <strong>25 et 45 cm/360°</strong> (400–800 DPI, sens 6–15, multiplicateur par défaut).</p>`;
+}
+
+// ─── Tool 2: cm/360 → Sensibilité ──────────────────────────────
+function calcFromCm() {
+  const dpi = parseFloat(document.getElementById('e2-dpi').value) || 0;
+  const cm  = parseFloat(document.getElementById('e2-cm').value)  || 0;
+  if (!dpi || !cm) return;
+
+  const yaw  = r6Yaw(DEFAULT_MULT);
+  const sens = sensFromCm360(dpi, cm, yaw);
+  const edpi = dpi * sens;
+  const rounded = Math.round(sens);
+  const realCm  = cm360(dpi, rounded, yaw);
+  const diff = Math.abs(realCm - cm);
+
+  document.getElementById('cm-result').innerHTML = `
+    <div class="result-row">
+      <span class="result-label">Sensibilité R6 exacte</span>
+      <span class="result-value">${sens.toFixed(2)}</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Arrondi à utiliser in-game</span>
+      <span class="result-value">${rounded}<span>/ 100</span></span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">cm/360° réel (avec arrondi)</span>
+      <span class="result-value">${realCm.toFixed(1)}<span>cm</span></span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">eDPI résultant</span>
+      <span class="result-value">${Math.round(dpi * rounded).toLocaleString()}<span>eDPI</span></span>
+    </div>
+    <p class="result-note">R6 n'accepte que des entiers (1–100). L'arrondi à <strong style="color:var(--white)">${rounded}</strong> donne ${realCm.toFixed(1)} cm/360° au lieu de ${cm} — écart de ${diff.toFixed(1)} cm (${(diff/cm*100).toFixed(1)}%).${sens > 100 ? ' <strong style="color:var(--red)">⚠ Valeur > 100 : impossible avec le multiplicateur par défaut. Utilise un multiplicateur custom (ex: 0.00223) pour des cm/360° élevés à bas DPI.</strong>' : ''}</p>`;
+}
+
+// ─── Tool 3: Cross-game converter ───────────────────────────────
+function calcConvert() {
+  const srcGame = document.getElementById('e3-game').value;
+  const srcSens = parseFloat(document.getElementById('e3-sens').value) || 0;
+  const dpi     = parseFloat(document.getElementById('e3-dpi').value)  || 0;
+  const tgtGame = document.getElementById('e3-target').value;
+  if (!srcSens || !dpi) return;
+
+  const srcYaw = srcGame === 'r6' ? r6Yaw(DEFAULT_MULT) : GAME_YAW[srcGame];
+  const tgtYaw = tgtGame === 'r6' ? r6Yaw(DEFAULT_MULT) : GAME_YAW[tgtGame];
+  const cm     = cm360(dpi, srcSens, srcYaw);
+  const tgtSens = sensFromCm360(dpi, cm, tgtYaw);
+
+  const names = { cs2:'CS2', valorant:'Valorant', apex:'Apex Legends', ow2:'Overwatch 2', r6:'R6 Siege' };
+  const decimals = { cs2: 3, valorant: 3, apex: 3, ow2: 1, r6: 1 };
+
+  let note = '';
+  if (tgtGame === 'r6') {
+    const r = Math.round(tgtSens);
+    const realCm = cm360(dpi, r, tgtYaw);
+    note = `R6 arrondit à l'entier — utilise <strong style="color:var(--white)">${r}</strong> (cm/360° réel : ${realCm.toFixed(1)} cm, écart ${Math.abs(realCm - cm).toFixed(1)} cm).`;
+  } else if (srcGame === tgtGame) {
+    note = 'Source et cible sont le même jeu — la sensibilité reste identique.';
+  } else {
+    note = 'Conversion exacte — même cm/360° dans les deux jeux.';
+  }
+
+  document.getElementById('convert-result').innerHTML = `
+    <div class="result-row">
+      <span class="result-label">Sensibilité ${names[tgtGame]}</span>
+      <span class="result-value">${tgtSens.toFixed(decimals[tgtGame])}<span>${tgtGame==='r6'?' / 100':''}</span></span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">cm/360° conservé</span>
+      <span class="result-value">${cm.toFixed(1)}<span>cm</span></span>
+    </div>
+    <p class="result-note">${note}</p>`;
+}
+
+// ─── Tool 4: ADS multipliers (Siege X — Y11) ───────────────────
 const ADS_SCOPES = [
-  { label: 'Hipfire (Référence)', isHip: true, legacy_mult: 1 },
-  { label: 'Optiques 1.0x (Holos)', isHip: false, legacy_mult: 0.6 },
-  { label: 'Magnifieur 2.5x (ACOG)', isHip: false, legacy_mult: 0.35 },
-  { label: 'Télescopique 3.5x', isHip: false, legacy_mult: 0.3 },
-  { label: 'Lunette 5.0x', isHip: false, legacy_mult: 0.22 },
-  { label: 'Lunette 12.0x (Kali)', isHip: false, legacy_mult: 0.083 },
+  { label:'Hip-fire',      zoom: 1.0,  legacy_mult: 1.000, isHip: true },
+  { label:'1× (holo/red)', zoom: 1.0,  legacy_mult: 0.900 },
+  { label:'1.5×',          zoom: 1.5,  legacy_mult: 0.667 },
+  { label:'2× (ACOG)',     zoom: 2.0,  legacy_mult: 0.500 },
+  { label:'2.5×',          zoom: 2.5,  legacy_mult: 0.400 },
+  { label:'3×',            zoom: 3.0,  legacy_mult: 0.333 },
+  { label:'3.5×',          zoom: 3.5,  legacy_mult: 0.286 },
+  { label:'5× (scope)',    zoom: 5.0,  legacy_mult: 0.200 },
+  { label:'12× (Kali)',    zoom: 12.0, legacy_mult: 0.083 },
 ];
 
 function calcADS() {
@@ -129,9 +432,12 @@ function calcADS() {
   document.getElementById('ads-result').innerHTML = ADS_SCOPES.map(s => {
     let adsCm, displaySens;
     if (mode === 'uniform') {
+      // Uniform mode: cm/360° is preserved (visuomotor gain model)
+      // At ADS slider 50 (default), same physical distance = same screen distance
       adsCm = hipCm;
       displaySens = s.isHip ? sens : '50';
     } else {
+      // Legacy: constant deg/pixel, cm/360 increases with zoom
       const mult = s.legacy_mult;
       const effectiveSens = sens * mult;
       adsCm = cm360(dpi, effectiveSens, yaw);
@@ -140,15 +446,16 @@ function calcADS() {
     return `
       <div class="${s.isHip ? 'ads-cell-header' : 'ads-cell'}">
         <div class="ads-cell-label">${s.label}</div>
-        <div class="ads-cell-value">${mode === 'uniform' && !s.isHip ? '<span style="font-size:14px;color:var(--gray-text)">Auto (Uni)</span>' : displaySens}</div>
-        <div class="ads-cell-cm">${adsCm.toFixed(1)} cm/360°</div>
-      </div>
-    `;
+        <div class="ads-cell-value">${mode === 'uniform' && !s.isHip ? '<span style="font-size:14px;color:var(--gray-text)">slider</span> 50' : displaySens}</div>
+        <div class="ads-cell-sub">${adsCm.toFixed(1)} cm/360°</div>
+      </div>`;
   }).join('');
 }
 
-window.onload = calcADS;
+// ─── Init ───────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  calcEdpi(); calcFromCm(); calcConvert(); calcADS();
+});
 </script>
-
 </body>
 </html>
