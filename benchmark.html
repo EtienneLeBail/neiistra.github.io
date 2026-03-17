@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Benchmark R6 — R6 Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black: #0a0a0a; --white: #f5f2ed; --red: #c8302a; --red-dim: #8a1f1a;
+    --gray: #1c1c1c; --gray-mid: #2e2e2e; --gray-light: #555; --gray-text: #999;
+    --border: rgba(255,255,255,0.08); --cyan: #4ecdc4; --green: #2ecc71; --yellow: #f1c40f; --orange: #e67e22;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.6; overflow-x: hidden; }
+
+  /* NAV */
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-back { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+
+  /* HERO */
+  .hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 70% 40%, rgba(200,48,42,0.1) 0%, transparent 70%); }
+  .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 60px 60px; mask-image: linear-gradient(180deg, transparent 0%, black 30%, black 70%, transparent 100%); }
+  .hero-tag { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; position: relative; }
+  .hero-tag::before { content: ''; display: block; width: 28px; height: 1px; background: var(--red); }
+  .hero-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(48px, 8vw, 96px); letter-spacing: 2px; line-height: 0.95; margin-bottom: 12px; position: relative; }
+  .hero-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 300; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 20px; position: relative; }
+  .hero-desc { font-size: 15px; color: var(--gray-text); line-height: 1.8; max-width: 600px; position: relative; }
+
+  /* MAIN CONTENT */
+  .bench-section { padding: 64px 48px; max-width: 1100px; margin: 0 auto; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); margin-bottom: 32px; display: flex; align-items: center; gap: 10px; }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
+
+  /* FORM */
+  .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-bottom: 32px; }
+  .config-card { background: var(--gray); padding: 28px; }
+  .config-card label { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--gray-text); display: block; margin-bottom: 10px; }
+  .config-card select, .config-card input {
+    width: 100%; padding: 12px 16px;
+    background: var(--black); border: 1px solid var(--border); color: var(--white);
+    font-family: 'Barlow', sans-serif; font-size: 14px; font-weight: 400;
+    border-radius: 3px; appearance: none; cursor: pointer; transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  .config-card select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' fill='none' stroke-width='1.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+  .config-card select:focus, .config-card input:focus { outline: none; border-color: var(--red); }
+  .config-card select option { background: var(--black); color: var(--white); }
+
+  /* RUN BUTTON */
+  .run-btn {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    width: 100%; padding: 18px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 4px;
+    color: var(--white); background: var(--red); border: none; cursor: pointer;
+    transition: all 0.25s; margin-bottom: 48px;
+  }
+  .run-btn:hover { background: #a02520; transform: translateY(-1px); }
+  .run-btn:active { transform: translateY(0); }
+
+  /* RESULTS */
+  .results { display: none; }
+  .results.visible { display: block; animation: fadeUp 0.5s ease both; }
+  .results-header { display: flex; align-items: baseline; gap: 20px; margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .results-title { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; }
+  .results-config { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 1px; color: var(--gray-text); }
+
+  /* FPS BARS */
+  .preset-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px; margin-bottom: 32px; }
+  .preset-card { background: var(--gray); padding: 28px; position: relative; overflow: hidden; }
+  .preset-card::after { content: ''; position: absolute; right: -40px; top: -40px; width: 120px; height: 120px; background: radial-gradient(circle, rgba(200,48,42,0.05) 0%, transparent 70%); pointer-events: none; }
+  .preset-name { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 3px; margin-bottom: 4px; }
+  .preset-desc { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 20px; }
+  .fps-display { display: flex; align-items: baseline; gap: 4px; margin-bottom: 12px; }
+  .fps-num { font-family: 'Bebas Neue', sans-serif; font-size: 64px; letter-spacing: 2px; line-height: 1; }
+  .fps-unit { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; letter-spacing: 2px; color: var(--gray-text); }
+  .fps-bar-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; margin-bottom: 12px; }
+  .fps-bar { height: 100%; border-radius: 3px; transition: width 1s ease; }
+  .fps-verdict { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; }
+
+  /* THRESHOLDS */
+  .threshold-row { display: flex; gap: 32px; margin-bottom: 32px; padding: 20px 24px; background: var(--gray); border: 1px solid var(--border); }
+  .threshold-item { display: flex; align-items: center; gap: 8px; }
+  .threshold-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .threshold-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; color: var(--gray-text); text-transform: uppercase; }
+
+  /* SPECS TABLE */
+  .specs-table { width: 100%; border-collapse: collapse; margin-bottom: 32px; }
+  .specs-table th { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--red); text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+  .specs-table td { font-family: 'Barlow', sans-serif; font-size: 13px; color: var(--gray-text); padding: 10px 16px; border-bottom: 1px solid var(--border); }
+  .specs-table tr:hover td { color: var(--white); background: rgba(255,255,255,0.02); }
+
+  /* RECOMMENDATION */
+  .reco-card { background: var(--gray); border: 1px solid var(--border); padding: 28px; margin-top: 32px; position: relative; overflow: hidden; }
+  .reco-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--red); }
+  .reco-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; margin-bottom: 8px; }
+  .reco-text { font-size: 14px; color: var(--gray-text); line-height: 1.7; }
+  .reco-text strong { color: var(--white); font-weight: 500; }
+
+  /* FOOTER */
+  footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
+  .footer-logo span { color: var(--red); }
+  .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .hero-tag { animation: fadeUp 0.6s ease both; }
+  .hero-title { animation: fadeUp 0.6s 0.1s ease both; }
+
+  @media (max-width: 768px) {
+    nav { padding: 0 24px; }
+    .hero { padding: 100px 24px 48px; }
+    .bench-section { padding: 48px 24px; }
+    .config-grid { grid-template-columns: 1fr; }
+    .preset-grid { grid-template-columns: 1fr; }
+    .threshold-row { flex-direction: column; gap: 12px; }
+    footer { padding: 20px 24px; flex-direction: column; gap: 8px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">NEI<span>I</span>STRA</a>
+  <a href="index.html" class="nav-back">← Retour à l'accueil</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-tag">Outil — R6 Process</div>
+  <h1 class="hero-title">Benchmark</h1>
+  <p class="hero-subtitle">Estime tes FPS sur Rainbow Six Siege</p>
+  <p class="hero-desc">Sélectionne tes composants et ta résolution. Le benchmark estime tes FPS pour trois presets graphiques — Low (compétitif), Medium et Ultra — basé sur les benchmarks réels et les spécifications officielles de Siege X (Y11).</p>
+</section>
+
+<div class="bench-section">
+  <div class="section-label">Configuration</div>
+
+  <div class="config-grid">
+    <div class="config-card">
+      <label>Carte graphique (GPU)</label>
+      <select id="gpu">
+        <optgroup label="NVIDIA — RTX 50 Series">
+          <option value="rtx5090" data-score="320">RTX 5090</option>
+          <option value="rtx5080" data-score="270">RTX 5080</option>
+          <option value="rtx5070ti" data-score="230">RTX 5070 Ti</option>
+          <option value="rtx5070" data-score="200">RTX 5070</option>
+          <option value="rtx5060ti" data-score="160">RTX 5060 Ti</option>
+          <option value="rtx5060" data-score="135">RTX 5060</option>
+        </optgroup>
+        <optgroup label="NVIDIA — RTX 40 Series">
+          <option value="rtx4090" data-score="260">RTX 4090</option>
+          <option value="rtx4080s" data-score="220">RTX 4080 Super</option>
+          <option value="rtx4080" data-score="210">RTX 4080</option>
+          <option value="rtx4070tis" data-score="185">RTX 4070 Ti Super</option>
+          <option value="rtx4070ti" data-score="175">RTX 4070 Ti</option>
+          <option value="rtx4070s" data-score="160">RTX 4070 Super</option>
+          <option value="rtx4070" data-score="145" selected>RTX 4070</option>
+          <option value="rtx4060ti" data-score="120">RTX 4060 Ti</option>
+          <option value="rtx4060" data-score="105">RTX 4060</option>
+        </optgroup>
+        <optgroup label="NVIDIA — RTX 30 Series">
+          <option value="rtx3090" data-score="175">RTX 3090</option>
+          <option value="rtx3080" data-score="155">RTX 3080</option>
+          <option value="rtx3070ti" data-score="135">RTX 3070 Ti</option>
+          <option value="rtx3070" data-score="125">RTX 3070</option>
+          <option value="rtx3060ti" data-score="110">RTX 3060 Ti</option>
+          <option value="rtx3060" data-score="90">RTX 3060</option>
+          <option value="rtx3050" data-score="60">RTX 3050</option>
+        </optgroup>
+        <optgroup label="NVIDIA — RTX 20 / GTX 16 Series">
+          <option value="rtx2080ti" data-score="130">RTX 2080 Ti</option>
+          <option value="rtx2080" data-score="110">RTX 2080</option>
+          <option value="rtx2070" data-score="95">RTX 2070</option>
+          <option value="rtx2060" data-score="75">RTX 2060</option>
+          <option value="gtx1660ti" data-score="60">GTX 1660 Ti</option>
+          <option value="gtx1660s" data-score="55">GTX 1660 Super</option>
+          <option value="gtx1660" data-score="50">GTX 1660</option>
+          <option value="gtx1650" data-score="35">GTX 1650</option>
+        </optgroup>
+        <optgroup label="NVIDIA — GTX 10 Series">
+          <option value="gtx1080ti" data-score="90">GTX 1080 Ti</option>
+          <option value="gtx1080" data-score="72">GTX 1080</option>
+          <option value="gtx1070" data-score="58">GTX 1070</option>
+          <option value="gtx1060" data-score="38">GTX 1060 6GB</option>
+          <option value="gtx1050ti" data-score="25">GTX 1050 Ti</option>
+        </optgroup>
+        <optgroup label="AMD — RX 9000 Series">
+          <option value="rx9070xt" data-score="195">RX 9070 XT</option>
+          <option value="rx9070" data-score="170">RX 9070</option>
+        </optgroup>
+        <optgroup label="AMD — RX 7000 Series">
+          <option value="rx7900xtx" data-score="230">RX 7900 XTX</option>
+          <option value="rx7900xt" data-score="200">RX 7900 XT</option>
+          <option value="rx7800xt" data-score="150">RX 7800 XT</option>
+          <option value="rx7700xt" data-score="130">RX 7700 XT</option>
+          <option value="rx7600" data-score="85">RX 7600</option>
+        </optgroup>
+        <optgroup label="AMD — RX 6000 Series">
+          <option value="rx6900xt" data-score="165">RX 6900 XT</option>
+          <option value="rx6800xt" data-score="150">RX 6800 XT</option>
+          <option value="rx6700xt" data-score="100">RX 6700 XT</option>
+          <option value="rx6600xt" data-score="75">RX 6600 XT</option>
+          <option value="rx6600" data-score="65">RX 6600</option>
+          <option value="rx5500xt" data-score="35">RX 5500 XT</option>
+        </optgroup>
+        <optgroup label="Intel Arc">
+          <option value="a770" data-score="85">Arc A770</option>
+          <option value="a750" data-score="72">Arc A750</option>
+          <option value="a380" data-score="30">Arc A380</option>
+        </optgroup>
+      </select>
+    </div>
+
+    <div class="config-card">
+      <label>Processeur (CPU)</label>
+      <select id="cpu">
+        <optgroup label="Intel — 15th / 14th Gen">
+          <option value="i9-15900k" data-score="115">Core i9-15900K</option>
+          <option value="i7-15700k" data-score="108">Core i7-15700K</option>
+          <option value="i9-14900k" data-score="110">Core i9-14900K</option>
+          <option value="i7-14700k" data-score="105">Core i7-14700K</option>
+          <option value="i5-14600k" data-score="95">Core i5-14600K</option>
+          <option value="i5-14400" data-score="82">Core i5-14400</option>
+        </optgroup>
+        <optgroup label="Intel — 12th / 13th Gen">
+          <option value="i9-13900k" data-score="108">Core i9-13900K</option>
+          <option value="i7-13700k" data-score="100">Core i7-13700K</option>
+          <option value="i5-13600k" data-score="92">Core i5-13600K</option>
+          <option value="i5-12600k" data-score="85">Core i5-12600K</option>
+          <option value="i5-12400" data-score="75" selected>Core i5-12400</option>
+        </optgroup>
+        <optgroup label="Intel — 10th / 11th Gen">
+          <option value="i5-11600k" data-score="72">Core i5-11600K</option>
+          <option value="i5-10400" data-score="62">Core i5-10400</option>
+          <option value="i3-10100" data-score="45">Core i3-10100</option>
+        </optgroup>
+        <optgroup label="Intel — Older">
+          <option value="i7-8700k" data-score="60">Core i7-8700K</option>
+          <option value="i5-8400" data-score="50">Core i5-8400</option>
+          <option value="i3-8100" data-score="38">Core i3-8100</option>
+        </optgroup>
+        <optgroup label="AMD — Ryzen 9000 / 7000">
+          <option value="r9-9950x" data-score="115">Ryzen 9 9950X</option>
+          <option value="r7-9700x" data-score="105">Ryzen 7 9700X</option>
+          <option value="r5-9600x" data-score="95">Ryzen 5 9600X</option>
+          <option value="r9-7950x" data-score="110">Ryzen 9 7950X</option>
+          <option value="r7-7800x3d" data-score="112">Ryzen 7 7800X3D</option>
+          <option value="r7-7700x" data-score="98">Ryzen 7 7700X</option>
+          <option value="r5-7600x" data-score="88">Ryzen 5 7600X</option>
+          <option value="r5-7600" data-score="82">Ryzen 5 7600</option>
+        </optgroup>
+        <optgroup label="AMD — Ryzen 5000">
+          <option value="r9-5900x" data-score="90">Ryzen 9 5900X</option>
+          <option value="r7-5800x" data-score="82">Ryzen 7 5800X</option>
+          <option value="r5-5600x" data-score="75">Ryzen 5 5600X</option>
+          <option value="r5-5600" data-score="70">Ryzen 5 5600</option>
+        </optgroup>
+        <optgroup label="AMD — Ryzen 3000">
+          <option value="r7-3700x" data-score="60">Ryzen 7 3700X</option>
+          <option value="r5-3600" data-score="55">Ryzen 5 3600</option>
+          <option value="r3-3100" data-score="38">Ryzen 3 3100</option>
+        </optgroup>
+      </select>
+    </div>
+
+    <div class="config-card">
+      <label>Mémoire RAM</label>
+      <select id="ram">
+        <option value="8">8 Go</option>
+        <option value="16" selected>16 Go</option>
+        <option value="32">32 Go</option>
+        <option value="64">64 Go</option>
+      </select>
+    </div>
+
+    <div class="config-card">
+      <label>Résolution d'affichage</label>
+      <select id="resolution">
+        <option value="720">1280×720 (720p)</option>
+        <option value="1080" selected>1920×1080 (1080p)</option>
+        <option value="1440">2560×1440 (1440p)</option>
+        <option value="2160">3840×2160 (4K)</option>
+      </select>
+    </div>
+  </div>
+
+  <button class="run-btn" onclick="runBenchmark()">
+    LANCER LE BENCHMARK
+  </button>
+
+  <!-- RESULTS -->
+  <div class="results" id="results">
+    <div class="results-header">
+      <h2 class="results-title">Résultats</h2>
+      <span class="results-config" id="results-config"></span>
+    </div>
+
+    <div class="threshold-row">
+      <div class="threshold-item"><div class="threshold-dot" style="background:var(--red)"></div><span class="threshold-label">< 60 FPS — Injouable en compétitif</span></div>
+      <div class="threshold-item"><div class="threshold-dot" style="background:var(--orange)"></div><span class="threshold-label">60–120 FPS — Jouable</span></div>
+      <div class="threshold-item"><div class="threshold-dot" style="background:var(--yellow)"></div><span class="threshold-label">120–240 FPS — Compétitif</span></div>
+      <div class="threshold-item"><div class="threshold-dot" style="background:var(--green)"></div><span class="threshold-label">> 240 FPS — Optimal</span></div>
+    </div>
+
+    <div class="preset-grid">
+      <div class="preset-card" id="card-low">
+        <div class="preset-name">LOW</div>
+        <div class="preset-desc">Compétitif — Tout au minimum</div>
+        <div class="fps-display">
+          <span class="fps-num" id="fps-low">—</span>
+          <span class="fps-unit">FPS</span>
+        </div>
+        <div class="fps-bar-bg"><div class="fps-bar" id="bar-low" style="width:0%"></div></div>
+        <div class="fps-verdict" id="verdict-low"></div>
+      </div>
+
+      <div class="preset-card" id="card-mid">
+        <div class="preset-name">MEDIUM</div>
+        <div class="preset-desc">Équilibré — Qualité & performance</div>
+        <div class="fps-display">
+          <span class="fps-num" id="fps-mid">—</span>
+          <span class="fps-unit">FPS</span>
+        </div>
+        <div class="fps-bar-bg"><div class="fps-bar" id="bar-mid" style="width:0%"></div></div>
+        <div class="fps-verdict" id="verdict-mid"></div>
+      </div>
+
+      <div class="preset-card" id="card-ultra">
+        <div class="preset-name">ULTRA</div>
+        <div class="preset-desc">Maximum — Ray tracing, ombres, AA</div>
+        <div class="fps-display">
+          <span class="fps-num" id="fps-ultra">—</span>
+          <span class="fps-unit">FPS</span>
+        </div>
+        <div class="fps-bar-bg"><div class="fps-bar" id="bar-ultra" style="width:0%"></div></div>
+        <div class="fps-verdict" id="verdict-ultra"></div>
+      </div>
+    </div>
+
+    <table class="specs-table">
+      <thead><tr><th>Composant</th><th>Sélection</th><th>Status</th></tr></thead>
+      <tbody id="specs-body"></tbody>
+    </table>
+
+    <div class="reco-card" id="reco-card">
+      <div class="reco-title" id="reco-title">Recommandation</div>
+      <div class="reco-text" id="reco-text"></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span class="footer-logo">NEI<span>I</span>STRA</span>
+  <span class="footer-text">R6 Process — Benchmark · Estimations basées sur les benchmarks réels Siege X (Y11)</span>
+</footer>
+
+<script>
+function runBenchmark() {
+  const gpuEl = document.getElementById('gpu');
+  const cpuEl = document.getElementById('cpu');
+  const ram = parseInt(document.getElementById('ram').value);
+  const res = parseInt(document.getElementById('resolution').value);
+
+  const gpuScore = parseInt(gpuEl.selectedOptions[0].dataset.score);
+  const cpuScore = parseInt(cpuEl.selectedOptions[0].dataset.score);
+  const gpuName = gpuEl.selectedOptions[0].textContent;
+  const cpuName = cpuEl.selectedOptions[0].textContent;
+
+  // Resolution multiplier (1080p = baseline)
+  const resMult = { 720: 1.55, 1080: 1.0, 1440: 0.68, 2160: 0.38 };
+  const rMult = resMult[res];
+
+  // RAM penalty
+  const ramMult = ram <= 8 ? 0.82 : 1.0;
+
+  // CPU bottleneck factor: if CPU score is much lower than GPU, it limits FPS
+  const cpuBottleneck = Math.min(1.0, (cpuScore / gpuScore) * 1.2);
+
+  // Base FPS calculation (calibrated to real benchmarks)
+  // RTX 4070 (score 145) @ 1080p Low ≈ 400+ FPS, Medium ≈ 300, Ultra ≈ 180
+  const baseLow = gpuScore * 2.8 * rMult * ramMult * cpuBottleneck;
+  const baseMid = gpuScore * 2.0 * rMult * ramMult * cpuBottleneck;
+  const baseUltra = gpuScore * 1.2 * rMult * ramMult * cpuBottleneck;
+
+  const fpsLow = Math.round(Math.min(baseLow, cpuScore * 5.5));
+  const fpsMid = Math.round(Math.min(baseMid, cpuScore * 4.5));
+  const fpsUltra = Math.round(Math.min(baseUltra, cpuScore * 3.5));
+
+  // Display
+  const results = document.getElementById('results');
+  results.classList.add('visible');
+
+  const resLabel = { 720: '720p', 1080: '1080p', 1440: '1440p', 2160: '4K' };
+  document.getElementById('results-config').textContent = `${gpuName} · ${cpuName} · ${ram} Go RAM · ${resLabel[res]}`;
+
+  animateFPS('low', fpsLow);
+  animateFPS('mid', fpsMid);
+  animateFPS('ultra', fpsUltra);
+
+  // Specs table
+  const tbody = document.getElementById('specs-body');
+  tbody.innerHTML = `
+    <tr><td>GPU</td><td>${gpuName}</td><td>${getStatus(gpuScore, 75)}</td></tr>
+    <tr><td>CPU</td><td>${cpuName}</td><td>${getStatus(cpuScore, 62)}</td></tr>
+    <tr><td>RAM</td><td>${ram} Go</td><td>${ram >= 16 ? '✓ Suffisant' : '⚠ Minimum (16 Go recommandé)'}</td></tr>
+    <tr><td>Résolution</td><td>${resLabel[res]}</td><td>${res <= 1080 ? '✓ Optimal compétitif' : res <= 1440 ? '✓ Bon compromis' : '⚠ Très exigeant en GPU'}</td></tr>
+  `;
+
+  // Recommendation
+  generateReco(fpsLow, fpsMid, fpsUltra, gpuScore, cpuScore, ram, res);
+
+  results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function animateFPS(preset, fps) {
+  const numEl = document.getElementById('fps-' + preset);
+  const barEl = document.getElementById('bar-' + preset);
+  const verdictEl = document.getElementById('verdict-' + preset);
+
+  // Animate number
+  let current = 0;
+  const step = Math.max(1, Math.round(fps / 40));
+  const interval = setInterval(() => {
+    current += step;
+    if (current >= fps) { current = fps; clearInterval(interval); }
+    numEl.textContent = current;
+  }, 20);
+
+  // Color
+  let color, verdict;
+  if (fps >= 240) { color = 'var(--green)'; verdict = 'Optimal — fluide à 240Hz'; }
+  else if (fps >= 144) { color = 'var(--yellow)'; verdict = 'Compétitif — fluide à 144Hz'; }
+  else if (fps >= 60) { color = 'var(--orange)'; verdict = 'Jouable — suffisant à 60Hz'; }
+  else { color = 'var(--red)'; verdict = 'Insuffisant — frame drops probables'; }
+
+  numEl.style.color = color;
+  barEl.style.background = color;
+  barEl.style.width = Math.min(100, fps / 4) + '%';
+  verdictEl.textContent = verdict;
+  verdictEl.style.color = color;
+}
+
+function getStatus(score, threshold) {
+  if (score >= threshold * 2) return '✓ Excellent';
+  if (score >= threshold * 1.3) return '✓ Bon';
+  if (score >= threshold) return '✓ Suffisant';
+  return '⚠ Limite';
+}
+
+function generateReco(low, mid, ultra, gpuS, cpuS, ram, res) {
+  const title = document.getElementById('reco-title');
+  const text = document.getElementById('reco-text');
+
+  let html = '';
+
+  if (low >= 240 && mid >= 144) {
+    title.textContent = 'Configuration excellente';
+    html = `Ta config gère Siege sans problème. En <strong>Low</strong> tu dépasses les 240 FPS — idéal pour un moniteur 240Hz. En <strong>Medium</strong>, tu restes au-dessus de 144 FPS, ce qui est parfaitement compétitif. Recommandation : joue en <strong>Low</strong> si tu vises le ranked sérieux (moins de clutter visuel, FPS stables), ou en Medium si tu veux un rendu plus agréable en casual.`;
+  } else if (low >= 144) {
+    title.textContent = 'Configuration compétitive';
+    html = `Tu atteins 144+ FPS en Low — c'est la cible pour le ranked compétitif. `;
+    if (mid >= 60) html += `Le Medium reste jouable à ${mid} FPS. `;
+    if (cpuS < gpuS * 0.6) html += `<strong>Attention</strong> : ton CPU semble être le facteur limitant (bottleneck). Un upgrade CPU aurait plus d'impact qu'un upgrade GPU. `;
+    if (ram < 16) html += `<strong>Passe à 16 Go de RAM</strong> — 8 Go cause des micro-stutters en Siege, surtout avec Discord/navigateur ouverts. `;
+    html += `Recommandation : reste en <strong>Low</strong> pour le ranked, active juste les ombres en Medium pour voir sous les portes.`;
+  } else if (low >= 60) {
+    title.textContent = 'Configuration jouable — mais limitée';
+    html = `Tu atteins ${low} FPS en Low, ce qui est jouable mais en dessous du seuil compétitif (144 FPS). `;
+    if (res >= 1440) html += `<strong>Baisse la résolution à 1080p</strong> — c'est le changement le plus impactant. Les pros jouent en 1080p, même avec des RTX 4090. `;
+    if (cpuS < 50) html += `Ton CPU est vieillissant pour Siege X. Un Ryzen 5 5600 ou i5-12400 serait un upgrade significatif. `;
+    if (gpuS < 50) html += `Ta carte graphique est en dessous des specs recommandées de Siege X. Une RTX 3060 ou RX 6600 serait le minimum pour 144 FPS en Low/1080p. `;
+    html += `Active le <strong>render scaling à 75%</strong> dans les options pour gagner ~30% de FPS sans trop perdre en lisibilité.`;
+  } else {
+    title.textContent = 'Configuration insuffisante';
+    html = `À ${low} FPS en Low, l'expérience sera difficile — les frame drops en combat rendront le jeu imprévisible. `;
+    if (res > 1080) html += `<strong>Passe impérativement en 1080p ou 720p.</strong> `;
+    html += `Pour Siege X en 2026, les specs minimum demandent une GTX 1650 / RX 5500 XT et un i3-8100 / Ryzen 3 3100. Si tu es en dessous, un upgrade hardware est nécessaire. Le render scaling à 50% peut débloquer la situation temporairement, au prix d'un rendu très flou.`;
+  }
+
+  text.innerHTML = html;
+}
+</script>
+
+</body>
+</html>
