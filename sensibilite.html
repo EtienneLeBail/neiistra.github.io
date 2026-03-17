@@ -12,35 +12,13 @@
   html { scroll-behavior: smooth; }
   body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
 
-  nav { 
-  position: fixed; 
-  top: 0; 
-  left: 0; 
-  right: 0; 
-  z-index: 100; 
-  display: flex; 
-  align-items: center; 
-  justify-content: space-between; 
-  padding: 0 48px; 
-  height: 64px; 
-  border-bottom: 1px solid var(--border); 
-  background: rgba(10,10,10,0.88); 
-  backdrop-filter: blur(12px); 
-}
-
-.nav-back { 
-  font-family: 'Barlow Condensed', sans-serif; 
-  font-size: 13px; 
-  letter-spacing: 2px; 
-  text-transform: uppercase; 
-  color: var(--gray-text); 
-  text-decoration: none; 
-  transition: color .2s; 
-}
-
-.nav-back:hover { 
-  color: var(--white); 
-}
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; border-bottom: 1px solid var(--border); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-links { display: flex; align-items: center; gap: 32px; }
+  .nav-link { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); text-decoration: none; transition: color 0.2s; }
+  .nav-link:hover { color: var(--white); }
+  .nav-link.active { color: var(--red); }
 
   .page-hero { padding: 120px 48px 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
   .page-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,48,42,0.07) 0%, transparent 70%); }
@@ -129,7 +107,11 @@
 
 <nav>
   <a href="index.html" class="nav-logo">NEI<span>I</span>STRA</a>
-  <a href="index.html" class="nav-back">← Retour à l'accueil</a>
+  <div class="nav-links">
+    <a href="sensibilite.html" class="nav-link active">Sensibilité</a>
+    <a href="benchmark.html" class="nav-link">Benchmark</a>
+    <a href="https://github.com/EtienneLeBail/neiistra.github.io" target="_blank" class="nav-link">GitHub</a>
+  </div>
 </nav>
 
 <section class="page-hero">
