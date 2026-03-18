@@ -19,7 +19,7 @@
 <div class="viewer-header"><div class="viewer-title" id="vTitle">—</div><div class="viewer-legend"><div class="legend-item"><div class="legend-bar" style="background:#e8c93a"></div>Murs destructibles</div><div class="legend-item"><div class="legend-bar" style="background:#e8c93a;background-image:repeating-linear-gradient(45deg,transparent,transparent 2px,#0a0a0a 2px,#0a0a0a 4px)"></div>Hatches</div><div class="legend-item"><div class="legend-bar" style="background:#c8302a;border:1px dashed #c8302a"></div>Lignes de vue</div></div></div>
 <div class="floor-bar" id="floorBar"></div>
 <div class="toolbar">
-  <button class="tb on" id="bPan" title="Déplacer (Espace)"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M10.5 1.5a1.5 1.5 0 0 1 3 0V9h.5a1.5 1.5 0 0 1 3 0v1.5a1.5 1.5 0 0 1 3 0V12a1.5 1.5 0 0 1 3 0v5a7 7 0 0 1-7 7h-2a7 7 0 0 1-7-7V6a1.5 1.5 0 0 1 3 0v4.5h.5z"/></svg></button>
+  <button class="tb on" id="bPan" title="Déplacer (Espace)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5V4a1.5 1.5 0 0 1 3 0v3"/><path d="M9.5 5.5V3a1.5 1.5 0 0 1 3 0v4"/><path d="M12.5 5.5V4a1.5 1.5 0 0 1 3 0v3"/><path d="M15.5 7v-.5a1.5 1.5 0 0 1 3 0V16a7 7 0 0 1-7 7h-1a7 7 0 0 1-7-7V9.5a1.5 1.5 0 0 1 3 0V12"/><path d="M6.5 12V6.5"/></svg></button>
   <div class="tsep"></div>
   <button class="tb" id="bPen" title="Dessiner"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></button>
   <input type="color" id="iColor" class="cpick" value="#c8302a">
@@ -149,7 +149,6 @@ function bbox(o){
     let mx=Infinity,my=Infinity,Mx=-Infinity,My=-Infinity;
     o.pts.forEach(p=>{
       let px=p.x+o.ox-c.x,py=p.y+o.oy-c.y;
-      // apply rotation + scale
       const rx=px*Math.cos(r)-py*Math.sin(r),ry=px*Math.sin(r)+py*Math.cos(r);
       const fx=rx*s+c.x,fy=ry*s+c.y;
       if(fx<mx)mx=fx;if(fy<my)my=fy;if(fx>Mx)Mx=fx;if(fy>My)My=fy;
@@ -157,13 +156,50 @@ function bbox(o){
     return{x:mx,y:my,w:Mx-mx,h:My-my};
   }
   if(o.type==='text'){
-    const s=o.scl||1;
-    cx.font=`bold ${o.sz}px 'Barlow',sans-serif`;const m=cx.measureText(o.text);
-    return{x:o.x-4,y:o.y-o.sz*s,w:(m.width+8)*s,h:(o.sz+8)*s};
+    // Compute rotated corners of the text box
+    const s=o.scl||1,r=(o.rot||0)*Math.PI/180;
+    cx.font=`bold ${o.sz}px 'Barlow',sans-serif`;
+    const tw=cx.measureText(o.text).width*s;
+    const th=o.sz*s;
+    // Local corners: (0, -th) to (tw, 0) relative to (o.x, o.y)
+    const corners=[
+      {x:-4,y:-th-4},{x:tw+4,y:-th-4},{x:tw+4,y:4},{x:-4,y:4}
+    ];
+    let mx=Infinity,my=Infinity,Mx=-Infinity,My=-Infinity;
+    corners.forEach(c=>{
+      const rx=c.x*Math.cos(r)-c.y*Math.sin(r)+o.x;
+      const ry=c.x*Math.sin(r)+c.y*Math.cos(r)+o.y;
+      if(rx<mx)mx=rx;if(ry<my)my=ry;if(rx>Mx)Mx=rx;if(ry>My)My=ry;
+    });
+    return{x:mx,y:my,w:Mx-mx,h:My-my};
   }
   return null;
 }
-function hit(x,y){for(let i=objs.length-1;i>=0;i--){const b=bbox(objs[i]);if(b&&x>=b.x-10&&x<=b.x+b.w+10&&y>=b.y-10&&y<=b.y+b.h+10)return objs[i];}return null;}
+function textLocalHit(o,x,y){
+  // Transform click point into text's local coordinate space
+  const s=o.scl||1,r=(o.rot||0)*Math.PI/180;
+  const dx=x-o.x,dy=y-o.y;
+  // Inverse rotate
+  const lx=dx*Math.cos(-r)-dy*Math.sin(-r);
+  const ly=dx*Math.sin(-r)+dy*Math.cos(-r);
+  // Local bounds: x from -4 to textWidth*s+4, y from -sz*s-4 to +4
+  cx.font=`bold ${o.sz}px 'Barlow',sans-serif`;
+  const tw=cx.measureText(o.text).width*s;
+  const th=o.sz*s;
+  return lx>=-10 && lx<=tw+10 && ly>=-th-10 && ly<=10;
+}
+function hit(x,y){
+  for(let i=objs.length-1;i>=0;i--){
+    const o=objs[i];
+    if(o.type==='text'){
+      if(textLocalHit(o,x,y)) return o;
+    }else{
+      const b=bbox(o);
+      if(b&&x>=b.x-10&&x<=b.x+b.w+10&&y>=b.y-10&&y<=b.y+b.h+10) return o;
+    }
+  }
+  return null;
+}
 
 // HISTORY
 function save(){hist.push(JSON.parse(JSON.stringify(objs)));redo=[];if(hist.length>50)hist.shift();}
