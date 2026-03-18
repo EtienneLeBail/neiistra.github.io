@@ -94,6 +94,48 @@
 </div>
 </div>
 
+<div class="content">
+<hr class="separator">
+<div class="section-tag">Section 3b — Dual-Task</div>
+<h2>Le vrai test : clavier + souris en simultané</h2>
+<p>En match R6, ton cerveau ne fait jamais qu'une seule chose. Tu <strong>strafes au clavier</strong> pour éviter les balles pendant que ta <strong>souris vise une tête</strong>. C'est du dual-tasking moteur — deux boucles motrices indépendantes qui tournent en parallèle.</p>
+<p>Le coût cognitif est réel : les études en neurosciences montrent une <strong>pénalité de ~15-30%</strong> sur chaque tâche quand elles sont exécutées simultanément. L'entraînement réduit ce coût en automatisant la tâche la plus simple (le déplacement clavier) pour libérer de l'attention pour la visée.</p>
+</div>
+
+<div class="content" style="padding-top:0;">
+<div class="game-section">
+<div class="game-header">
+<div>
+<div class="game-title">Dual-Task Trainer</div>
+<div style="font-size:12px;color:var(--gray-text);margin-top:4px;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px">HAUT : Z/Q ← · D → esquive les murs | BAS : Souris — track & click (sensi R6)</div>
+</div>
+<button class="game-btn" id="dtStart">Démarrer (30s)</button>
+</div>
+<div style="padding:12px 24px;border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:rgba(10,10,10,0.3)">
+<label style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text)">DPI</label>
+<input type="number" id="dtDpi" value="800" min="100" max="32000" style="width:64px;padding:6px 8px;background:var(--black);border:1px solid var(--border);color:var(--white);font-family:'Barlow Condensed',sans-serif;font-size:13px;border-radius:3px;text-align:center">
+<label style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text)">Sens</label>
+<input type="number" id="dtSens" value="10" min="1" max="100" style="width:52px;padding:6px 8px;background:var(--black);border:1px solid var(--border);color:var(--white);font-family:'Barlow Condensed',sans-serif;font-size:13px;border-radius:3px;text-align:center">
+<label style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text)">Mult</label>
+<input type="number" id="dtMult" value="0.02" step="0.001" min="0.001" max="0.1" style="width:64px;padding:6px 8px;background:var(--black);border:1px solid var(--border);color:var(--white);font-family:'Barlow Condensed',sans-serif;font-size:13px;border-radius:3px;text-align:center">
+<span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--cyan);letter-spacing:1px" id="dtInfo">—</span>
+</div>
+<div style="position:relative">
+<canvas id="dtCanvas" style="width:100%;height:520px;display:block;background:#0e0e0e;cursor:none"></canvas>
+<div id="dtOverlay" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(10,10,10,0.9);cursor:pointer;z-index:5">
+<div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;margin-bottom:8px">DUAL-TASK TRAINER</div>
+<div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--gray-text);text-align:center;line-height:1.6">Clique pour capturer la souris<br>HAUT : Z/Q ← D → pour esquiver les murs<br>BAS : Souris pour viser (track + click)<br><span style="font-size:11px;color:var(--gray-light);margin-top:8px;display:block">Échap pour libérer le curseur</span></div>
+</div>
+</div>
+<div class="game-stats" style="grid-template-columns:repeat(5,1fr)">
+<div class="game-stat"><div class="game-stat-num" id="dt-dodge">—</div><div class="game-stat-label">Esquivés</div></div>
+<div class="game-stat"><div class="game-stat-num" id="dt-crash">—</div><div class="game-stat-label">Crashs</div></div>
+<div class="game-stat"><div class="game-stat-num" id="dt-hits">—</div><div class="game-stat-label">Hits souris</div></div>
+<div class="game-stat"><div class="game-stat-num" id="dt-miss">—</div><div class="game-stat-label">Miss souris</div></div>
+<div class="game-stat"><div class="game-stat-num" id="dt-score">—</div><div class="game-stat-label">Score</div></div>
+</div>
+</div>
+
 <div class="content" style="padding-top:0;">
 <hr class="separator">
 <div class="section-tag">Section 4</div>
@@ -187,6 +229,272 @@ document.getElementById('gn-correct').textContent=gngCorrect||'—';
 document.getElementById('gn-false').textContent=gngFalse||'—';
 document.getElementById('gn-missed').textContent=gngMissed||'—';
 document.getElementById('gn-avg').textContent=goTimes.length?(Math.round(goTimes.reduce((a,b)=>a+b,0)/goTimes.length)+'ms'):'—';
+}
+// ═══════════════════════════════════════════════
+// DUAL-TASK TRAINER
+// ═══════════════════════════════════════════════
+const dtCanvas=document.getElementById('dtCanvas');
+const dc=dtCanvas.getContext('2d');
+let dtActive=false,dtAnim,dtStart,dtDur=30000;
+let dtSensScale=0.2;
+// Top half: runner
+let runner={x:0,lane:1},walls=[],dtSpeed=3,dtDodged=0,dtCrash=0,wallTimer=0;
+// Bottom half: aim
+let dtCh={x:0,y:0},dtTargets=[],dtHits=0,dtMiss=0,dtClicks=0;
+let dtLocked=false,dtPhase='track'; // 'track' or 'click'
+let dtTrackTarget={x:0,y:0,w:40,h:40,vx:2,vy:1.5};
+let dtTrackScore=0,dtTrackTotal=0;
+let dtClickTargets=[];
+const LANES=5,LANE_W=80;
+
+function dtUpdateConfig(){
+  const dpi=parseFloat(document.getElementById('dtDpi').value)||800;
+  const sens=parseFloat(document.getElementById('dtSens').value)||10;
+  const mult=parseFloat(document.getElementById('dtMult').value)||0.02;
+  dtSensScale=sens*mult;
+  const cm=(360*2.54)/(dpi*sens*mult*0.33);
+  document.getElementById('dtInfo').textContent=cm.toFixed(1)+' cm/360°';
+}
+document.getElementById('dtDpi').oninput=dtUpdateConfig;
+document.getElementById('dtSens').oninput=dtUpdateConfig;
+document.getElementById('dtMult').oninput=dtUpdateConfig;
+dtUpdateConfig();
+
+// Pointer lock
+document.getElementById('dtOverlay').onclick=()=>{dtCanvas.requestPointerLock();};
+document.addEventListener('pointerlockchange',()=>{
+  dtLocked=document.pointerLockElement===dtCanvas;
+  if(dtLocked)document.getElementById('dtOverlay').style.display='none';
+  else document.getElementById('dtOverlay').style.display='flex';
+});
+document.addEventListener('mousemove',e=>{
+  if(!dtLocked)return;
+  const r=dtCanvas.getBoundingClientRect();
+  const half=dtCanvas.height/2;
+  dtCh.x=Math.max(0,Math.min(dtCanvas.width,dtCh.x+e.movementX*dtSensScale));
+  dtCh.y=Math.max(half,Math.min(dtCanvas.height,dtCh.y+e.movementY*dtSensScale));
+});
+document.addEventListener('mousedown',e=>{
+  if(!dtLocked||!dtActive)return;
+  if(dtPhase==='click'){
+    let hitAny=false;
+    dtClickTargets=dtClickTargets.filter(t=>{
+      const dx=dtCh.x-t.x,dy=dtCh.y-t.y;
+      if(Math.sqrt(dx*dx+dy*dy)<t.r+4){hitAny=true;dtHits++;return false;}
+      return true;
+    });
+    if(!hitAny)dtMiss++;
+    dtClicks++;
+  }
+});
+
+// Keyboard for runner
+const dtKeys={};
+document.addEventListener('keydown',e=>{dtKeys[e.code]=true;});
+document.addEventListener('keyup',e=>{dtKeys[e.code]=false;});
+
+document.getElementById('dtStart').onclick=()=>{
+  if(!dtLocked)dtCanvas.requestPointerLock();
+  setTimeout(startDT,300);
+};
+
+function startDT(){
+  const rect=dtCanvas.getBoundingClientRect();
+  dtCanvas.width=rect.width;dtCanvas.height=rect.height;
+  const half=dtCanvas.height/2;
+  const topW=dtCanvas.width;
+  runner={x:topW/2,lane:Math.floor(LANES/2)};
+  runner.x=topW/2;
+  walls=[];dtSpeed=3;dtDodged=0;dtCrash=0;wallTimer=0;
+  dtCh={x:dtCanvas.width/2,y:half+half/2};
+  dtHits=0;dtMiss=0;dtClicks=0;dtTrackScore=0;dtTrackTotal=0;
+  dtPhase='track';
+  dtTrackTarget={x:dtCanvas.width/2,y:half+half/2,w:36,h:36,vx:2.5,vy:1.8};
+  dtClickTargets=[];spawnClickTargets();
+  dtActive=true;dtStart=performance.now();
+  if(dtAnim)cancelAnimationFrame(dtAnim);
+  dtLoop();
+}
+
+function spawnWall(){
+  const w=dtCanvas.width;
+  const gapLane=Math.floor(Math.random()*LANES);
+  const laneW=w/LANES;
+  walls.push({y:-20,gapLane,laneW,counted:false});
+}
+
+function spawnClickTargets(){
+  const half=dtCanvas.height/2;
+  dtClickTargets=[];
+  for(let i=0;i<3;i++){
+    dtClickTargets.push({
+      x:40+Math.random()*(dtCanvas.width-80),
+      y:half+30+Math.random()*(half-60),
+      r:12+Math.random()*8
+    });
+  }
+}
+
+function dtLoop(){
+  if(!dtActive)return;
+  const el=performance.now()-dtStart;
+  if(el>=dtDur){endDT();return;}
+  const w=dtCanvas.width,h=dtCanvas.height,half=h/2;
+  dc.clearRect(0,0,w,h);
+
+  // ─── TOP HALF: RUNNER ───
+  dc.save();
+  dc.beginPath();dc.rect(0,0,w,half);dc.clip();
+  // Background
+  dc.fillStyle='#0c0c0c';dc.fillRect(0,0,w,half);
+  // Grid lines
+  const laneW=w/LANES;
+  dc.strokeStyle='rgba(255,255,255,0.06)';dc.lineWidth=1;
+  for(let i=1;i<LANES;i++){dc.beginPath();dc.moveTo(i*laneW,0);dc.lineTo(i*laneW,half);dc.stroke();}
+  // Label
+  dc.fillStyle='rgba(255,255,255,0.08)';dc.font='bold 11px "Barlow Condensed",sans-serif';
+  dc.fillText('CLAVIER — Z/Q ← · D →',10,16);
+
+  // Move runner
+  const moveSpeed=5;
+  if(dtKeys['KeyA']||dtKeys['KeyQ']||dtKeys['KeyZ'])runner.x-=moveSpeed;
+  if(dtKeys['KeyD'])runner.x+=moveSpeed;
+  runner.x=Math.max(12,Math.min(w-12,runner.x));
+
+  // Accelerate
+  dtSpeed=3+el/dtDur*4;
+
+  // Spawn walls
+  wallTimer++;
+  if(wallTimer>Math.max(25,60-el/dtDur*35)){wallTimer=0;spawnWall();}
+
+  // Update walls
+  walls.forEach(wall=>{
+    wall.y+=dtSpeed;
+    // Draw wall segments (all lanes except gap)
+    for(let i=0;i<LANES;i++){
+      if(i===wall.gapLane)continue;
+      dc.fillStyle='rgba(200,48,42,0.7)';
+      dc.fillRect(i*laneW+2,wall.y,laneW-4,16);
+    }
+    // Gap highlight
+    dc.fillStyle='rgba(78,205,196,0.08)';
+    dc.fillRect(wall.gapLane*laneW,wall.y,laneW,16);
+
+    // Collision
+    if(!wall.counted&&wall.y>half-30&&wall.y<half-10){
+      const runnerLane=Math.floor(runner.x/laneW);
+      if(runnerLane!==wall.gapLane){dtCrash++;wall.counted=true;}
+      else{dtDodged++;wall.counted=true;}
+    }
+  });
+  walls=walls.filter(w=>w.y<half+30);
+
+  // Draw runner
+  dc.fillStyle='var(--white)';
+  dc.beginPath();dc.arc(runner.x,half-24,8,0,Math.PI*2);dc.fill();
+  dc.fillStyle='rgba(78,205,196,0.3)';
+  dc.beginPath();dc.arc(runner.x,half-24,14,0,Math.PI*2);dc.fill();
+  dc.restore();
+
+  // ─── DIVIDER ───
+  dc.fillStyle='rgba(200,48,42,0.6)';dc.fillRect(0,half-1,w,2);
+
+  // ─── BOTTOM HALF: AIM ───
+  dc.save();
+  dc.beginPath();dc.rect(0,half,w,half);dc.clip();
+  dc.fillStyle='#111';dc.fillRect(0,half,w,half);
+  // Grid
+  dc.strokeStyle='rgba(255,255,255,0.03)';
+  for(let i=0;i<w;i+=60){dc.beginPath();dc.moveTo(i,half);dc.lineTo(i,h);dc.stroke();}
+  for(let i=half;i<h;i+=60){dc.beginPath();dc.moveTo(0,i);dc.lineTo(w,i);dc.stroke();}
+  dc.fillStyle='rgba(255,255,255,0.08)';dc.font='bold 11px "Barlow Condensed",sans-serif';
+  dc.fillText('SOURIS — POINTER LOCK R6',10,half+16);
+
+  // Switch phase every 8s
+  const phaseTime=8000;
+  const phaseNum=Math.floor(el/phaseTime);
+  dtPhase=phaseNum%2===0?'track':'click';
+
+  if(dtPhase==='track'){
+    // Track square
+    dc.fillStyle='rgba(78,205,196,0.1)';dc.font='10px "Barlow Condensed",sans-serif';
+    dc.fillText('MODE: TRACKING',10,half+30);
+    const t=dtTrackTarget;
+    t.x+=t.vx;t.y+=t.vy;
+    if(t.x<10||t.x>w-t.w-10)t.vx*=-1;
+    if(t.y<half+10||t.y>h-t.h-10)t.vy*=-1;
+    if(Math.random()<0.015){t.vx*=-1;t.vx*=0.8+Math.random()*0.5;}
+    if(Math.random()<0.015){t.vy*=-1;t.vy*=0.8+Math.random()*0.5;}
+    t.x=Math.max(5,Math.min(w-t.w-5,t.x));
+    t.y=Math.max(half+5,Math.min(h-t.h-5,t.y));
+
+    const onTarget=dtCh.x>=t.x&&dtCh.x<=t.x+t.w&&dtCh.y>=t.y&&dtCh.y<=t.y+t.h;
+    dc.fillStyle=onTarget?'rgba(78,205,196,0.6)':'rgba(200,48,42,0.5)';
+    dc.fillRect(t.x,t.y,t.w,t.h);
+    dc.strokeStyle=onTarget?'rgba(78,205,196,0.9)':'rgba(200,48,42,0.8)';
+    dc.lineWidth=2;dc.strokeRect(t.x,t.y,t.w,t.h);
+    dtTrackTotal++;if(onTarget)dtTrackScore++;
+  }else{
+    // Click circles
+    dc.fillStyle='rgba(200,48,42,0.1)';dc.font='10px "Barlow Condensed",sans-serif';
+    dc.fillText('MODE: CLICK',10,half+30);
+    if(dtClickTargets.length===0)spawnClickTargets();
+    dtClickTargets.forEach(t=>{
+      dc.beginPath();dc.arc(t.x,t.y,t.r,0,Math.PI*2);
+      dc.fillStyle='rgba(200,48,42,0.8)';dc.fill();
+      dc.beginPath();dc.arc(t.x,t.y,2,0,Math.PI*2);
+      dc.fillStyle='#fff';dc.fill();
+    });
+  }
+
+  // Crosshair
+  const ch=dtCh;
+  dc.shadowColor='rgba(255,255,255,0.4)';dc.shadowBlur=4;
+  dc.strokeStyle='rgba(255,255,255,0.95)';dc.lineWidth=2;
+  dc.beginPath();dc.moveTo(ch.x-12,ch.y);dc.lineTo(ch.x-4,ch.y);dc.stroke();
+  dc.beginPath();dc.moveTo(ch.x+4,ch.y);dc.lineTo(ch.x+12,ch.y);dc.stroke();
+  dc.beginPath();dc.moveTo(ch.x,ch.y-12);dc.lineTo(ch.x,ch.y-4);dc.stroke();
+  dc.beginPath();dc.moveTo(ch.x,ch.y+4);dc.lineTo(ch.x,ch.y+12);dc.stroke();
+  dc.shadowBlur=0;
+  dc.fillStyle='#fff';dc.beginPath();dc.arc(ch.x,ch.y,2,0,Math.PI*2);dc.fill();
+  dc.restore();
+
+  // ─── HUD ───
+  const remaining=Math.ceil((dtDur-el)/1000);
+  dc.fillStyle='rgba(10,10,10,0.7)';dc.fillRect(w-70,4,66,22);
+  dc.fillStyle='var(--white)';dc.font='bold 14px "Bebas Neue",sans-serif';dc.textAlign='center';
+  dc.fillText(remaining+'s',w-37,19);dc.textAlign='left';
+
+  // Progress bar
+  dc.fillStyle='rgba(200,48,42,0.3)';dc.fillRect(0,h-3,w*(el/dtDur),3);
+
+  updateDTStats();
+  dtAnim=requestAnimationFrame(dtLoop);
+}
+
+function endDT(){
+  dtActive=false;
+  const w=dtCanvas.width,h=dtCanvas.height;
+  dc.fillStyle='rgba(10,10,10,0.85)';dc.fillRect(0,0,w,h);
+  const trackAcc=dtTrackTotal?Math.round(dtTrackScore/dtTrackTotal*100):0;
+  const score=dtDodged*10+dtHits*15-dtCrash*5-dtMiss*3+Math.round(trackAcc/2);
+  dc.fillStyle='var(--white)';dc.font='600 42px "Bebas Neue",sans-serif';dc.textAlign='center';
+  dc.fillText('SCORE: '+Math.max(0,score),w/2,h/2-20);
+  dc.font='300 14px "Barlow Condensed",sans-serif';dc.fillStyle='var(--gray-text)';
+  dc.fillText(dtDodged+' esquivés · '+dtHits+' hits · '+trackAcc+'% tracking · Relance depuis le bouton',w/2,h/2+20);
+  dc.textAlign='left';
+  document.getElementById('dt-score').textContent=Math.max(0,score);
+}
+
+function updateDTStats(){
+  document.getElementById('dt-dodge').textContent=dtDodged||'—';
+  document.getElementById('dt-crash').textContent=dtCrash||'—';
+  document.getElementById('dt-hits').textContent=dtHits||'—';
+  document.getElementById('dt-miss').textContent=dtMiss||'—';
+  const trackAcc=dtTrackTotal?Math.round(dtTrackScore/dtTrackTotal*100):0;
+  const score=dtDodged*10+dtHits*15-dtCrash*5-dtMiss*3+Math.round(trackAcc/2);
+  document.getElementById('dt-score').textContent=Math.max(0,score)||'—';
 }
 </script>
 </body>
