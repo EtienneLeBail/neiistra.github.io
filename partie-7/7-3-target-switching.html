@@ -56,7 +56,7 @@
   footer{border-top:1px solid var(--border);padding:24px 48px;display:flex;justify-content:space-between;align-items:center}
   .footer-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;color:var(--gray-text)}.footer-logo span{color:var(--red)}
   .footer-text{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;color:var(--gray-light);text-transform:uppercase}
-  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  .cfg-l{font-family:"Barlow Condensed",sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);white-space:nowrap}.cfg-i{padding:5px 6px;background:var(--black);border:1px solid var(--border);color:var(--white);font-family:"Barlow Condensed",sans-serif;font-size:12px;border-radius:3px;text-align:center;-moz-appearance:textfield}.cfg-i::-webkit-inner-spin-button{-webkit-appearance:none}@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
   .chap-eyebrow{animation:fadeUp .6s ease both}.chap-title{animation:fadeUp .6s .1s ease both}
   @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.3)}100%{transform:scale(0);opacity:0}}
   @media(max-width:768px){nav{padding:0 24px}.chap-hero{padding:100px 24px 48px}.content{padding:48px 24px}.stat-row,.insight-grid{grid-template-columns:1fr}.game-area{height:300px}.game-stats{grid-template-columns:repeat(2,1fr)}.chap-nav{flex-direction:column;gap:16px;padding:32px 24px}footer{padding:20px 24px;flex-direction:column;gap:8px;text-align:center}}
@@ -146,130 +146,45 @@
 
 <div class="content" style="padding-top:0;">
   <div class="game-section">
-    <div class="game-header">
-      <div class="game-title">Switch Trainer</div>
-      <button class="game-btn" onclick="startSwitch()">Démarrer</button>
-    </div>
-    <div class="game-area" id="switchArea"></div>
-    <div class="game-stats">
-      <div class="game-stat"><div class="game-stat-num" id="sw-total">—</div><div class="game-stat-label">Temps total</div></div>
-      <div class="game-stat"><div class="game-stat-num" id="sw-avg">—</div><div class="game-stat-label">Moy. inter-cibles</div></div>
-      <div class="game-stat"><div class="game-stat-num" id="sw-best">—</div><div class="game-stat-label">Switch le + rapide</div></div>
-      <div class="game-stat"><div class="game-stat-num" id="sw-worst">—</div><div class="game-stat-label">Switch le + lent</div></div>
-    </div>
-  </div>
+<div class="game-header"><div class="game-title">Switch Trainer</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="game-btn" onclick="startSwitch()">Démarrer</button></div></div>
+<div style="padding:12px 24px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:rgba(10,10,10,0.3)">
+<label class="cfg-l">DPI</label><input type="number" id="cfgDpi" value="800" class="cfg-i" style="width:60px">
+<label class="cfg-l">Sens</label><input type="number" id="cfgSens" value="10" class="cfg-i" style="width:48px">
+<label class="cfg-l">Mult</label><input type="number" id="cfgMult" value="0.02" step="0.001" class="cfg-i" style="width:60px">
+<span class="cfg-l" style="color:#4ecdc4" id="cfgInfo">—</span>
+<span style="font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#2ecc71;background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.25);padding:3px 8px;border-radius:2px">POINTER LOCK</span>
 </div>
-
-<div class="content" style="padding-top:0;">
-  <hr class="separator">
-  <div class="section-tag">Section 4</div>
-  <h2>Application dans R6 Siege</h2>
-
-  <div class="insight-grid">
-    <div class="insight-card">
-      <h4>Spray transfer</h4>
-      <p>Le spray transfer est un switch sans interruption de tir. Après le kill, tu maintiens le spray et déplaces ton crosshair vers la cible suivante en ~150ms. Le challenge : compenser le recul vertical pendant un flick horizontal. Les pros s'entraînent à des patterns de transfer spécifiques par arme (AK-12, F2, C7E).</p>
-    </div>
-    <div class="insight-card">
-      <h4>Ordre de priorité</h4>
-      <p>En retake, l'ordre dans lequel tu switch est stratégique. Priorité 1 : l'ennemi qui te voit (menace immédiate). Priorité 2 : l'ennemi sur le plant/defuse. Priorité 3 : l'ennemi positionné pour le refrag. Les joueurs qui "killent dans le bon ordre" gagnent plus de rounds que ceux qui killent plus vite mais dans le mauvais ordre.</p>
-    </div>
-    <div class="insight-card">
-      <h4>Pré-identification périphérique</h4>
-      <p>Les joueurs d'élite utilisent leur vision périphérique (bâtonnets, voie dorsale ~80ms) pour détecter la position de la prochaine cible pendant qu'ils engagent la première. Quand le premier ennemi tombe, le switch est déjà pré-programmé — la saccade oculaire a une destination calculée.</p>
-    </div>
-    <div class="insight-card">
-      <h4>Le double peek</h4>
-      <p>Contre un target switcher, le double peek est la meilleure défense : deux défenseurs peekent le même angle simultanément. L'attaquant doit tuer le premier, subir le coût de switch (~200ms), puis engager le second — qui a déjà 200ms d'avantage pour tirer. C'est pourquoi la coordination défensive est si puissante.</p>
-    </div>
-  </div>
-
-  <p><strong>Sources :</strong> Posner, M.I. & Cohen, Y. (1984). Components of visual orienting — découverte de l'IOR. — Monsell, S. (2003). Task switching. Trends in Cognitive Sciences — coût du switch attentionnel. — Saul & Heeger (2022). Movement kinematics in FPS — transition entre programmes moteurs.</p>
+<div style="position:relative">
+<canvas id="gameCanvas" style="width:100%;height:420px;display:block;background:#0e0e0e;cursor:none"></canvas>
+<div id="plOverlay" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(10,10,10,0.92);cursor:pointer;z-index:5">
+<div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;margin-bottom:8px">CLIQUE POUR CAPTURER</div>
+<div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:#999;line-height:1.6;text-align:center">Sensibilité R6 appliquée<br><span style="font-size:11px;color:#555">Échap pour libérer</span></div>
 </div>
-
-<div class="chap-nav">
-  <a href="7-2-tracking.html" class="chap-nav-cta">← Chapitre 7.2</a>
-  <a href="7-4-micro-ajustements.html" class="chap-nav-cta">Chapitre 7.4 →</a>
 </div>
-
-<footer>
-  <span class="footer-logo">NEI<span>I</span>STRA</span>
-  <span class="footer-text">R6 Process — Partie VII · Chapitre 7.3</span>
-</footer>
+<div class="game-stats"><div class="game-stat"><div class="game-stat-num" id="s-total">—</div><div class="game-stat-label">Total</div></div><div class="game-stat"><div class="game-stat-num" id="s-avg">—</div><div class="game-stat-label">Moy.</div></div><div class="game-stat"><div class="game-stat-num" id="s-best">—</div><div class="game-stat-label">+ rapide</div></div><div class="game-stat"><div class="game-stat-num" id="s-worst">—</div><div class="game-stat-label">+ lent</div></div></div>
+</div>
 
 <script>
-const area = document.getElementById('switchArea');
-let targets = [], currentIdx = 0, switchTimes = [], lastClickTime = 0, gameStartTime = 0;
 
-function startSwitch() {
-  area.innerHTML = '';
-  targets = []; currentIdx = 0; switchTimes = [];
-  const count = 6;
-  const w = area.offsetWidth, h = area.offsetHeight;
-  const positions = [];
+let sensScale=0.2,chX=0,chY=0,plLocked=false;
+function updateSens(){const dpi=parseFloat(document.getElementById('cfgDpi').value)||800;const sens=parseFloat(document.getElementById('cfgSens').value)||10;const mult=parseFloat(document.getElementById('cfgMult').value)||0.02;sensScale=sens*mult;document.getElementById('cfgInfo').textContent=((360*2.54)/(dpi*sens*mult*0.33)).toFixed(1)+' cm/360°';}
+document.getElementById('cfgDpi').oninput=updateSens;document.getElementById('cfgSens').oninput=updateSens;document.getElementById('cfgMult').oninput=updateSens;updateSens();
+const gc=document.getElementById('gameCanvas'),gx=gc.getContext('2d');
+document.getElementById('plOverlay').onclick=()=>{gc.requestPointerLock();};
+document.addEventListener('pointerlockchange',()=>{plLocked=document.pointerLockElement===gc;document.getElementById('plOverlay').style.display=plLocked?'none':'flex';});
+document.addEventListener('mousemove',e=>{if(!plLocked)return;chX=Math.max(0,Math.min(gc.width,chX+e.movementX*sensScale));chY=Math.max(0,Math.min(gc.height,chY+e.movementY*sensScale));});
+function drawCH(){gx.shadowColor='rgba(255,255,255,0.4)';gx.shadowBlur=4;gx.strokeStyle='rgba(255,255,255,0.95)';gx.lineWidth=2;gx.beginPath();gx.moveTo(chX-12,chY);gx.lineTo(chX-4,chY);gx.stroke();gx.beginPath();gx.moveTo(chX+4,chY);gx.lineTo(chX+12,chY);gx.stroke();gx.beginPath();gx.moveTo(chX,chY-12);gx.lineTo(chX,chY-4);gx.stroke();gx.beginPath();gx.moveTo(chX,chY+4);gx.lineTo(chX,chY+12);gx.stroke();gx.shadowBlur=0;gx.fillStyle='#fff';gx.beginPath();gx.arc(chX,chY,2,0,Math.PI*2);gx.fill();}
+function drawGrid(){gx.strokeStyle='rgba(255,255,255,0.03)';gx.lineWidth=1;for(let i=0;i<gc.width;i+=60){gx.beginPath();gx.moveTo(i,0);gx.lineTo(i,gc.height);gx.stroke();}for(let i=0;i<gc.height;i+=60){gx.beginPath();gx.moveTo(0,i);gx.lineTo(gc.width,i);gx.stroke();}}
+function initGC(){const r=gc.getBoundingClientRect();gc.width=r.width;gc.height=r.height;chX=gc.width/2;chY=gc.height/2;}
+function dist(a,b,c,d){return Math.sqrt((a-c)**2+(b-d)**2);}
 
-  for (let i = 0; i < count; i++) {
-    let x, y, valid;
-    do {
-      x = 40 + Math.random() * (w - 80);
-      y = 40 + Math.random() * (h - 80);
-      valid = positions.every(p => Math.hypot(p.x - x, p.y - y) > 80);
-    } while (!valid);
-    positions.push({ x, y });
 
-    const el = document.createElement('div');
-    el.className = 'sw-target' + (i === 0 ? ' next' : '');
-    el.style.cssText = `width:40px;height:40px;left:${x-20}px;top:${y-20}px;background:${i===0?'var(--red)':'var(--gray-mid)'};border:2px solid ${i===0?'var(--red)':'var(--gray-light)'};`;
-    el.innerHTML = `<span class="num">${i + 1}</span>`;
-    el.dataset.idx = i;
-    el.addEventListener('mousedown', onSwitchClick);
-    area.appendChild(el);
-    targets.push(el);
-  }
+let swTargets=[],swIdx=0,swTimes=[],swStart=0,swLast=0,swActive=false,swAnim;
+function startSwitch(){initGC();swTargets=[];swIdx=0;swTimes=[];swActive=true;const pos=[];for(let i=0;i<6;i++){let x,y,ok;do{x=50+Math.random()*(gc.width-100);y=50+Math.random()*(gc.height-100);ok=pos.every(p=>dist(p.x,p.y,x,y)>90);}while(!ok);pos.push({x,y});swTargets.push({x,y,r:21,num:i+1,hit:false});}swStart=performance.now();swLast=swStart;if(!plLocked)gc.requestPointerLock();if(swAnim)cancelAnimationFrame(swAnim);swLoop();}
+document.addEventListener('mousedown',e=>{if(!plLocked||!swActive||swIdx>=swTargets.length)return;const t=swTargets[swIdx];if(dist(chX,chY,t.x,t.y)<t.r+5){const now=performance.now();if(swIdx>0)swTimes.push(now-swLast);swLast=now;t.hit=true;swIdx++;if(swIdx>=swTargets.length){document.getElementById('s-total').textContent=Math.round(now-swStart)+'ms';swActive=false;}updSw();}});
+function swLoop(){gx.clearRect(0,0,gc.width,gc.height);drawGrid();swTargets.forEach((t,i)=>{gx.beginPath();gx.arc(t.x,t.y,t.r,0,Math.PI*2);if(t.hit){gx.fillStyle='rgba(78,205,196,0.4)';}else if(i===swIdx){gx.fillStyle='rgba(200,48,42,0.85)';gx.strokeStyle='#fff';gx.lineWidth=2;gx.stroke();}else{gx.fillStyle='rgba(46,46,46,0.8)';gx.strokeStyle='rgba(255,255,255,0.2)';gx.lineWidth=1;gx.stroke();}gx.fill();gx.fillStyle=t.hit?'rgba(255,255,255,0.3)':'#fff';gx.font='600 18px "Bebas Neue",sans-serif';gx.textAlign='center';gx.textBaseline='middle';gx.fillText(t.num,t.x,t.y);gx.textBaseline='alphabetic';});gx.textAlign='left';drawCH();swAnim=requestAnimationFrame(swLoop);}
+function updSw(){if(swTimes.length){document.getElementById('s-avg').textContent=Math.round(swTimes.reduce((a,b)=>a+b,0)/swTimes.length)+'ms';document.getElementById('s-best').textContent=Math.round(Math.min(...swTimes))+'ms';document.getElementById('s-worst').textContent=Math.round(Math.max(...swTimes))+'ms';}}
 
-  gameStartTime = performance.now();
-  lastClickTime = gameStartTime;
-  updateSwitchStats();
-}
-
-function onSwitchClick(e) {
-  const idx = parseInt(e.currentTarget.dataset.idx);
-  if (idx !== currentIdx) return;
-
-  const now = performance.now();
-  if (currentIdx > 0) switchTimes.push(now - lastClickTime);
-  lastClickTime = now;
-
-  // Animate hit
-  e.currentTarget.style.background = 'var(--cyan)';
-  e.currentTarget.style.borderColor = 'var(--cyan)';
-  e.currentTarget.style.animation = 'pop 0.3s ease forwards';
-  e.currentTarget.style.pointerEvents = 'none';
-
-  currentIdx++;
-
-  if (currentIdx < targets.length) {
-    targets[currentIdx].classList.add('next');
-    targets[currentIdx].style.background = 'var(--red)';
-    targets[currentIdx].style.borderColor = 'var(--red)';
-  } else {
-    const total = now - gameStartTime;
-    document.getElementById('sw-total').textContent = Math.round(total) + 'ms';
-  }
-
-  updateSwitchStats();
-}
-
-function updateSwitchStats() {
-  if (switchTimes.length > 0) {
-    const avg = Math.round(switchTimes.reduce((a,b)=>a+b,0) / switchTimes.length);
-    const best = Math.round(Math.min(...switchTimes));
-    const worst = Math.round(Math.max(...switchTimes));
-    document.getElementById('sw-avg').textContent = avg + 'ms';
-    document.getElementById('sw-best').textContent = best + 'ms';
-    document.getElementById('sw-worst').textContent = worst + 'ms';
-  }
-}
 </script>
 
 </body>

@@ -123,7 +123,7 @@
   .footer-logo span { color: var(--red); }
   .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
 
-  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .cfg-l{font-family:"Barlow Condensed",sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);white-space:nowrap}.cfg-i{padding:5px 6px;background:var(--black);border:1px solid var(--border);color:var(--white);font-family:"Barlow Condensed",sans-serif;font-size:12px;border-radius:3px;text-align:center;-moz-appearance:textfield}.cfg-i::-webkit-inner-spin-button{-webkit-appearance:none}@keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
   .chap-eyebrow{animation:fadeUp .6s ease both;} .chap-title{animation:fadeUp .6s .1s ease both;} .chap-subtitle{animation:fadeUp .6s .2s ease both;}
   @media(max-width:768px){
     nav{padding:0 24px;} .chap-hero{padding:100px 24px 48px;} .content{padding:48px 24px;}
@@ -282,239 +282,49 @@
 <!-- GAME -->
 <div class="content" style="padding-top:0;">
   <div class="game-section">
-    <div class="game-header">
-      <div class="game-title">Flick Trainer</div>
-      <div class="game-controls">
-        <button class="game-btn" onclick="setDifficulty('easy')" id="btn-easy">Facile</button>
-        <button class="game-btn active" onclick="setDifficulty('medium')" id="btn-medium">Normal</button>
-        <button class="game-btn" onclick="setDifficulty('hard')" id="btn-hard">Difficile</button>
-        <button class="game-btn" onclick="startGame()" id="btn-start">Démarrer</button>
-      </div>
-    </div>
-    <div class="game-canvas-wrap" id="gameArea">
-      <div class="game-msg" id="gameMsg">
-        <h3>Flick Trainer</h3>
-        <p>Clique sur Démarrer puis élimine 20 cibles</p>
-      </div>
-    </div>
-    <div class="game-stats">
-      <div class="game-stat"><div class="game-stat-num" id="gs-hits">—</div><div class="game-stat-label">Hits</div></div>
-      <div class="game-stat"><div class="game-stat-num" id="gs-miss">—</div><div class="game-stat-label">Miss</div></div>
-      <div class="game-stat"><div class="game-stat-num" id="gs-acc">—</div><div class="game-stat-label">Précision</div></div>
-      <div class="game-stat"><div class="game-stat-num" id="gs-avg">—</div><div class="game-stat-label">Temps moyen</div></div>
-      <div class="game-stat"><div class="game-stat-num" id="gs-best">—</div><div class="game-stat-label">Meilleur</div></div>
-    </div>
-  </div>
+<div class="game-header"><div class="game-title">Flick Trainer</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="game-btn" onclick="setDifficulty('easy')" id="btn-easy">Facile</button><button class="game-btn active" onclick="setDifficulty('medium')" id="btn-medium">Normal</button><button class="game-btn" onclick="setDifficulty('hard')" id="btn-hard">Difficile</button><button class="game-btn" onclick="startGame()">Démarrer</button></div></div>
+<div style="padding:12px 24px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:rgba(10,10,10,0.3)">
+<label class="cfg-l">DPI</label><input type="number" id="cfgDpi" value="800" class="cfg-i" style="width:60px">
+<label class="cfg-l">Sens</label><input type="number" id="cfgSens" value="10" class="cfg-i" style="width:48px">
+<label class="cfg-l">Mult</label><input type="number" id="cfgMult" value="0.02" step="0.001" class="cfg-i" style="width:60px">
+<span class="cfg-l" style="color:#4ecdc4" id="cfgInfo">—</span>
+<span style="font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#2ecc71;background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.25);padding:3px 8px;border-radius:2px">POINTER LOCK</span>
 </div>
-
-<!-- SECTION 5 -->
-<div class="content" style="padding-top:0;">
-  <hr class="separator">
-  <div class="section-tag">Section 5</div>
-  <h2>Application tactique dans R6 Siege</h2>
-
-  <div class="insight-grid">
-    <div class="insight-card">
-      <h4>Pre-aim = annuler le flick</h4>
-      <p>Le meilleur flick est celui que tu n'as pas à faire. Placer ton crosshair à hauteur de tête, au pixel près de l'angle attendu, transforme un flick de 30° en micro-correction de 2°. L'ID de Fitts chute de 4+ à moins de 1 — le mouvement devient quasi-trivial.</p>
-    </div>
-    <div class="insight-card">
-      <h4>Peek + flick = combo neurologique</h4>
-      <p>En attaque, le quick peek te donne ~200ms d'exposition. Le défenseur doit : détecter (80ms voie dorsale) → identifier (120ms voie ventrale) → flick → tirer. L'attaquant n'a qu'un micro-flick résiduel sur un angle pré-aimé. Avantage biologique pur.</p>
-    </div>
-    <div class="insight-card">
-      <h4>Sensibilité et biomécanique</h4>
-      <p>La majorité des pros R6 jouent entre 400 et 800 DPI avec une sensibilité de 8 à 12 in-game. Cela donne un cm/360° de 25–45cm, optimisant la zone poignet pour les flicks de 5°–45°. Plus bas = plus précis sur les micro-flicks, mais plus lent sur les rotations.</p>
-    </div>
-    <div class="insight-card">
-      <h4>Le vertical est plus dur</h4>
-      <p>Biomécaniquement, les mouvements verticaux impliquent une élévation/abaissement du coude — un geste moins naturel et moins précis que le balayage horizontal du poignet. C'est pourquoi les angles de hatch et les repels sont statistiquement les duels les moins fiables en compétition.</p>
-    </div>
-  </div>
-
-  <hr class="separator">
-
-  <!-- SECTION 6 -->
-  <div class="section-tag">Section 6</div>
-  <h2>Protocole d'entraînement</h2>
-  <p>La recherche sur Aim Lab (Listman et al., 2021, > 7000 joueurs analysés) montre que la <strong>fréquence d'entraînement</strong> prime sur la durée. 10–15 minutes de flick training quotidien produisent de meilleurs résultats que 60 minutes hebdomadaires. Le cerveau consolide les programmes moteurs pendant le sommeil — la répétition espacée est la clé.</p>
-
-  <div class="diagram-container">
-    <div class="diagram-title">Protocole recommandé — 4 semaines</div>
-    <svg class="diagram-svg" viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg">
-      <!-- Week boxes -->
-      <rect x="20" y="30" width="170" height="130" rx="3" fill="#1c1c1c" stroke="rgba(200,48,42,0.3)" stroke-width="1"/>
-      <text x="105" y="55" text-anchor="middle" fill="#c8302a" font-size="14" font-weight="600">Semaine 1–2</text>
-      <text x="105" y="78" text-anchor="middle" fill="#f5f2ed" font-size="11">Grosses cibles, lent</text>
-      <text x="105" y="96" text-anchor="middle" fill="#999" font-size="10">Focus : trajectoire fluide</text>
-      <text x="105" y="114" text-anchor="middle" fill="#999" font-size="10">Pas de rush, 100% précision</text>
-      <text x="105" y="140" text-anchor="middle" fill="#555" font-size="10">10 min/jour</text>
-
-      <text x="200" y="95" fill="#555" font-size="18">→</text>
-
-      <rect x="210" y="30" width="170" height="130" rx="3" fill="#1c1c1c" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-      <text x="295" y="55" text-anchor="middle" fill="#c8302a" font-size="14" font-weight="600">Semaine 3</text>
-      <text x="295" y="78" text-anchor="middle" fill="#f5f2ed" font-size="11">Cibles moyennes</text>
-      <text x="295" y="96" text-anchor="middle" fill="#999" font-size="10">Focus : vitesse progressive</text>
-      <text x="295" y="114" text-anchor="middle" fill="#999" font-size="10">Maintenir > 80% précision</text>
-      <text x="295" y="140" text-anchor="middle" fill="#555" font-size="10">10 min/jour</text>
-
-      <text x="390" y="95" fill="#555" font-size="18">→</text>
-
-      <rect x="400" y="30" width="170" height="130" rx="3" fill="#1c1c1c" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-      <text x="485" y="55" text-anchor="middle" fill="#c8302a" font-size="14" font-weight="600">Semaine 4</text>
-      <text x="485" y="78" text-anchor="middle" fill="#f5f2ed" font-size="11">Petites cibles, rapide</text>
-      <text x="485" y="96" text-anchor="middle" fill="#999" font-size="10">Focus : speed-accuracy</text>
-      <text x="485" y="114" text-anchor="middle" fill="#999" font-size="10">Push les deux limites</text>
-      <text x="485" y="140" text-anchor="middle" fill="#555" font-size="10">15 min/jour</text>
-
-      <text x="580" y="95" fill="#555" font-size="18">→</text>
-
-      <rect x="590" y="30" width="170" height="130" rx="3" fill="#1c1c1c" stroke="rgba(200,48,42,0.15)" stroke-width="1"/>
-      <text x="675" y="55" text-anchor="middle" fill="#c8302a" font-size="14" font-weight="600">Ongoing</text>
-      <text x="675" y="78" text-anchor="middle" fill="#f5f2ed" font-size="11">Warmup quotidien</text>
-      <text x="675" y="96" text-anchor="middle" fill="#999" font-size="10">5 min avant ranked</text>
-      <text x="675" y="114" text-anchor="middle" fill="#999" font-size="10">Alterner flick/track</text>
-      <text x="675" y="140" text-anchor="middle" fill="#555" font-size="10">Maintenance</text>
-    </svg>
-  </div>
-
-  <p><strong>Sources scientifiques :</strong> Fitts, P.M. (1954). The information capacity of the human motor system. Journal of Experimental Psychology. — Saul, M.A. & Heeger, D.J. (2022). Assessment of human expertise and movement kinematics in FPS games. Frontiers in Human Neuroscience. — Listman, J.B. et al. (2021). Long-term motor learning in Aim Lab. — NVIDIA Research (2019). Latency of 30ms benefits FPS targeting tasks.</p>
+<div style="position:relative">
+<canvas id="gameCanvas" style="width:100%;height:420px;display:block;background:#0e0e0e;cursor:none"></canvas>
+<div id="plOverlay" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(10,10,10,0.92);cursor:pointer;z-index:5">
+<div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;margin-bottom:8px">CLIQUE POUR CAPTURER</div>
+<div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:#999;line-height:1.6;text-align:center">Sensibilité R6 appliquée<br><span style="font-size:11px;color:#555">Échap pour libérer</span></div>
 </div>
-
-<div class="chap-nav">
-  <a href="index.html" class="chap-nav-cta">← Partie VII</a>
-  <a href="7-2-tracking.html" class="chap-nav-cta">Chapitre 7.2 →</a>
 </div>
-
-<footer>
-  <span class="footer-logo">NEI<span>I</span>STRA</span>
-  <span class="footer-text">R6 Process — Partie VII · Chapitre 7.1</span>
-</footer>
+<div class="game-stats" style="grid-template-columns:repeat(5,1fr)"><div class="game-stat"><div class="game-stat-num" id="f-hits">—</div><div class="game-stat-label">Hits</div></div><div class="game-stat"><div class="game-stat-num" id="f-miss">—</div><div class="game-stat-label">Miss</div></div><div class="game-stat"><div class="game-stat-num" id="f-acc">—</div><div class="game-stat-label">Précision</div></div><div class="game-stat"><div class="game-stat-num" id="f-avg">—</div><div class="game-stat-label">Moy.</div></div><div class="game-stat"><div class="game-stat-num" id="f-best">—</div><div class="game-stat-label">Best</div></div></div>
+</div>
 
 <script>
-// FLICK TRAINER GAME
-const gameArea = document.getElementById('gameArea');
-let difficulty = 'medium';
-let targetSize = { easy: 48, medium: 32, hard: 18 };
-let gameActive = false;
-let hits = 0, misses = 0, totalClicks = 0;
-let times = [];
-let targetCount = 0;
-let maxTargets = 20;
-let lastTargetTime = 0;
-let currentTarget = null;
 
-function setDifficulty(d) {
-  difficulty = d;
-  document.querySelectorAll('.game-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('btn-' + d).classList.add('active');
-}
+let sensScale=0.2,chX=0,chY=0,plLocked=false;
+function updateSens(){const dpi=parseFloat(document.getElementById('cfgDpi').value)||800;const sens=parseFloat(document.getElementById('cfgSens').value)||10;const mult=parseFloat(document.getElementById('cfgMult').value)||0.02;sensScale=sens*mult;document.getElementById('cfgInfo').textContent=((360*2.54)/(dpi*sens*mult*0.33)).toFixed(1)+' cm/360°';}
+document.getElementById('cfgDpi').oninput=updateSens;document.getElementById('cfgSens').oninput=updateSens;document.getElementById('cfgMult').oninput=updateSens;updateSens();
+const gc=document.getElementById('gameCanvas'),gx=gc.getContext('2d');
+document.getElementById('plOverlay').onclick=()=>{gc.requestPointerLock();};
+document.addEventListener('pointerlockchange',()=>{plLocked=document.pointerLockElement===gc;document.getElementById('plOverlay').style.display=plLocked?'none':'flex';});
+document.addEventListener('mousemove',e=>{if(!plLocked)return;chX=Math.max(0,Math.min(gc.width,chX+e.movementX*sensScale));chY=Math.max(0,Math.min(gc.height,chY+e.movementY*sensScale));});
+function drawCH(){gx.shadowColor='rgba(255,255,255,0.4)';gx.shadowBlur=4;gx.strokeStyle='rgba(255,255,255,0.95)';gx.lineWidth=2;gx.beginPath();gx.moveTo(chX-12,chY);gx.lineTo(chX-4,chY);gx.stroke();gx.beginPath();gx.moveTo(chX+4,chY);gx.lineTo(chX+12,chY);gx.stroke();gx.beginPath();gx.moveTo(chX,chY-12);gx.lineTo(chX,chY-4);gx.stroke();gx.beginPath();gx.moveTo(chX,chY+4);gx.lineTo(chX,chY+12);gx.stroke();gx.shadowBlur=0;gx.fillStyle='#fff';gx.beginPath();gx.arc(chX,chY,2,0,Math.PI*2);gx.fill();}
+function drawGrid(){gx.strokeStyle='rgba(255,255,255,0.03)';gx.lineWidth=1;for(let i=0;i<gc.width;i+=60){gx.beginPath();gx.moveTo(i,0);gx.lineTo(i,gc.height);gx.stroke();}for(let i=0;i<gc.height;i+=60){gx.beginPath();gx.moveTo(0,i);gx.lineTo(gc.width,i);gx.stroke();}}
+function initGC(){const r=gc.getBoundingClientRect();gc.width=r.width;gc.height=r.height;chX=gc.width/2;chY=gc.height/2;}
+function dist(a,b,c,d){return Math.sqrt((a-c)**2+(b-d)**2);}
 
-function startGame() {
-  hits = 0; misses = 0; totalClicks = 0; times = []; targetCount = 0;
-  gameActive = true;
-  document.getElementById('gameMsg').style.display = 'none';
-  updateStats();
-  spawnTarget();
-}
 
-function spawnTarget() {
-  if (targetCount >= maxTargets) return endGame();
-  if (currentTarget) currentTarget.remove();
+let fDiff='medium',fHits=0,fMiss=0,fTimes=[],fCount=0,fMax=20,fTarget=null,fLast=0,fActive=false,fAnim;
+const fSizes={easy:48,medium:32,hard:18};
+function setDifficulty(d){fDiff=d;document.querySelectorAll('[id^="btn-"]').forEach(b=>b.classList.remove('active'));document.getElementById('btn-'+d).classList.add('active');}
+function startGame(){initGC();fHits=0;fMiss=0;fTimes=[];fCount=0;fActive=true;fTarget=null;if(!plLocked)gc.requestPointerLock();spawnF();if(fAnim)cancelAnimationFrame(fAnim);fLoop();}
+function spawnF(){if(fCount>=fMax){endF();return;}const s=fSizes[fDiff],m=s+20;fTarget={x:m+Math.random()*(gc.width-m*2),y:m+Math.random()*(gc.height-m*2),r:s/2};fLast=performance.now();fCount++;}
+document.addEventListener('mousedown',e=>{if(!plLocked||!fActive||!fTarget)return;if(dist(chX,chY,fTarget.x,fTarget.y)<fTarget.r){fHits++;fTimes.push(performance.now()-fLast);spawnF();}else{fMiss++;}updF();});
+function fLoop(){gx.clearRect(0,0,gc.width,gc.height);drawGrid();if(fTarget){gx.beginPath();gx.arc(fTarget.x,fTarget.y,fTarget.r,0,Math.PI*2);gx.fillStyle='rgba(200,48,42,0.85)';gx.fill();gx.beginPath();gx.arc(fTarget.x,fTarget.y,2,0,Math.PI*2);gx.fillStyle='#fff';gx.fill();}drawCH();if(fActive)fAnim=requestAnimationFrame(fLoop);}
+function endF(){fActive=false;fTarget=null;const avg=fTimes.length?Math.round(fTimes.reduce((a,b)=>a+b,0)/fTimes.length):0;const acc=(fHits+fMiss)?Math.round(fHits/(fHits+fMiss)*100):0;let g='D';if(avg<300&&acc>90)g='S';else if(avg<400&&acc>80)g='A';else if(avg<500&&acc>70)g='B';else if(avg<600)g='C';gx.fillStyle='rgba(10,10,10,0.85)';gx.fillRect(0,0,gc.width,gc.height);gx.fillStyle='#f5f2ed';gx.font='600 48px "Bebas Neue",sans-serif';gx.textAlign='center';gx.fillText('GRADE: '+g,gc.width/2,gc.height/2-10);gx.font='300 14px "Barlow Condensed",sans-serif';gx.fillStyle='#999';gx.fillText(avg+'ms \u00b7 '+acc+'%',gc.width/2,gc.height/2+30);gx.textAlign='left';updF();}
+function updF(){const avg=fTimes.length?Math.round(fTimes.reduce((a,b)=>a+b,0)/fTimes.length):'\u2014';const best=fTimes.length?Math.round(Math.min(...fTimes)):'\u2014';const acc=(fHits+fMiss)?Math.round(fHits/(fHits+fMiss)*100)+'%':'\u2014';document.getElementById('f-hits').textContent=fHits||'\u2014';document.getElementById('f-miss').textContent=fMiss||'\u2014';document.getElementById('f-acc').textContent=acc;document.getElementById('f-avg').textContent=avg!=='\u2014'?avg+'ms':'\u2014';document.getElementById('f-best').textContent=best!=='\u2014'?best+'ms':'\u2014';}
 
-  const size = targetSize[difficulty];
-  const area = gameArea.getBoundingClientRect();
-  const margin = size + 20;
-  const x = margin + Math.random() * (area.width - margin * 2);
-  const y = margin + Math.random() * (area.height - margin * 2);
-
-  const t = document.createElement('div');
-  t.className = 'target';
-  t.style.cssText = `width:${size}px;height:${size}px;left:${x - size/2}px;top:${y - size/2}px;`;
-  t.innerHTML = '<div class="target-inner"><div class="target-dot"></div></div>';
-  t.addEventListener('mousedown', (e) => {
-    e.stopPropagation();
-    onHit(e, t);
-  });
-  gameArea.appendChild(t);
-  currentTarget = t;
-  lastTargetTime = performance.now();
-  targetCount++;
-}
-
-function onHit(e, t) {
-  if (!gameActive) return;
-  const dt = performance.now() - lastTargetTime;
-  times.push(dt);
-  hits++;
-  totalClicks++;
-
-  // Hit marker
-  const rect = gameArea.getBoundingClientRect();
-  const hm = document.createElement('div');
-  hm.className = 'hit-marker';
-  hm.style.left = (e.clientX - rect.left - 10) + 'px';
-  hm.style.top = (e.clientY - rect.top - 10) + 'px';
-  gameArea.appendChild(hm);
-  setTimeout(() => hm.remove(), 400);
-
-  t.remove();
-  currentTarget = null;
-  updateStats();
-  setTimeout(spawnTarget, 200);
-}
-
-gameArea.addEventListener('mousedown', (e) => {
-  if (!gameActive || e.target.closest('.target')) return;
-  misses++;
-  totalClicks++;
-
-  const rect = gameArea.getBoundingClientRect();
-  const mm = document.createElement('div');
-  mm.className = 'miss-marker';
-  mm.style.left = (e.clientX - rect.left - 3) + 'px';
-  mm.style.top = (e.clientY - rect.top - 3) + 'px';
-  gameArea.appendChild(mm);
-  setTimeout(() => mm.remove(), 600);
-
-  updateStats();
-});
-
-function endGame() {
-  gameActive = false;
-  if (currentTarget) { currentTarget.remove(); currentTarget = null; }
-  const avg = times.length ? Math.round(times.reduce((a,b) => a+b, 0) / times.length) : 0;
-  const best = times.length ? Math.round(Math.min(...times)) : 0;
-  const acc = totalClicks ? Math.round(hits / totalClicks * 100) : 0;
-
-  const msg = document.getElementById('gameMsg');
-  msg.style.display = 'block';
-
-  let grade = '';
-  if (avg < 300 && acc > 90) grade = 'S — Excellent';
-  else if (avg < 400 && acc > 80) grade = 'A — Très bon';
-  else if (avg < 500 && acc > 70) grade = 'B — Bon';
-  else if (avg < 600 && acc > 60) grade = 'C — Correct';
-  else grade = 'D — À travailler';
-
-  msg.innerHTML = `<h3>${grade}</h3><p>${avg}ms moy · ${best}ms best · ${acc}% précision<br>Clique Démarrer pour réessayer</p>`;
-  updateStats();
-}
-
-function updateStats() {
-  const avg = times.length ? Math.round(times.reduce((a,b) => a+b, 0) / times.length) : '—';
-  const best = times.length ? Math.round(Math.min(...times)) : '—';
-  const acc = totalClicks ? Math.round(hits / totalClicks * 100) + '%' : '—';
-
-  document.getElementById('gs-hits').textContent = hits || '—';
-  document.getElementById('gs-hits').className = 'game-stat-num' + (hits > 0 ? ' good' : '');
-  document.getElementById('gs-miss').textContent = misses || '—';
-  document.getElementById('gs-miss').className = 'game-stat-num' + (misses > 0 ? ' bad' : '');
-  document.getElementById('gs-acc').textContent = acc;
-  document.getElementById('gs-avg').textContent = avg !== '—' ? avg + 'ms' : '—';
-  document.getElementById('gs-best').textContent = best !== '—' ? best + 'ms' : '—';
-}
 </script>
 
 </body>

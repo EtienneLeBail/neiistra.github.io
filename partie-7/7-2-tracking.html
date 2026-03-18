@@ -69,7 +69,7 @@
   .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--gray-text); }
   .footer-logo span { color: var(--red); }
   .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
-  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .cfg-l{font-family:"Barlow Condensed",sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);white-space:nowrap}.cfg-i{padding:5px 6px;background:var(--black);border:1px solid var(--border);color:var(--white);font-family:"Barlow Condensed",sans-serif;font-size:12px;border-radius:3px;text-align:center;-moz-appearance:textfield}.cfg-i::-webkit-inner-spin-button{-webkit-appearance:none}@keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
   .chap-eyebrow{animation:fadeUp .6s ease both;} .chap-title{animation:fadeUp .6s .1s ease both;}
   @media(max-width:768px){ nav{padding:0 24px;} .chap-hero{padding:100px 24px 48px;} .content{padding:48px 24px;} .stat-row,.insight-grid{grid-template-columns:1fr;} .game-stats{grid-template-columns:repeat(2,1fr);} .game-canvas{height:300px;} .chap-nav{flex-direction:column;gap:16px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;text-align:center;} }
 </style>
@@ -218,183 +218,45 @@
 
 <div class="content" style="padding-top:0;">
   <div class="game-section">
-    <div class="game-header">
-      <div class="game-title">Tracking Trainer</div>
-      <div style="display:flex;gap:12px;">
-        <button class="game-btn" onclick="startTracking('easy')">Facile</button>
-        <button class="game-btn active" onclick="startTracking('medium')" id="tbtn-med">Normal</button>
-        <button class="game-btn" onclick="startTracking('hard')">Difficile</button>
-      </div>
-    </div>
-    <canvas class="game-canvas" id="trackCanvas" width="860" height="400"></canvas>
-    <div class="game-stats">
-      <div class="game-stat"><div class="game-stat-num" id="ts-acc">—</div><div class="game-stat-label">Précision</div></div>
-      <div class="game-stat"><div class="game-stat-num" id="ts-time">15s</div><div class="game-stat-label">Temps restant</div></div>
-      <div class="game-stat"><div class="game-stat-num" id="ts-streak">—</div><div class="game-stat-label">Meilleur streak</div></div>
-      <div class="game-stat"><div class="game-stat-num" id="ts-grade">—</div><div class="game-stat-label">Grade</div></div>
-    </div>
-  </div>
+<div class="game-header"><div class="game-title">Tracking Trainer</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="game-btn" onclick="tDiff='easy';startTrack()">Facile</button><button class="game-btn" onclick="tDiff='medium';startTrack()">Normal</button><button class="game-btn" onclick="tDiff='hard';startTrack()">Difficile</button></div></div>
+<div style="padding:12px 24px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:rgba(10,10,10,0.3)">
+<label class="cfg-l">DPI</label><input type="number" id="cfgDpi" value="800" class="cfg-i" style="width:60px">
+<label class="cfg-l">Sens</label><input type="number" id="cfgSens" value="10" class="cfg-i" style="width:48px">
+<label class="cfg-l">Mult</label><input type="number" id="cfgMult" value="0.02" step="0.001" class="cfg-i" style="width:60px">
+<span class="cfg-l" style="color:#4ecdc4" id="cfgInfo">—</span>
+<span style="font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#2ecc71;background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.25);padding:3px 8px;border-radius:2px">POINTER LOCK</span>
 </div>
-
-<div class="content" style="padding-top:0;">
-  <hr class="separator">
-
-  <div class="section-tag">Section 5</div>
-  <h2>Application tactique dans R6 Siege</h2>
-
-  <div class="insight-grid">
-    <div class="insight-card">
-      <h4>Spray transfer</h4>
-      <p>Passer d'un ennemi à un autre pendant un spray est un combo tracking+flick. Le spray transfer demande de maintenir le contrôle du recul (tracking vertical vers le bas) tout en effectuant un flick horizontal vers la nouvelle cible. C'est l'un des gestes les plus difficiles du jeu.</p>
-    </div>
-    <div class="insight-card">
-      <h4>Lean spam et contre-strafe</h4>
-      <p>Le lean spam combine un mouvement latéral de la hitbox avec un changement d'angle visuel. Pour tracker un lean spammer, il faut anticiper la direction du lean — pas la position actuelle de la tête. Les meilleurs défenseurs combinent lean + strafe court pour maximiser l'imprévisibilité.</p>
-    </div>
-    <div class="insight-card">
-      <h4>Tracking au recul</h4>
-      <p>Chaque arme dans R6 a un pattern de recul déterministe. Compenser ce recul est une forme de tracking vertical inversé — tu suis un "ennemi invisible" (le centre de ton spray) qui monte. Les joueurs qui maîtrisent les patterns peuvent spray headshot sur 10+ balles.</p>
-    </div>
-    <div class="insight-card">
-      <h4>Drone tracking</h4>
-      <p>Suivre un drone ennemi est un exercice de tracking pur — cible petite, rapide, trajectoire erratique. Les défenseurs experts track les drones en smooth pursuit plutôt qu'en flick : ils pré-aiment la direction probable et laissent le drone entrer dans leur crosshair.</p>
-    </div>
-  </div>
-
-  <p><strong>Sources :</strong> NVIDIA Research (2019). Latency of 30ms benefits FPS targeting tasks — la distinction tracking/flick face au refresh rate. — Saunders, J.A. & Knill, D.C. (2004). Visual feedback control of hand movements. Journal of Neuroscience. — Krauzlis, R.J. (2004). Recasting the smooth pursuit eye movement system. Journal of Neurophysiology — modèle prédictif du cervelet en smooth pursuit.</p>
+<div style="position:relative">
+<canvas id="gameCanvas" style="width:100%;height:420px;display:block;background:#0e0e0e;cursor:none"></canvas>
+<div id="plOverlay" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(10,10,10,0.92);cursor:pointer;z-index:5">
+<div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;margin-bottom:8px">CLIQUE POUR CAPTURER</div>
+<div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:#999;line-height:1.6;text-align:center">Sensibilité R6 appliquée<br><span style="font-size:11px;color:#555">Échap pour libérer</span></div>
 </div>
-
-<div class="chap-nav">
-  <a href="7-1-flicking.html" class="chap-nav-cta">← Chapitre 7.1</a>
-  <a href="7-3-target-switching.html" class="chap-nav-cta">Chapitre 7.3 →</a>
 </div>
-
-<footer>
-  <span class="footer-logo">NEI<span>I</span>STRA</span>
-  <span class="footer-text">R6 Process — Partie VII · Chapitre 7.2</span>
-</footer>
+<div class="game-stats"><div class="game-stat"><div class="game-stat-num" id="t-acc">—</div><div class="game-stat-label">Précision</div></div><div class="game-stat"><div class="game-stat-num" id="t-time">15s</div><div class="game-stat-label">Restant</div></div><div class="game-stat"><div class="game-stat-num" id="t-streak">—</div><div class="game-stat-label">Streak</div></div><div class="game-stat"><div class="game-stat-num" id="t-grade">—</div><div class="game-stat-label">Grade</div></div></div>
+</div>
 
 <script>
-const canvas = document.getElementById('trackCanvas');
-const ctx = canvas.getContext('2d');
-let trackAnim, trackActive = false;
-let ball = { x: 400, y: 200, r: 24, vx: 3, vy: 2 };
-let mouse = { x: 0, y: 0 };
-let onTarget = 0, totalFrames = 0, bestStreak = 0, curStreak = 0;
-let trackDuration = 15000, trackStart = 0;
-let speedMult = 1;
 
-canvas.addEventListener('mousemove', e => {
-  const rect = canvas.getBoundingClientRect();
-  const sx = canvas.width / rect.width;
-  const sy = canvas.height / rect.height;
-  mouse.x = (e.clientX - rect.left) * sx;
-  mouse.y = (e.clientY - rect.top) * sy;
-});
+let sensScale=0.2,chX=0,chY=0,plLocked=false;
+function updateSens(){const dpi=parseFloat(document.getElementById('cfgDpi').value)||800;const sens=parseFloat(document.getElementById('cfgSens').value)||10;const mult=parseFloat(document.getElementById('cfgMult').value)||0.02;sensScale=sens*mult;document.getElementById('cfgInfo').textContent=((360*2.54)/(dpi*sens*mult*0.33)).toFixed(1)+' cm/360°';}
+document.getElementById('cfgDpi').oninput=updateSens;document.getElementById('cfgSens').oninput=updateSens;document.getElementById('cfgMult').oninput=updateSens;updateSens();
+const gc=document.getElementById('gameCanvas'),gx=gc.getContext('2d');
+document.getElementById('plOverlay').onclick=()=>{gc.requestPointerLock();};
+document.addEventListener('pointerlockchange',()=>{plLocked=document.pointerLockElement===gc;document.getElementById('plOverlay').style.display=plLocked?'none':'flex';});
+document.addEventListener('mousemove',e=>{if(!plLocked)return;chX=Math.max(0,Math.min(gc.width,chX+e.movementX*sensScale));chY=Math.max(0,Math.min(gc.height,chY+e.movementY*sensScale));});
+function drawCH(){gx.shadowColor='rgba(255,255,255,0.4)';gx.shadowBlur=4;gx.strokeStyle='rgba(255,255,255,0.95)';gx.lineWidth=2;gx.beginPath();gx.moveTo(chX-12,chY);gx.lineTo(chX-4,chY);gx.stroke();gx.beginPath();gx.moveTo(chX+4,chY);gx.lineTo(chX+12,chY);gx.stroke();gx.beginPath();gx.moveTo(chX,chY-12);gx.lineTo(chX,chY-4);gx.stroke();gx.beginPath();gx.moveTo(chX,chY+4);gx.lineTo(chX,chY+12);gx.stroke();gx.shadowBlur=0;gx.fillStyle='#fff';gx.beginPath();gx.arc(chX,chY,2,0,Math.PI*2);gx.fill();}
+function drawGrid(){gx.strokeStyle='rgba(255,255,255,0.03)';gx.lineWidth=1;for(let i=0;i<gc.width;i+=60){gx.beginPath();gx.moveTo(i,0);gx.lineTo(i,gc.height);gx.stroke();}for(let i=0;i<gc.height;i+=60){gx.beginPath();gx.moveTo(0,i);gx.lineTo(gc.width,i);gx.stroke();}}
+function initGC(){const r=gc.getBoundingClientRect();gc.width=r.width;gc.height=r.height;chX=gc.width/2;chY=gc.height/2;}
+function dist(a,b,c,d){return Math.sqrt((a-c)**2+(b-d)**2);}
 
-function startTracking(diff) {
-  document.querySelectorAll('.game-header .game-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
 
-  speedMult = diff === 'easy' ? 0.6 : diff === 'hard' ? 1.6 : 1;
-  ball = { x: canvas.width/2, y: canvas.height/2, r: diff==='easy'?30:diff==='hard'?16:24, vx: 3*speedMult, vy: 2*speedMult };
-  onTarget = 0; totalFrames = 0; bestStreak = 0; curStreak = 0;
-  trackStart = performance.now();
-  trackActive = true;
-  if (trackAnim) cancelAnimationFrame(trackAnim);
-  trackLoop();
-}
+let tDiff='medium',tBall,tOn=0,tTot=0,tBest=0,tCur=0,tDur=15000,tStart=0,tActive=false,tAnim;
+function setTDiff(d){tDiff=d;}
+function startTrack(){initGC();const spd=tDiff==='easy'?0.6:tDiff==='hard'?1.6:1;const r=tDiff==='easy'?30:tDiff==='hard'?16:24;tBall={x:gc.width/2,y:gc.height/2,r,vx:3*spd,vy:2*spd};tOn=0;tTot=0;tBest=0;tCur=0;tActive=true;tStart=performance.now();if(!plLocked)gc.requestPointerLock();if(tAnim)cancelAnimationFrame(tAnim);tLoop();}
+function tLoop(){const el=performance.now()-tStart;if(el>=tDur){tActive=false;endTrack();return;}gx.clearRect(0,0,gc.width,gc.height);drawGrid();const accel=1+(el/tDur)*0.8;if(Math.random()<0.02)tBall.vx=-tBall.vx*(0.8+Math.random()*0.4);if(Math.random()<0.02)tBall.vy=-tBall.vy*(0.8+Math.random()*0.4);tBall.x+=tBall.vx*accel;tBall.y+=tBall.vy*accel;if(tBall.x-tBall.r<0||tBall.x+tBall.r>gc.width)tBall.vx*=-1;if(tBall.y-tBall.r<0||tBall.y+tBall.r>gc.height)tBall.vy*=-1;tBall.x=Math.max(tBall.r,Math.min(gc.width-tBall.r,tBall.x));tBall.y=Math.max(tBall.r,Math.min(gc.height-tBall.r,tBall.y));const isOn=dist(chX,chY,tBall.x,tBall.y)<tBall.r;tTot++;if(isOn){tOn++;tCur++;if(tCur>tBest)tBest=tCur;}else{tCur=0;}gx.beginPath();gx.arc(tBall.x,tBall.y,tBall.r,0,Math.PI*2);gx.fillStyle=isOn?'rgba(78,205,196,0.9)':'rgba(200,48,42,0.9)';gx.fill();gx.beginPath();gx.arc(tBall.x,tBall.y,3,0,Math.PI*2);gx.fillStyle='#f5f2ed';gx.fill();drawCH();const acc=tTot?Math.round(tOn/tTot*100):0;document.getElementById('t-acc').textContent=acc+'%';document.getElementById('t-time').textContent=Math.max(0,Math.ceil((tDur-el)/1000))+'s';document.getElementById('t-streak').textContent=tBest;gx.fillStyle='rgba(200,48,42,0.3)';gx.fillRect(0,gc.height-3,gc.width*(el/tDur),3);tAnim=requestAnimationFrame(tLoop);}
+function endTrack(){const acc=tTot?Math.round(tOn/tTot*100):0;let g='D';if(acc>85)g='S';else if(acc>70)g='A';else if(acc>55)g='B';else if(acc>40)g='C';document.getElementById('t-grade').textContent=g;gx.fillStyle='rgba(10,10,10,0.85)';gx.fillRect(0,0,gc.width,gc.height);gx.fillStyle='#f5f2ed';gx.font='600 48px "Bebas Neue",sans-serif';gx.textAlign='center';gx.fillText('GRADE: '+g,gc.width/2,gc.height/2-10);gx.font='300 14px "Barlow Condensed",sans-serif';gx.fillStyle='#999';gx.fillText(acc+'% \u00b7 streak '+tBest,gc.width/2,gc.height/2+30);gx.textAlign='left';}
 
-function trackLoop() {
-  const elapsed = performance.now() - trackStart;
-  if (elapsed >= trackDuration) { trackActive = false; showTrackResult(); return; }
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Grid
-  ctx.strokeStyle = 'rgba(255,255,255,0.03)';
-  ctx.lineWidth = 1;
-  for (let i = 0; i < canvas.width; i += 60) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,canvas.height); ctx.stroke(); }
-  for (let i = 0; i < canvas.height; i += 60) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(canvas.width,i); ctx.stroke(); }
-
-  // Acceleration
-  const t = elapsed / trackDuration;
-  const accel = 1 + t * 0.8;
-
-  // Random direction changes
-  if (Math.random() < 0.02 * speedMult) ball.vx = -ball.vx * (0.8 + Math.random() * 0.4);
-  if (Math.random() < 0.02 * speedMult) ball.vy = -ball.vy * (0.8 + Math.random() * 0.4);
-
-  ball.x += ball.vx * accel;
-  ball.y += ball.vy * accel;
-
-  if (ball.x - ball.r < 0 || ball.x + ball.r > canvas.width) ball.vx *= -1;
-  if (ball.y - ball.r < 0 || ball.y + ball.r > canvas.height) ball.vy *= -1;
-  ball.x = Math.max(ball.r, Math.min(canvas.width - ball.r, ball.x));
-  ball.y = Math.max(ball.r, Math.min(canvas.height - ball.r, ball.y));
-
-  // Check on target
-  const dx = mouse.x - ball.x, dy = mouse.y - ball.y;
-  const dist = Math.sqrt(dx*dx + dy*dy);
-  const isOn = dist < ball.r;
-  totalFrames++;
-  if (isOn) { onTarget++; curStreak++; if (curStreak > bestStreak) bestStreak = curStreak; }
-  else { curStreak = 0; }
-
-  // Draw ball
-  ctx.beginPath();
-  ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2);
-  ctx.fillStyle = isOn ? 'rgba(78,205,196,0.9)' : 'rgba(200,48,42,0.9)';
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(ball.x, ball.y, 3, 0, Math.PI*2);
-  ctx.fillStyle = '#f5f2ed';
-  ctx.fill();
-
-  // Draw cursor
-  ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-  ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(mouse.x-10, mouse.y); ctx.lineTo(mouse.x+10, mouse.y); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(mouse.x, mouse.y-10); ctx.lineTo(mouse.x, mouse.y+10); ctx.stroke();
-
-  // HUD
-  const acc = totalFrames ? Math.round(onTarget/totalFrames*100) : 0;
-  const remaining = Math.max(0, Math.ceil((trackDuration - elapsed)/1000));
-  document.getElementById('ts-acc').textContent = acc + '%';
-  document.getElementById('ts-time').textContent = remaining + 's';
-  document.getElementById('ts-streak').textContent = bestStreak;
-
-  // Progress bar
-  ctx.fillStyle = 'rgba(200,48,42,0.3)';
-  ctx.fillRect(0, canvas.height-3, canvas.width * (elapsed/trackDuration), 3);
-
-  trackAnim = requestAnimationFrame(trackLoop);
-}
-
-function showTrackResult() {
-  const acc = totalFrames ? Math.round(onTarget/totalFrames*100) : 0;
-  let grade = 'D';
-  if (acc > 85) grade = 'S';
-  else if (acc > 70) grade = 'A';
-  else if (acc > 55) grade = 'B';
-  else if (acc > 40) grade = 'C';
-  document.getElementById('ts-grade').textContent = grade;
-  document.getElementById('ts-acc').textContent = acc + '%';
-  document.getElementById('ts-time').textContent = '0s';
-
-  // Draw result on canvas
-  ctx.fillStyle = 'rgba(10,10,10,0.8)';
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-  ctx.fillStyle = '#f5f2ed';
-  ctx.font = '600 48px "Bebas Neue", sans-serif';
-  ctx.textAlign = 'center';
-  ctx.letterSpacing = '3px';
-  ctx.fillText('GRADE: ' + grade, canvas.width/2, canvas.height/2 - 20);
-  ctx.font = '300 16px "Barlow Condensed", sans-serif';
-  ctx.fillStyle = '#999';
-  ctx.fillText(acc + '% précision · ' + bestStreak + ' frames streak max', canvas.width/2, canvas.height/2 + 20);
-  ctx.fillText('Sélectionne une difficulté pour recommencer', canvas.width/2, canvas.height/2 + 50);
-}
 </script>
 
 </body>
