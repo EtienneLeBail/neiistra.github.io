@@ -60,6 +60,7 @@
   .footer-logo span { color: var(--red); }
   .footer-text { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: var(--gray-light); text-transform: uppercase; }
   @keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .cfg-l{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-text);white-space:nowrap}.cfg-i{padding:5px 6px;background:var(--black);border:1px solid var(--border);color:var(--white);font-family:'Barlow Condensed',sans-serif;font-size:12px;border-radius:3px;text-align:center;-moz-appearance:textfield}.cfg-i::-webkit-inner-spin-button{-webkit-appearance:none}
   .chapter-eyebrow{animation:fadeUp .6s ease both;} .chapter-title{animation:fadeUp .6s .1s ease both;} .chapter-subtitle{animation:fadeUp .6s .2s ease both;} .chapter-meta{animation:fadeUp .6s .3s ease both;}
   @media(max-width:768px){ nav{padding:0 24px;} .chapter-hero{padding:100px 24px 48px;} .content{padding:48px 24px;} .stat-grid{grid-template-columns:repeat(2,1fr);} .impl-card{grid-template-columns:1fr;gap:8px;} .next-chapter{flex-direction:column;gap:24px;padding:32px 24px;} footer{padding:20px 24px;flex-direction:column;gap:8px;} }
 </style>
@@ -222,8 +223,21 @@
   <p>Dans R6, le son est le canal d'information le plus constant — il est toujours actif, contrairement au drone qui est limité. Ce test simule la détection de signaux audio dans un environnement bruité. Réagis dès que tu entends un signal distinct parmi le bruit de fond.</p>
 
   <div class="diagram-wrap">
-    <div style="margin-bottom:12px;font-size:13px;color:var(--gray-text);">Clique sur <strong style="color:var(--white)">Démarrer</strong>. Des cercles vont apparaître aléatoirement — ils représentent des sons ennemis que tu dois détecter rapidement. Clique dessus dès qu'ils apparaissent.</div>
-    <canvas id="scanCanvas" height="320" style="width:100%;display:block;border-radius:6px;background:rgba(0,0,0,0.3);cursor:crosshair;"></canvas>
+    <div style="margin-bottom:12px;font-size:13px;color:var(--gray-text);">Clique sur la zone pour capturer la souris (sensi R6). Des cercles vont apparaître — place ton <strong style="color:var(--white)">crosshair dessus et clique</strong>.</div>
+    <div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:rgba(0,0,0,0.2);margin-bottom:2px;border-radius:6px 6px 0 0">
+      <label class="cfg-l">DPI</label><input type="number" id="cfgDpi" value="800" class="cfg-i" style="width:60px">
+      <label class="cfg-l">Sens</label><input type="number" id="cfgSens" value="10" class="cfg-i" style="width:48px">
+      <label class="cfg-l">Mult</label><input type="number" id="cfgMult" value="0.02" step="0.001" class="cfg-i" style="width:60px">
+      <span class="cfg-l" style="color:#4ecdc4" id="cfgInfo">—</span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#2ecc71;background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.25);padding:3px 8px;border-radius:2px">POINTER LOCK</span>
+    </div>
+    <div style="position:relative">
+      <canvas id="scanCanvas" height="320" style="width:100%;display:block;border-radius:0 0 6px 6px;background:rgba(0,0,0,0.3);cursor:none;"></canvas>
+      <div id="plOverlay" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(10,10,10,0.92);cursor:pointer;z-index:5;border-radius:0 0 6px 6px" onclick="document.getElementById('scanCanvas').requestPointerLock()">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;margin-bottom:8px">CLIQUE POUR CAPTURER</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:#999;line-height:1.6;text-align:center">Sensibilité R6 appliquée<br><span style="font-size:11px;color:#555">Échap pour libérer</span></div>
+      </div>
+    </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:2px;">
       <div style="background:rgba(0,0,0,0.3);padding:10px 16px;">
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-light);margin-bottom:2px;">Détectés</div>
@@ -293,142 +307,91 @@
 </footer>
 
 <script>
-let scanRunning = false, scanTimer = null, dotTimer = null;
-let hits = 0, misses = 0, activeDot = null, dotTimeout = null;
+// Pointer Lock + Sensitivity
+let sensScale=0.2,chX=0,chY=0,plLocked=false;
+function updateSens(){const dpi=parseFloat(document.getElementById('cfgDpi').value)||800;const sens=parseFloat(document.getElementById('cfgSens').value)||10;const mult=parseFloat(document.getElementById('cfgMult').value)||0.02;sensScale=sens*mult;document.getElementById('cfgInfo').textContent=((360*2.54)/(dpi*sens*mult*0.33)).toFixed(1)+' cm/360°';}
+document.getElementById('cfgDpi').oninput=updateSens;document.getElementById('cfgSens').oninput=updateSens;document.getElementById('cfgMult').oninput=updateSens;updateSens();
+const gc=document.getElementById('scanCanvas');const gx=gc.getContext('2d');
+document.addEventListener('pointerlockchange',()=>{plLocked=document.pointerLockElement===gc;document.getElementById('plOverlay').style.display=plLocked?'none':'flex';});
+document.addEventListener('mousemove',e=>{if(!plLocked)return;chX=Math.max(0,Math.min(gc.width,chX+e.movementX*sensScale));chY=Math.max(0,Math.min(gc.height,chY+e.movementY*sensScale));});
+function drawCH(){gx.shadowColor='rgba(255,255,255,0.4)';gx.shadowBlur=4;gx.strokeStyle='rgba(255,255,255,0.95)';gx.lineWidth=2;gx.beginPath();gx.moveTo(chX-12,chY);gx.lineTo(chX-4,chY);gx.stroke();gx.beginPath();gx.moveTo(chX+4,chY);gx.lineTo(chX+12,chY);gx.stroke();gx.beginPath();gx.moveTo(chX,chY-12);gx.lineTo(chX,chY-4);gx.stroke();gx.beginPath();gx.moveTo(chX,chY+4);gx.lineTo(chX,chY+12);gx.stroke();gx.shadowBlur=0;gx.fillStyle='#fff';gx.beginPath();gx.arc(chX,chY,2,0,Math.PI*2);gx.fill();}
 
-function startScan() {
-  hits = 0; misses = 0;
-  document.getElementById('scan-hits').textContent = '0';
-  document.getElementById('scan-miss').textContent = '0';
-  document.getElementById('scan-score').textContent = '—';
-  scanRunning = true;
-  drawScanBase();
+// Game state
+let scanRunning=false,scanTimer=null,dotTimer=null,dotTimeout=null;
+let hits=0,misses=0,activeDot=null,animFrame;
+
+function startScan(){
+  const W=gc.offsetWidth||820;gc.width=W;chX=W/2;chY=160;
+  hits=0;misses=0;
+  document.getElementById('scan-hits').textContent='0';
+  document.getElementById('scan-miss').textContent='0';
+  document.getElementById('scan-score').textContent='—';
+  scanRunning=true;
+  if(!plLocked)gc.requestPointerLock();
   scheduleDot();
   clearTimeout(scanTimer);
-  scanTimer = setTimeout(stopScan, 30000);
+  scanTimer=setTimeout(stopScan,30000);
+  if(animFrame)cancelAnimationFrame(animFrame);
+  renderLoop();
 }
 
-function stopScan() {
-  scanRunning = false;
-  clearTimeout(dotTimer);
-  clearTimeout(dotTimeout);
-  activeDot = null;
-  if (hits + misses > 0) {
-    const pct = Math.round(hits / (hits + misses) * 100);
-    document.getElementById('scan-score').textContent = pct + '%';
-  }
-  drawScanBase();
+function stopScan(){
+  scanRunning=false;
+  clearTimeout(dotTimer);clearTimeout(dotTimeout);
+  activeDot=null;
+  if(hits+misses>0)document.getElementById('scan-score').textContent=Math.round(hits/(hits+misses)*100)+'%';
 }
 
-function scheduleDot() {
-  if (!scanRunning) return;
-  const delay = 800 + Math.random() * 1800;
-  dotTimer = setTimeout(spawnDot, delay);
+function scheduleDot(){
+  if(!scanRunning)return;
+  dotTimer=setTimeout(spawnDot,800+Math.random()*1800);
 }
 
-function spawnDot() {
-  if (!scanRunning) return;
-  const canvas = document.getElementById('scanCanvas');
-  const W = canvas.offsetWidth || 820;
-  const H = 320;
-  const margin = 40;
-  let x, y;
-  x = margin + Math.random() * (W - margin * 2);
-  y = margin + Math.random() * (H - margin * 2);
-  activeDot = { x, y, born: Date.now() };
-  drawScanBase();
-  dotTimeout = setTimeout(() => {
-    if (activeDot) {
-      misses++;
-      document.getElementById('scan-miss').textContent = misses;
-      activeDot = null;
-      drawScanBase();
-    }
+function spawnDot(){
+  if(!scanRunning)return;
+  const W=gc.width,H=320,m=40;
+  activeDot={x:m+Math.random()*(W-m*2),y:m+Math.random()*(H-m*2),born:Date.now()};
+  dotTimeout=setTimeout(()=>{
+    if(activeDot){misses++;document.getElementById('scan-miss').textContent=misses;activeDot=null;}
     scheduleDot();
-  }, 1400);
+  },1400);
 }
 
-function drawScanBase() {
-  const canvas = document.getElementById('scanCanvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const W = canvas.offsetWidth || 820;
-  canvas.width = W;
-  const H = 320;
-  ctx.clearRect(0, 0, W, H);
-
-  // Draw room layout (R6-style top view)
-  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-  ctx.lineWidth = 1;
-  // Walls
-  ctx.strokeRect(20, 20, W-40, H-40);
-  // Interior walls
-  ctx.beginPath(); ctx.moveTo(W/2, 20); ctx.lineTo(W/2, H*0.6); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(20, H/2); ctx.lineTo(W*0.4, H/2); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(W*0.6, H/2); ctx.lineTo(W-20, H/2); ctx.stroke();
-
-  ctx.fillStyle = 'rgba(255,255,255,0.06)';
-  ctx.font = "10px 'Barlow Condensed', sans-serif";
-  ctx.textAlign = 'center';
-  ctx.fillText('Vue de dessus schématique — représentation R6', W/2, 14);
-
-  if (!scanRunning) {
-    ctx.fillStyle = 'rgba(255,255,255,0.2)';
-    ctx.font = "14px 'Barlow Condensed', sans-serif";
-    ctx.fillText('Clique sur Démarrer pour commencer', W/2, H/2 + 4);
-    return;
-  }
-
-  ctx.fillStyle = '#555';
-  ctx.font = "10px 'Barlow Condensed', sans-serif";
-  ctx.fillText('Détecte les signaux ennemis — 30 secondes', W/2, H - 6);
-
-  if (activeDot) {
-    const age = (Date.now() - activeDot.born) / 1400;
-    const alpha = 1 - age * 0.4;
-    // Ripple effect
-    ctx.beginPath();
-    ctx.arc(activeDot.x, activeDot.y, 20 + age * 10, 0, Math.PI * 2);
-    ctx.strokeStyle = `rgba(200,48,42,${alpha * 0.3})`;
-    ctx.lineWidth = 1;
-    ctx.stroke();
-    // Main dot
-    ctx.beginPath();
-    ctx.arc(activeDot.x, activeDot.y, 10, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(200,48,42,${alpha})`;
-    ctx.fill();
-    ctx.strokeStyle = `rgba(245,242,237,${alpha})`;
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-    // Sound wave symbol
-    ctx.fillStyle = `rgba(245,242,237,${alpha * 0.8})`;
-    ctx.font = "10px 'Barlow Condensed', sans-serif";
-    ctx.fillText('PAS', activeDot.x, activeDot.y - 16);
-  }
-}
-
-function handleScanClick(e) {
-  if (!scanRunning || !activeDot) return;
-  const canvas = document.getElementById('scanCanvas');
-  const rect = canvas.getBoundingClientRect();
-  const x = (e.clientX - rect.left) * (canvas.width / rect.width);
-  const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-  const dist = Math.hypot(x - activeDot.x, y - activeDot.y);
-  if (dist < 35) {
-    hits++;
-    document.getElementById('scan-hits').textContent = hits;
-    clearTimeout(dotTimeout);
-    activeDot = null;
-    drawScanBase();
-    scheduleDot();
-  }
-}
-
-window.addEventListener('load', () => {
-  const canvas = document.getElementById('scanCanvas');
-  if (canvas) { canvas.addEventListener('click', handleScanClick); drawScanBase(); }
+// Click detection via pointer lock
+document.addEventListener('mousedown',e=>{
+  if(!plLocked||!scanRunning||!activeDot)return;
+  const d=Math.hypot(chX-activeDot.x,chY-activeDot.y);
+  if(d<35){hits++;document.getElementById('scan-hits').textContent=hits;clearTimeout(dotTimeout);activeDot=null;scheduleDot();}
 });
-window.addEventListener('resize', drawScanBase);
+
+function renderLoop(){
+  const W=gc.width,H=320;
+  gx.clearRect(0,0,W,H);
+  // Room layout
+  gx.strokeStyle='rgba(255,255,255,0.06)';gx.lineWidth=1;
+  gx.strokeRect(20,20,W-40,H-40);
+  gx.beginPath();gx.moveTo(W/2,20);gx.lineTo(W/2,H*0.6);gx.stroke();
+  gx.beginPath();gx.moveTo(20,H/2);gx.lineTo(W*0.4,H/2);gx.stroke();
+  gx.beginPath();gx.moveTo(W*0.6,H/2);gx.lineTo(W-20,H/2);gx.stroke();
+  gx.fillStyle='rgba(255,255,255,0.06)';gx.font="10px 'Barlow Condensed',sans-serif";gx.textAlign='center';
+  gx.fillText('Vue de dessus — détecte les signaux ennemis',W/2,14);
+
+  if(!scanRunning){gx.fillStyle='rgba(255,255,255,0.2)';gx.font="14px 'Barlow Condensed',sans-serif";gx.fillText('Clique Démarrer',W/2,H/2+4);gx.textAlign='left';drawCH();animFrame=requestAnimationFrame(renderLoop);return;}
+  gx.fillStyle='#555';gx.font="10px 'Barlow Condensed',sans-serif";gx.fillText('30 secondes',W/2,H-6);
+
+  if(activeDot){
+    const age=(Date.now()-activeDot.born)/1400,alpha=1-age*0.4;
+    gx.beginPath();gx.arc(activeDot.x,activeDot.y,20+age*10,0,Math.PI*2);gx.strokeStyle=`rgba(200,48,42,${alpha*0.3})`;gx.lineWidth=1;gx.stroke();
+    gx.beginPath();gx.arc(activeDot.x,activeDot.y,10,0,Math.PI*2);gx.fillStyle=`rgba(200,48,42,${alpha})`;gx.fill();gx.strokeStyle=`rgba(245,242,237,${alpha})`;gx.lineWidth=1.5;gx.stroke();
+    gx.fillStyle=`rgba(245,242,237,${alpha*0.8})`;gx.font="10px 'Barlow Condensed',sans-serif";gx.fillText('PAS',activeDot.x,activeDot.y-16);
+  }
+  gx.textAlign='left';
+  drawCH();
+  animFrame=requestAnimationFrame(renderLoop);
+}
+
+window.addEventListener('load',()=>{const W=gc.offsetWidth||820;gc.width=W;chX=W/2;chY=160;renderLoop();});
+window.addEventListener('resize',()=>{const W=gc.offsetWidth||820;gc.width=W;});
 </script>
 </body>
 </html>
